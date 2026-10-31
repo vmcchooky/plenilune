@@ -71,7 +71,9 @@ Evidence giữ model/prompt version, request/response hash và usage; giữ acce
 Tài liệu chính thức đã đối chiếu: [models](https://dev.meta.ai/models/muse-spark),
 [tool calling](https://dev.meta.ai/docs/tool-calling), [structured output](https://dev.meta.ai/docs/structured-output).
 Transport hiện dùng POST `/v1/responses`, flat function tools, `text.format`,
-`max_output_tokens` (agent 1200/request), reasoning medium, stream=false,
+`max_output_tokens` (agent 3000/request; reasoning tokens cũng tính vào ngân sách
+này, 1200 đã bị cạn trong một lượt live UI trước khi có JSON dùng được),
+reasoning medium, stream=false,
 store=false + encrypted reasoning replay trong session. Không lưu opaque reasoning
 vào artifact/log; request 256 KiB / response 1 MiB, 8 model calls/session,
 12 tools, 2 proposals, deadline session 60s. Timeout mỗi request 45s.

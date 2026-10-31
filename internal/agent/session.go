@@ -4,12 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
 	"plenilune/internal/ai"
 	"plenilune/internal/intent"
 )
+
+// Reasoning tokens count toward max_output_tokens. The previous 1200-token
+// budget was exhausted before a usable final JSON in a live UI session.
+const outputTokensPerRequest = 3000
 
 type Config struct {
 	Enabled              bool
@@ -336,7 +341,7 @@ func (r *runner) modelCall() (ai.Response, error) {
 		Model:     r.session.cfg.Model,
 		Messages:  r.messages,
 		Tools:     r.session.tools,
-		MaxTokens: 1200,
+		MaxTokens: outputTokensPerRequest,
 	}
 	if !r.session.cfg.PromptOnlyJSON {
 		req.ResponseFormat = &ai.ResponseFormat{
@@ -429,8 +434,8 @@ func (r *runner) correct(content, code, message string) bool {
 }
 
 // correctTruncated starts a fresh, tools-off final turn instead of echoing the
-// truncated assistant payload back into the context. Replaying 1200 tokens of
-// incomplete JSON on every correction tends to recreate the same truncation.
+// truncated assistant payload back into the context. Replaying a full truncated
+// payload on every correction tends to recreate the same truncation.
 func (r *runner) correctTruncated() bool {
 	if r.corrections >= r.session.cfg.MaxOutputCorrections {
 		return false
@@ -441,7 +446,7 @@ func (r *runner) correctTruncated() bool {
 		Error       toolProblem `json:"error"`
 		Instruction string      `json:"instruction"`
 	}{
-		Error:       toolProblem{Code: "invalid_output", Message: "model output was truncated by the 1200-token limit"},
+		Error:       toolProblem{Code: "invalid_output", Message: fmt.Sprintf("model output was truncated by the %d-token limit", outputTokensPerRequest)},
 		Instruction: "Do not repeat or continue truncated text and do not call tools. Return only the smallest valid final JSON object now; keep summary under 200 characters.",
 	})
 	if err != nil {

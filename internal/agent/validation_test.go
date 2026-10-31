@@ -276,8 +276,23 @@ func TestTruncatedOutputCorrectionStartsFresh(t *testing.T) {
 		}
 	}
 	last := second.Messages[len(second.Messages)-1]
-	if !strings.Contains(last.Content, "1200-token") || !strings.Contains(last.Content, "smallest valid final JSON") {
+	if !strings.Contains(last.Content, "token limit") || !strings.Contains(last.Content, "smallest valid final JSON") {
 		t.Fatalf("truncation correction is not compact: %+v", last)
+	}
+}
+
+func TestSessionUsesRaisedOutputBudget(t *testing.T) {
+	provider := scripted(contentResponse(proposal), contentResponse(finalHolds))
+	s := newSession(t, provider, &fakeEngine{})
+	res := runSession(t, s, testInput())
+	if res.Status != StatusCompleted {
+		t.Fatalf("result = %s/%s", res.Status, res.Reason)
+	}
+	if got := provider.request(0).MaxTokens; got != outputTokensPerRequest {
+		t.Fatalf("output budget = %d, want %d", got, outputTokensPerRequest)
+	}
+	if outputTokensPerRequest <= 1200 || outputTokensPerRequest > 4096 {
+		t.Fatalf("output budget %d is outside the reviewed range", outputTokensPerRequest)
 	}
 }
 

@@ -190,7 +190,7 @@ func (r *runner) loop() Result {
 		}
 		switch resp.FinishReason {
 		case "length":
-			if !r.correct(resp.Content, "invalid_output", "model output was truncated by the token limit") {
+			if !r.correctTruncated() {
 				return r.limitResult("invalid_model_output")
 			}
 			continue
@@ -420,6 +420,29 @@ func (r *runner) correct(content, code, message string) bool {
 	}{
 		Error:       toolProblem{Code: code, Message: message},
 		Instruction: "Correct it and return only the required JSON object or a valid tool call.",
+	})
+	if err != nil {
+		return false
+	}
+	r.messages = append(r.messages, ai.Message{Role: "user", Content: string(correction)})
+	return true
+}
+
+// correctTruncated starts a fresh, tools-off final turn instead of echoing the
+// truncated assistant payload back into the context. Replaying 1200 tokens of
+// incomplete JSON on every correction tends to recreate the same truncation.
+func (r *runner) correctTruncated() bool {
+	if r.corrections >= r.session.cfg.MaxOutputCorrections {
+		return false
+	}
+	r.corrections++
+	r.toolsDisabled = true
+	correction, err := json.Marshal(struct {
+		Error       toolProblem `json:"error"`
+		Instruction string      `json:"instruction"`
+	}{
+		Error:       toolProblem{Code: "invalid_output", Message: "model output was truncated by the 1200-token limit"},
+		Instruction: "Do not repeat or continue truncated text and do not call tools. Return only the smallest valid final JSON object now; keep summary under 200 characters.",
 	})
 	if err != nil {
 		return false

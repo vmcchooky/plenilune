@@ -257,6 +257,30 @@ func TestTruncatedModelOutputIsRejected(t *testing.T) {
 	}
 }
 
+func TestTruncatedOutputCorrectionStartsFresh(t *testing.T) {
+	truncated := contentResponse(proposal)
+	truncated.FinishReason = "length"
+	provider := scripted(truncated, contentResponse(proposal), contentResponse(finalHolds))
+	s := newSession(t, provider, &fakeEngine{})
+	res := runSession(t, s, testInput())
+	if res.Status != StatusCompleted || provider.count() != 3 {
+		t.Fatalf("result = %s calls=%d", res.Status, provider.count())
+	}
+	second := provider.request(1)
+	if len(second.Tools) != 0 {
+		t.Fatalf("truncation correction kept tools enabled: %d", len(second.Tools))
+	}
+	for _, m := range second.Messages {
+		if m.Role == "assistant" {
+			t.Fatalf("truncated assistant payload was replayed: %+v", m)
+		}
+	}
+	last := second.Messages[len(second.Messages)-1]
+	if !strings.Contains(last.Content, "1200-token") || !strings.Contains(last.Content, "smallest valid final JSON") {
+		t.Fatalf("truncation correction is not compact: %+v", last)
+	}
+}
+
 func TestContentFilteredOutputIsUnavailable(t *testing.T) {
 	filtered := contentResponse(proposal)
 	filtered.FinishReason = "content_filter"

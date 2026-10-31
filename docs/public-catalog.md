@@ -55,6 +55,7 @@ publication step.
 | `scripts/public-snapshot.ps1` | Builds the review snapshot under ignored `out/` and regenerates the manifest |
 | `web/src/**`, `web/tests/**` except the dated/historical browser harnesses | UI source and product tests |
 | `web/index.html`, `web/package.json`, `web/package-lock.json` | UI entry/build metadata |
+| `web/.gitignore` | Local UI build/dependency ignore rules |
 | `web/tsconfig.json`, `web/vite.config.ts`, `web/vitest.config.ts` | UI configuration |
 | `web/public/**` | Static public assets |
 | `docs/design/product-ux.md` | Product design reference |

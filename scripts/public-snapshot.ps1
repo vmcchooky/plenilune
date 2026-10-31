@@ -47,7 +47,7 @@ foreach ($tree in @('cmd', 'internal', 'testdata', 'docs', 'examples/moonstorm-c
 
 Get-ChildItem -LiteralPath (Join-Path $root 'scripts') -File -Filter '*.ps1' | ForEach-Object { Copy-PublicFile $_ }
 
-foreach ($name in @('index.html', 'package.json', 'package-lock.json', 'tsconfig.json', 'vite.config.ts', 'vitest.config.ts')) {
+foreach ($name in @('index.html', 'package.json', 'package-lock.json', '.gitignore', 'tsconfig.json', 'vite.config.ts', 'vitest.config.ts')) {
     Copy-PublicFile (Get-Item -LiteralPath (Join-Path $root ('web/' + $name)))
 }
 

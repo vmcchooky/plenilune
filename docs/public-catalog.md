@@ -68,7 +68,7 @@ publication step.
 | `examples/moonstorm-client/**` | Independent subprocess JSON client (std-lib only) |
 | `docs/usage-vi.md` | Vietnamese walkthrough of the configuration-level flow |
 | `docs/public-catalog.md` | This catalog |
-| `docs/public-manifest.sha256` | SHA-256 inventory of the files above, generated for the review snapshot; the manifest file itself is not listed |
+| `docs/public-manifest.sha256` | SHA-256 inventory of the files above, generated for the review snapshot; the manifest file itself is not listed. Regenerate with `scripts/public-snapshot.ps1` only from a checkout whose working-tree bytes match Git (LF checkout, `core.autocrlf=false`): `.gitattributes` pins Go source and `testdata/**`, but unattributed text files become CRLF on `core.autocrlf=true` clones and their hashes would drift |
 
 ## Internal — do not publish
 

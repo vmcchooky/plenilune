@@ -1,0 +1,264 @@
+{
+  "schema": "plenilune.analysis/v1",
+  "tool": {
+    "version": "0.2.0-dev",
+    "commit": "unversioned"
+  },
+  "versions": {
+    "intake": "plenilune-intake/v0.1",
+    "acl_parser": "cisco-acl/v0.2",
+    "acl_engine": "acl-exact/v0.2",
+    "prefix_list_parser": "cisco-prefix-list/v0.1",
+    "prefix_list_engine": "prefix-list-exact/v0.1"
+  },
+  "request": {
+    "select": [],
+    "policies": [],
+    "options": {
+      "acl": {
+        "limits": {
+          "max_operations": 2000000,
+          "max_boxes": 50000,
+          "timeout_ns": 2000000000
+        },
+        "max_witnesses": 8
+      },
+      "max_classes": 32,
+      "deadline_ms": 30000
+    }
+  },
+  "sources": {
+    "after": {
+      "sha256": "8c08730675a85536e4c1c7afb6f3d52675c6710436ae5f503d3f9d0a04b9811d",
+      "bytes": 715,
+      "lines": 24
+    },
+    "before": {
+      "sha256": "c5a37db14cb8020c747e9225cfcf446f2adaa4d45f5a05ae9f55da8ec2448493",
+      "bytes": 651,
+      "lines": 23
+    }
+  },
+  "objects": [
+    {
+      "domain": "acl",
+      "name": "MGMT",
+      "kind": "named-extended",
+      "status": "unchanged",
+      "before": {
+        "lines": [
+          [
+            9,
+            14
+          ]
+        ],
+        "byte_start": 190,
+        "byte_end": 434,
+        "sha256": "c2d381528fe1cb1895c118bd3221d6487166801d0a4eed1662eb2ca20d167b1f",
+        "units": 4
+      },
+      "after": {
+        "lines": [
+          [
+            9,
+            14
+          ]
+        ],
+        "byte_start": 190,
+        "byte_end": 434,
+        "sha256": "c2d381528fe1cb1895c118bd3221d6487166801d0a4eed1662eb2ca20d167b1f",
+        "units": 4
+      },
+      "references": {
+        "after": [
+          {
+            "line": 7,
+            "text": "ip access-group MGMT in"
+          }
+        ],
+        "before": [
+          {
+            "line": 7,
+            "text": "ip access-group MGMT in"
+          }
+        ]
+      }
+    },
+    {
+      "domain": "prefix-list",
+      "name": "CUSTOMER",
+      "kind": "ipv4",
+      "status": "changed",
+      "before": {
+        "lines": [
+          [
+            16,
+            17
+          ]
+        ],
+        "sha256": "8cfc573fda5ba05e5f7217aa313f4b3fcb2aae1aaa7c1e96f984ce23c246546c",
+        "units": 2
+      },
+      "after": {
+        "lines": [
+          [
+            16,
+            18
+          ]
+        ],
+        "sha256": "d72bd7ee95d060283a65e8304a4d76b63631111ebb958bd01d6d4abc2b3f71f7",
+        "units": 3
+      },
+      "references": {
+        "after": [
+          {
+            "line": 22,
+            "text": "neighbor 198.51.100.2 prefix-list CUSTOMER in"
+          }
+        ],
+        "before": [
+          {
+            "line": 21,
+            "text": "neighbor 198.51.100.2 prefix-list CUSTOMER in"
+          }
+        ]
+      },
+      "prefix_list": {
+        "parser": "cisco-prefix-list/v0.1",
+        "engine": "prefix-list-exact/v0.1",
+        "report": {
+          "verdict": "DIFFERENT",
+          "complete": true,
+          "classes": [
+            {
+              "effect": "newly_permitted",
+              "before": {
+                "action": "deny",
+                "seq": 10,
+                "line": 17,
+                "text": "ip prefix-list CUSTOMER seq 10 deny 0.0.0.0/0 le 32",
+                "implicit": false
+              },
+              "after": {
+                "action": "permit",
+                "seq": 5,
+                "line": 17,
+                "text": "ip prefix-list CUSTOMER seq 5 permit 203.0.113.0/24 le 26",
+                "implicit": false
+              },
+              "witness": {
+                "route": "203.0.113.0/25",
+                "before": {
+                  "action": "deny",
+                  "seq": 10,
+                  "line": 17,
+                  "implicit": false
+                },
+                "after": {
+                  "action": "permit",
+                  "seq": 5,
+                  "line": 17,
+                  "implicit": false
+                }
+              },
+              "routes": 3,
+              "lengths": [
+                25,
+                26
+              ],
+              "ranges": [
+                {
+                  "length": 25,
+                  "first": "203.0.113.0/25",
+                  "last": "203.0.113.0/25",
+                  "routes": 1
+                },
+                {
+                  "length": 26,
+                  "first": "203.0.113.0/26",
+                  "last": "203.0.113.64/26",
+                  "routes": 2
+                }
+              ],
+              "ranges_truncated": false,
+              "total_ranges": 2
+            }
+          ],
+          "classes_truncated": false,
+          "total_classes": 1,
+          "operations": 334,
+          "max_classes": 32
+        }
+      }
+    }
+  ],
+  "coverage": {
+    "after": {
+      "lines": 24,
+      "noise_lines": 7,
+      "analyzed_lines": 9,
+      "structural_lines": 0,
+      "unsupported_lines": 0,
+      "unanalyzed_lines": 8,
+      "unanalyzed_sections": [
+        {
+          "kind": "hostname",
+          "count": 1
+        },
+        {
+          "kind": "interface",
+          "count": 1
+        },
+        {
+          "kind": "router",
+          "count": 1
+        }
+      ],
+      "warnings": []
+    },
+    "before": {
+      "lines": 23,
+      "noise_lines": 7,
+      "analyzed_lines": 8,
+      "structural_lines": 0,
+      "unsupported_lines": 0,
+      "unanalyzed_lines": 8,
+      "unanalyzed_sections": [
+        {
+          "kind": "hostname",
+          "count": 1
+        },
+        {
+          "kind": "interface",
+          "count": 1
+        },
+        {
+          "kind": "router",
+          "count": 1
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "unanalyzed_changes": [],
+  "unanalyzed_changes_truncated": false,
+  "summary": {
+    "objects": 2,
+    "changed": 1,
+    "equivalent": 0,
+    "unchanged": 1,
+    "added": 0,
+    "removed": 0,
+    "unsupported": 0,
+    "inconclusive": 0,
+    "not_analyzed": 0,
+    "unanalyzed_changes": 0
+  },
+  "limitations": [
+    "behavior_evaluated_per_object_without_binding",
+    "acl_scope_ipv4_unfragmented_or_initial_with_complete_l4",
+    "prefix_list_scope_ipv4_route_prefix_only",
+    "unanalyzed_configuration_present"
+  ],
+  "sha256": "bc5c615e08cfebb6e60e0729a1c83e75abbc974b5f76470a6d04adc50324c88e"
+}

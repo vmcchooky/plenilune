@@ -1,0 +1,6 @@
+ip access-list extended MGMT
+ 10 remark synthetic documentation addresses only
+ 20 deny tcp host 192.0.2.10 any eq 22 log
+ 30 permit tcp 192.0.2.0 0.0.0.255 host 198.51.100.10 eq 22
+ 40 deny ip any any
+!

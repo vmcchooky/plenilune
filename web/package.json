@@ -1,0 +1,31 @@
+{
+  "name": "plenilune-demo",
+  "private": true,
+  "version": "0.1.0",
+  "license": "GPL-3.0-only",
+  "author": "Võ Mạnh Cường (Chooky) — Quorix Việt Nam",
+  "repository": "vmcchooky/plenilune",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "vite": "^7.1.9"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "jsdom": "^29.1.1",
+    "playwright": "^1.64.1",
+    "typescript": "~5.9.3",
+    "vitest": "^5.0.5"
+  }
+}

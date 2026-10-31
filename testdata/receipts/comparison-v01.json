@@ -1,0 +1,121 @@
+{
+  "schema": "plenilune.evidence/v1",
+  "tool": {
+    "version": "0.2.0-dev",
+    "commit": "unversioned"
+  },
+  "parser_version": "cisco-acl/v0.2",
+  "engine_version": "acl-exact/v0.1",
+  "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+  "before": {
+    "sha256": "a70ad0803a9fe29920f03114dede216aa153ce65cb726fa754d34313923c143a",
+    "name": "MGMT",
+    "kind": "named-extended"
+  },
+  "after": {
+    "sha256": "bdf00bdfadd5eaa17187a5f36ea1a013ecfc9e132562a67d0eb5dbaed99127f3",
+    "name": "MGMT",
+    "kind": "named-extended"
+  },
+  "conditions": {
+    "schema": "plenilune.obligations/v1",
+    "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+    "obligations": [
+      {
+        "id": "OB-1",
+        "kind": "must_permit",
+        "match": {
+          "protocol": "tcp",
+          "src_cidr": "192.0.2.0/24",
+          "dst_cidr": "198.51.100.10/32",
+          "exclude_src": [],
+          "exclude_dst": [],
+          "src_ports": [
+            {
+              "lo": 0,
+              "hi": 65535
+            }
+          ],
+          "dst_ports": [
+            {
+              "lo": 22,
+              "hi": 22
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "report": {
+    "verdict": "DIFFERENT",
+    "search_complete": true,
+    "witnesses": [
+      {
+        "id": "wit-dce62d661aaa6b99c40b364f179b95bed1d11b7cfdf57a3090d95c385ed0c55b",
+        "packet": {
+          "protocol": 6,
+          "src_ip": "192.0.2.10",
+          "dst_ip": "198.51.100.10",
+          "src_port": 0,
+          "dst_port": 22
+        },
+        "before": {
+          "action": "permit",
+          "rule_ordinal": 0,
+          "line": 2,
+          "implicit": false
+        },
+        "after": {
+          "action": "deny",
+          "rule_ordinal": 0,
+          "line": 3,
+          "implicit": false
+        }
+      }
+    ],
+    "witnesses_truncated": false,
+    "obligations": [
+      {
+        "id": "OB-1",
+        "status": "VIOLATED",
+        "witness": {
+          "id": "wit-3d328706b10d870c262f6509e3010a50f5c6407893766975f2f69314798a2311",
+          "packet": {
+            "protocol": 6,
+            "src_ip": "192.0.2.10",
+            "dst_ip": "198.51.100.10",
+            "src_port": 0,
+            "dst_port": 22
+          },
+          "before": {
+            "action": "permit",
+            "rule_ordinal": 0,
+            "line": 2,
+            "implicit": false
+          },
+          "after": {
+            "action": "deny",
+            "rule_ordinal": 0,
+            "line": 3,
+            "implicit": false
+          }
+        }
+      }
+    ],
+    "budget": {
+      "operations": 163,
+      "peak_boxes": 23,
+      "stop_reason": "",
+      "timing_limited": false
+    },
+    "options": {
+      "limits": {
+        "max_operations": 2000000,
+        "max_boxes": 50000,
+        "timeout_ns": 2000000000
+      },
+      "max_witnesses": 8
+    }
+  },
+  "sha256": "03c2a6e61773d46af26352309146d67efc2c81ec8f40c880e8d31b32a7d6d5d3"
+}

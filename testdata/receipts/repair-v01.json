@@ -1,0 +1,186 @@
+{
+  "schema": "plenilune.repair/v1",
+  "version": "acl-repair/v0.1",
+  "status": "VERIFIED",
+  "before_sha256": "a70ad0803a9fe29920f03114dede216aa153ce65cb726fa754d34313923c143a",
+  "base_after_sha256": "bdf00bdfadd5eaa17187a5f36ea1a013ecfc9e132562a67d0eb5dbaed99127f3",
+  "policy": {
+    "schema": "plenilune.policy/v1",
+    "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+    "operator_accepted": true,
+    "conditions": {
+      "schema": "plenilune.obligations/v1",
+      "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+      "obligations": [
+        {
+          "id": "OB-1",
+          "kind": "must_permit",
+          "match": {
+            "protocol": "tcp",
+            "src_cidr": "192.0.2.0/24",
+            "dst_cidr": "198.51.100.10/32",
+            "exclude_src": [],
+            "exclude_dst": [],
+            "src_ports": [
+              {
+                "lo": 0,
+                "hi": 65535
+              }
+            ],
+            "dst_ports": [
+              {
+                "lo": 22,
+                "hi": 22
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "allowed_changes": []
+  },
+  "policy_sha256": "f4c954428182ee0de80083bdc0982dcbab6b078d23b9d3fcce1d191e728e398d",
+  "request": {
+    "schema": "plenilune.patch/v1",
+    "base_before_sha256": "a70ad0803a9fe29920f03114dede216aa153ce65cb726fa754d34313923c143a",
+    "base_after_sha256": "bdf00bdfadd5eaa17187a5f36ea1a013ecfc9e132562a67d0eb5dbaed99127f3",
+    "obligations_digest": "663b819122eb093be299d6d488a6f9f520429f7ec5c4de46a80b94ec95a4688e",
+    "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+    "edits": [
+      {
+        "op": "remove",
+        "ref": {
+          "base_after_sha256": "bdf00bdfadd5eaa17187a5f36ea1a013ecfc9e132562a67d0eb5dbaed99127f3",
+          "ordinal": 0,
+          "line": 3
+        }
+      }
+    ]
+  },
+  "options": {
+    "limits": {
+      "max_operations": 2000000,
+      "max_boxes": 50000,
+      "timeout_ns": 2000000000
+    },
+    "max_witnesses": 8
+  },
+  "candidate": "ip access-list extended MGMT\n 10 remark synthetic documentation addresses only\n 20 permit tcp 192.0.2.0 0.0.0.255 host 198.51.100.10 eq 22\n 30 deny ip any any\n!\n",
+  "candidate_sha256": "580168120430bfa2190ea6ee2a2465a16e9a5b041fb6d595f58975033b7670f0",
+  "conditions": {
+    "schema": "plenilune.obligations/v1",
+    "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+    "obligations": [
+      {
+        "id": "OB-1",
+        "kind": "must_permit",
+        "match": {
+          "protocol": "tcp",
+          "src_cidr": "192.0.2.0/24",
+          "dst_cidr": "198.51.100.10/32",
+          "exclude_src": [],
+          "exclude_dst": [],
+          "src_ports": [
+            {
+              "lo": 0,
+              "hi": 65535
+            }
+          ],
+          "dst_ports": [
+            {
+              "lo": 22,
+              "hi": 22
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "obligations_digest": "663b819122eb093be299d6d488a6f9f520429f7ec5c4de46a80b94ec95a4688e",
+  "comparison": {
+    "schema": "plenilune.evidence/v1",
+    "tool": {
+      "version": "0.2.0-dev",
+      "commit": "unversioned"
+    },
+    "parser_version": "cisco-acl/v0.2",
+    "engine_version": "acl-exact/v0.1",
+    "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+    "before": {
+      "sha256": "a70ad0803a9fe29920f03114dede216aa153ce65cb726fa754d34313923c143a",
+      "name": "MGMT",
+      "kind": "named-extended"
+    },
+    "after": {
+      "sha256": "580168120430bfa2190ea6ee2a2465a16e9a5b041fb6d595f58975033b7670f0",
+      "name": "MGMT",
+      "kind": "named-extended"
+    },
+    "conditions": {
+      "schema": "plenilune.obligations/v1",
+      "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+      "obligations": [
+        {
+          "id": "OB-1",
+          "kind": "must_permit",
+          "match": {
+            "protocol": "tcp",
+            "src_cidr": "192.0.2.0/24",
+            "dst_cidr": "198.51.100.10/32",
+            "exclude_src": [],
+            "exclude_dst": [],
+            "src_ports": [
+              {
+                "lo": 0,
+                "hi": 65535
+              }
+            ],
+            "dst_ports": [
+              {
+                "lo": 22,
+                "hi": 22
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "report": {
+      "verdict": "EQUIVALENT",
+      "search_complete": true,
+      "witnesses": [],
+      "witnesses_truncated": false,
+      "obligations": [
+        {
+          "id": "OB-1",
+          "status": "HOLDS"
+        }
+      ],
+      "budget": {
+        "operations": 34,
+        "peak_boxes": 6,
+        "stop_reason": "",
+        "timing_limited": false
+      },
+      "options": {
+        "limits": {
+          "max_operations": 2000000,
+          "max_boxes": 50000,
+          "timeout_ns": 2000000000
+        },
+        "max_witnesses": 8
+      }
+    },
+    "sha256": "0f2d829a5b7aa9f9f7b14ac9825a988bfc095903ce5e140dd93b48f9e0622a1f"
+  },
+  "collateral": {
+    "status": "VERIFIED",
+    "stats": {
+      "operations": 24,
+      "peak_boxes": 6,
+      "stop_reason": "",
+      "timing_limited": false
+    }
+  },
+  "sha256": "c8672b435ccaa096f62fcf39f17198b4084b91876ac44b4d91727d872bb05a48"
+}

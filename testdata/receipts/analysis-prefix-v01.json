@@ -1,0 +1,187 @@
+{
+  "schema": "plenilune.analysis/v1",
+  "tool": {
+    "version": "0.2.0-dev",
+    "commit": "unversioned"
+  },
+  "versions": {
+    "intake": "plenilune-intake/v0.1",
+    "acl_parser": "cisco-acl/v0.2",
+    "acl_engine": "acl-exact/v0.2",
+    "prefix_list_parser": "cisco-prefix-list/v0.1",
+    "prefix_list_engine": "prefix-list-exact/v0.1"
+  },
+  "request": {
+    "select": [],
+    "policies": [],
+    "options": {
+      "acl": {
+        "limits": {
+          "max_operations": 2000000,
+          "max_boxes": 50000,
+          "timeout_ns": 2000000000
+        },
+        "max_witnesses": 8
+      },
+      "max_classes": 32,
+      "deadline_ms": 30000
+    }
+  },
+  "sources": {
+    "after": {
+      "sha256": "824d52e5a4f8606a922bf0a961a71c5f077332ce913925cac691189548f068f4",
+      "bytes": 76,
+      "lines": 2
+    },
+    "before": {
+      "sha256": "7d9d5c1d30d17105edff94a4c6a0b42c2083616b791b814a91f4def549099c06",
+      "bytes": 78,
+      "lines": 2
+    }
+  },
+  "objects": [
+    {
+      "domain": "prefix-list",
+      "name": "P",
+      "kind": "ipv4",
+      "status": "changed",
+      "before": {
+        "lines": [
+          [
+            2,
+            2
+          ]
+        ],
+        "sha256": "76c3f448ffc8623cb7cbaa5333165db6b85efbd3b3fe39b53e26adefd81ce1dc",
+        "units": 1
+      },
+      "after": {
+        "lines": [
+          [
+            2,
+            2
+          ]
+        ],
+        "sha256": "f09b9dfa6976beb6a1264d040e85cbcae245a40a9840c1351d3e28fbece2baff",
+        "units": 1
+      },
+      "references": {
+        "after": [],
+        "before": []
+      },
+      "prefix_list": {
+        "parser": "cisco-prefix-list/v0.1",
+        "engine": "prefix-list-exact/v0.1",
+        "report": {
+          "verdict": "DIFFERENT",
+          "complete": true,
+          "classes": [
+            {
+              "effect": "newly_denied",
+              "before": {
+                "action": "permit",
+                "seq": 4294967295,
+                "line": 2,
+                "text": "ip prefix-list P seq 4294967295 permit 10.0.0.0/8 ge 24 le 24",
+                "implicit": false
+              },
+              "after": {
+                "action": "deny",
+                "seq": 4294967295,
+                "line": 2,
+                "text": "ip prefix-list P seq 4294967295 deny 10.0.0.0/8 ge 24 le 24",
+                "implicit": false
+              },
+              "witness": {
+                "route": "10.0.0.0/24",
+                "before": {
+                  "action": "permit",
+                  "seq": 4294967295,
+                  "line": 2,
+                  "implicit": false
+                },
+                "after": {
+                  "action": "deny",
+                  "seq": 4294967295,
+                  "line": 2,
+                  "implicit": false
+                }
+              },
+              "routes": 65536,
+              "lengths": [
+                24
+              ],
+              "ranges": [
+                {
+                  "length": 24,
+                  "first": "10.0.0.0/24",
+                  "last": "10.255.255.0/24",
+                  "routes": 65536
+                }
+              ],
+              "ranges_truncated": false,
+              "total_ranges": 1
+            }
+          ],
+          "classes_truncated": false,
+          "total_classes": 1,
+          "operations": 103,
+          "max_classes": 32
+        }
+      }
+    }
+  ],
+  "coverage": {
+    "after": {
+      "lines": 2,
+      "noise_lines": 0,
+      "analyzed_lines": 1,
+      "structural_lines": 0,
+      "unsupported_lines": 0,
+      "unanalyzed_lines": 1,
+      "unanalyzed_sections": [
+        {
+          "kind": "hostname",
+          "count": 1
+        }
+      ],
+      "warnings": []
+    },
+    "before": {
+      "lines": 2,
+      "noise_lines": 0,
+      "analyzed_lines": 1,
+      "structural_lines": 0,
+      "unsupported_lines": 0,
+      "unanalyzed_lines": 1,
+      "unanalyzed_sections": [
+        {
+          "kind": "hostname",
+          "count": 1
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "unanalyzed_changes": [],
+  "unanalyzed_changes_truncated": false,
+  "summary": {
+    "objects": 1,
+    "changed": 1,
+    "equivalent": 0,
+    "unchanged": 0,
+    "added": 0,
+    "removed": 0,
+    "unsupported": 0,
+    "inconclusive": 0,
+    "not_analyzed": 0,
+    "unanalyzed_changes": 0
+  },
+  "limitations": [
+    "behavior_evaluated_per_object_without_binding",
+    "acl_scope_ipv4_unfragmented_or_initial_with_complete_l4",
+    "prefix_list_scope_ipv4_route_prefix_only",
+    "unanalyzed_configuration_present"
+  ],
+  "sha256": "6fb29fd7abd3783dcf79659bbf63db17955af87288f4db2416a47a72e898cde1"
+}

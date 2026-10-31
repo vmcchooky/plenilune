@@ -1,0 +1,97 @@
+:root {
+  color-scheme: light;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Cambria, Georgia, serif;
+  --font-ui: "Aptos", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Cascadia Code", "Cascadia Mono", Consolas, "Courier New", monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.85rem;
+  --text-base: 1rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.35rem;
+  --text-xl: 1.8rem;
+  --text-display: clamp(2.2rem, 4.2vw, 3.4rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --bg: #f1ede4;
+  --bg-deep: #e9e3d6;
+  --surface: #fbf8f1;
+  --surface-2: #f5f0e5;
+  --surface-3: #ebe4d5;
+  --ink: #1d2521;
+  --ink-2: #3f4a44;
+  --muted: #58635c;
+  --faint: #737e77;
+  --line: #d6cfbf;
+  --line-strong: #a79d88;
+  --accent: #2f5d4f;
+  --accent-strong: #234a3e;
+  --accent-soft: #e1ebe4;
+  --rust: #9c4a32;
+  --rust-soft: #f3e1d9;
+  --good: #216044;
+  --good-soft: #e0eee5;
+  --warn: #765310;
+  --warn-soft: #f4e9cf;
+  --bad: #963c2b;
+  --bad-soft: #f5e0d9;
+  --focus: #1c5a9c;
+  --code-bg: #f4efe3;
+  --code-ink: #29332e;
+  --stamp: #765f38;
+  --overlay: rgb(29 37 33 / 5%);
+  --overlay-strong: rgb(29 37 33 / 9%);
+  --shadow: 0 22px 52px rgb(29 37 33 / 9%);
+
+  --border-thin: 1px;
+  --border-thick: 2px;
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --max-main: 1080px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0f1513;
+    --bg-deep: #0b100e;
+    --surface: #18211d;
+    --surface-2: #1d2923;
+    --surface-3: #26332c;
+    --ink: #ece6d8;
+    --ink-2: #c9c9bc;
+    --muted: #a6b0a7;
+    --faint: #89958c;
+    --line: #33423a;
+    --line-strong: #586b5f;
+    --accent: #d8bb78;
+    --accent-strong: #e8ce92;
+    --accent-soft: #2c3324;
+    --rust: #e0a07f;
+    --rust-soft: #3a251e;
+    --good: #93cba8;
+    --good-soft: #1c3527;
+    --warn: #e4c077;
+    --warn-soft: #3a2f1b;
+    --bad: #eda28f;
+    --bad-soft: #3d251f;
+    --focus: #9cc2ff;
+    --code-bg: #0c1210;
+    --code-ink: #e3ddcf;
+    --stamp: #d8bb78;
+    --overlay: rgb(236 230 216 / 5%);
+    --overlay-strong: rgb(236 230 216 / 9%);
+    --shadow: 0 22px 52px rgb(0 0 0 / 32%);
+  }
+}

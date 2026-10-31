@@ -1,0 +1,11 @@
+/Sơ khai/
+/bin/
+/out/
+/test-output/
+/traces/
+.env
+.env.*
+!.env.example
+*.exe
+*.test
+coverage.out

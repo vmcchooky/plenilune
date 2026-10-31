@@ -13,6 +13,7 @@ import (
 )
 
 const testKey = "sk-test-secret-value"
+const testTokens = 3000
 
 func newTestClient(t *testing.T, handler http.HandlerFunc) (*Client, *httptest.Server) {
 	t.Helper()
@@ -110,7 +111,7 @@ func TestCompleteParsesToolCalls(t *testing.T) {
 			{"type":"function_call","status":"completed","call_id":"call_1","name":"get_evidence","arguments":"{\"ids\":[\"E-1\"]}"}
 		],"usage":{"input_tokens":10,"output_tokens":5}}`)
 	})
-	resp, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}})
+	resp, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens})
 	if err != nil {
 		t.Fatalf("Complete: %v", err)
 	}
@@ -142,7 +143,7 @@ func TestCompleteProviderErrors(t *testing.T) {
 				w.WriteHeader(tc.status)
 				_, _ = io.WriteString(w, tc.body)
 			})
-			_, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}})
+			_, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens})
 			if err == nil {
 				t.Fatal("expected error")
 			}
@@ -184,7 +185,7 @@ func TestCompleteRejectsMalformedResponses(t *testing.T) {
 			client, _ := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 				_, _ = io.WriteString(w, tc.body)
 			})
-			_, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}})
+			_, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens})
 			var te *TransportError
 			if !errors.As(err, &te) || te.Code != tc.code {
 				t.Fatalf("error = %v, want code %s", err, tc.code)
@@ -202,7 +203,7 @@ func TestCompleteResponseTooLarge(t *testing.T) {
 	if err != nil {
 		t.Fatalf("New: %v", err)
 	}
-	_, err = client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}})
+	_, err = client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens})
 	var te *TransportError
 	if !errors.As(err, &te) || te.Code != "response_too_large" {
 		t.Fatalf("error = %v", err)
@@ -219,7 +220,7 @@ func TestCompleteRequestTooLarge(t *testing.T) {
 	if err != nil {
 		t.Fatalf("New: %v", err)
 	}
-	_, err = client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: strings.Repeat("a", 1000)}}})
+	_, err = client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: strings.Repeat("a", 1000)}}, MaxTokens: testTokens})
 	var te *TransportError
 	if !errors.As(err, &te) || te.Code != "request_too_large" {
 		t.Fatalf("error = %v", err)
@@ -238,7 +239,7 @@ func TestCompleteDoesNotFollowRedirects(t *testing.T) {
 	client, _ := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, target.URL, http.StatusFound)
 	})
-	_, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}})
+	_, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens})
 	var se *StatusError
 	if !errors.As(err, &se) || se.Status != http.StatusFound {
 		t.Fatalf("error = %v", err)
@@ -262,7 +263,7 @@ func TestCompleteCancelAndTimeout(t *testing.T) {
 		time.Sleep(20 * time.Millisecond)
 		cancel()
 	}()
-	_, err := client.Complete(ctx, Request{Messages: []Message{{Role: "user", Content: "x"}}})
+	_, err := client.Complete(ctx, Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens})
 	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("error = %v", err)
 	}
@@ -275,15 +276,16 @@ func TestCompleteInputValidation(t *testing.T) {
 		name string
 		req  Request
 	}{
-		{"no messages", Request{}},
-		{"bad role", Request{Messages: []Message{{Role: "developer", Content: "x"}}}},
-		{"tool without id", Request{Messages: []Message{{Role: "tool", Content: "x"}}}},
-		{"bad tool", Request{Messages: []Message{{Role: "user", Content: "x"}}, Tools: []Tool{{Type: "function"}}}},
-		{"too many tools", Request{Messages: []Message{{Role: "user", Content: "x"}}, Tools: make([]Tool, 9)}},
-		{"long description", Request{Messages: []Message{{Role: "user", Content: "x"}}, Tools: []Tool{{Type: "function",
+		{"no messages", Request{MaxTokens: testTokens}},
+		{"bad role", Request{Messages: []Message{{Role: "developer", Content: "x"}}, MaxTokens: testTokens}},
+		{"tool without id", Request{Messages: []Message{{Role: "tool", Content: "x"}}, MaxTokens: testTokens}},
+		{"bad tool", Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens, Tools: []Tool{{Type: "function"}}}},
+		{"too many tools", Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens, Tools: make([]Tool, 9)}},
+		{"long description", Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens, Tools: []Tool{{Type: "function",
 			Function: ToolFunction{Name: "ok", Description: long, Parameters: json.RawMessage(`{}`)}}}}},
-		{"bad response format", Request{Messages: []Message{{Role: "user", Content: "x"}},
+		{"bad response format", Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens,
 			ResponseFormat: &ResponseFormat{Type: "json_object"}}},
+		{"missing max tokens", Request{Messages: []Message{{Role: "user", Content: "x"}}}},
 		{"max tokens", Request{Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: 5000}},
 	}
 	for _, tc := range cases {
@@ -295,9 +297,21 @@ func TestCompleteInputValidation(t *testing.T) {
 	}
 	temp := 3.0
 	if _, err := client.Complete(context.Background(), Request{
-		Messages: []Message{{Role: "user", Content: "x"}}, Temperature: &temp,
+		Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens, Temperature: &temp,
 	}); err == nil {
 		t.Fatal("expected temperature error")
+	}
+}
+
+func TestMissingMaxTokensNeverReachesProvider(t *testing.T) {
+	called := false
+	client, _ := newTestClient(t, func(http.ResponseWriter, *http.Request) { called = true })
+	_, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "x"}}})
+	if err == nil || called {
+		t.Fatalf("missing max_tokens was not rejected before the network: err=%v called=%t", err, called)
+	}
+	if !strings.Contains(err.Error(), "max_tokens") {
+		t.Fatalf("error does not name max_tokens: %v", err)
 	}
 }
 

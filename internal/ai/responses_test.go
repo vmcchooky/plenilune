@@ -37,11 +37,11 @@ func TestResponsesStatelessReasoningAndToolPairReplay(t *testing.T) {
 		}
 		_, _ = w.Write([]byte(`{"id":"resp2","status":"completed","output":[{"type":"message","role":"assistant","status":"completed","content":[{"type":"output_text","text":"done"}]}]}`))
 	})
-	first, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "check"}}})
+	first, err := client.Complete(context.Background(), Request{Messages: []Message{{Role: "user", Content: "check"}}, MaxTokens: testTokens})
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = client.Complete(context.Background(), Request{Messages: []Message{
+	_, err = client.Complete(context.Background(), Request{MaxTokens: testTokens, Messages: []Message{
 		{Role: "user", Content: "check"},
 		{Role: "assistant", ToolCalls: first.ToolCalls, ReplayItems: first.ReplayItems},
 		{Role: "tool", ToolCallID: "call1", Content: `{"ok":true}`},
@@ -79,7 +79,7 @@ func TestResponsesTerminalStatesAndModelBinding(t *testing.T) {
 
 func TestModelOverrideNeverReachesProvider(t *testing.T) {
 	client, _ := newTestClient(t, func(http.ResponseWriter, *http.Request) { t.Fatal("model override reached provider") })
-	_, err := client.Complete(context.Background(), Request{Model: "muse-wonder", Messages: []Message{{Role: "user", Content: "x"}}})
+	_, err := client.Complete(context.Background(), Request{Model: "muse-wonder", Messages: []Message{{Role: "user", Content: "x"}}, MaxTokens: testTokens})
 	if err == nil {
 		t.Fatal("model override was accepted")
 	}

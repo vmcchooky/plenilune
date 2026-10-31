@@ -182,8 +182,8 @@ func validateRequest(req Request) error {
 			return errors.New("response format schema must be a JSON object")
 		}
 	}
-	if req.MaxTokens < 0 || req.MaxTokens > 4096 {
-		return errors.New("max_tokens is outside the adapter limit")
+	if req.MaxTokens < 1 || req.MaxTokens > 4096 {
+		return errors.New("max_tokens is required and must be between 1 and 4096")
 	}
 	if req.Temperature != nil && (*req.Temperature < 0 || *req.Temperature > 2) {
 		return errors.New("temperature is outside the supported range")

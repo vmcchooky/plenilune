@@ -111,6 +111,9 @@ func TestPolicyIsFrozenAndInputsAndSnapshotsOwned(t *testing.T) {
 	if input.AcceptedConditions == nil {
 		t.Fatal("accepted policy missing from contextual input")
 	}
+	if !input.RepairAvailable {
+		t.Fatal("accepted policy did not enable repair")
+	}
 	input.AcceptedConditions.Obligations[0].Match.DstPorts[0].Lo = 99
 	input3, err := e.Input("Allow SSH.")
 	if err != nil || input3.AcceptedConditions == nil || input3.AcceptedConditions.Obligations[0].Match.DstPorts[0].Lo != 22 {
@@ -157,7 +160,7 @@ func TestMissingAcceptanceAndPinMismatchNeverVerify(t *testing.T) {
 			t.Fatal("missing operator acceptance acquired authority")
 		}
 		in, err := e.Input("Allow SSH.")
-		if err != nil || in.AcceptedConditions != nil {
+		if err != nil || in.AcceptedConditions != nil || in.RepairAvailable {
 			t.Fatal("unaccepted policy leaked into accepted context")
 		}
 		result, err := e.VerifyPatch(context.Background(), request(t, e, set))
@@ -314,6 +317,68 @@ func TestAcceptedInputNeedsMatchingEngineAuthorityBeforeProviderCall(t *testing.
 func (p *scriptedProvider) Complete(_ context.Context, req ai.Request) (ai.Response, error) {
 	p.step++
 	return p.call(p.step, req)
+}
+
+func TestRepairAvailabilityFlagWithoutAcceptanceHasNoAuthority(t *testing.T) {
+	e := newEngine(t, nil)
+	set := fixturePolicy().Conditions
+	in, err := e.Input("Allow SSH.")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if in.RepairAvailable || in.AcceptedConditions != nil {
+		t.Fatal("engine without accepted policy reported repair availability")
+	}
+	// A caller can flip the provider-facing hint, but the engine must still
+	// refuse the proposal because it owns acceptance.
+	in.RepairAvailable = true
+	proposal, err := json.Marshal(struct {
+		Status      string              `json:"status"`
+		Obligations []intent.Obligation `json:"obligations"`
+		Questions   []string            `json:"questions"`
+		Claims      []agent.Claim       `json:"claims"`
+		Summary     string              `json:"summary"`
+	}{"ok", set.Obligations, []string{}, []agent.Claim{}, ""})
+	if err != nil {
+		t.Fatal(err)
+	}
+	patchArgs, err := json.Marshal(struct {
+		Edits     []agent.Edit `json:"edits"`
+		Rationale string       `json:"rationale"`
+	}{request(t, e, set).Edits, "Attempt repair without operator acceptance."})
+	if err != nil {
+		t.Fatal(err)
+	}
+	provider := &scriptedProvider{call: func(step int, req ai.Request) (ai.Response, error) {
+		response := ai.Response{Model: "scripted-no-live-meta", FinishReason: "stop", RequestSHA256: strings.Repeat("1", 64), ResponseSHA256: strings.Repeat("2", 64)}
+		switch step {
+		case 1:
+			response.Content = string(proposal)
+		case 2:
+			response.FinishReason = "tool_calls"
+			response.ToolCalls = []ai.ToolCall{{ID: "patch-1", Type: "function", Function: ai.FunctionCall{Name: "verify_patch", Arguments: string(patchArgs)}}}
+		case 3:
+			response.Content = `{"status":"ok","obligations":[],"questions":[],"claims":[],"summary":""}`
+		default:
+			return ai.Response{}, errors.New("unexpected provider request")
+		}
+		return response, nil
+	}}
+	session, err := agent.New(agent.Config{Enabled: true, Provider: provider, Engine: e})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result, err := session.Run(context.Background(), in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Status != agent.StatusPartial || result.Repair == nil ||
+		result.Repair.Status != agent.PatchUnverified || result.Repair.Reason != "operator_policy_not_accepted" {
+		t.Fatalf("forged availability granted repair authority: %+v", result)
+	}
+	if provider.step != 3 {
+		t.Fatalf("unexpected provider calls: %d", provider.step)
+	}
 }
 
 func TestAgentToolLoopUsesRealEngineAndRealRepair(t *testing.T) {

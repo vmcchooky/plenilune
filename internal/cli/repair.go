@@ -103,6 +103,11 @@ func runRepair(ctx context.Context, cmd string, args []string, out, stderr io.Wr
 				return fail(stderr, "AI_CONFIG_INVALID", "invalid server Meta configuration")
 			}
 			if err == nil {
+				// This CLI is qualified for one model only, matching the demo HTTP
+				// guard. A loopback base URL must not widen the model allowlist.
+				if cfg.Model != ai.DefaultModel {
+					return fail(stderr, "AI_MODEL_UNSUPPORTED", "only muse-spark-1.3-contributor is enabled")
+				}
 				client, err := ai.New(cfg)
 				if err != nil {
 					return fail(stderr, "AI_CONFIG_INVALID", "invalid Meta configuration")

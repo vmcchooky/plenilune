@@ -11,7 +11,7 @@ import (
 
 const (
 	ProviderName  = "meta-model-api"
-	PromptVersion = "meta-orchestrator/v2"
+	PromptVersion = "meta-orchestrator/v3"
 	ResultSchema  = "plenilune.ai/v1"
 
 	DefaultMaxModelRequests     = 8

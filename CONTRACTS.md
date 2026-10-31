@@ -93,7 +93,7 @@ Global verdict và từng obligation có outcome riêng.
 Obligation VIOLATED có witness riêng, không buộc phải trỏ global difference.
 Lệnh `diff`: 0=EQUIVALENT, 1=DIFFERENT, 2=INCONCLUSIVE/error; unsupported input trả typed error exit 2.
 Obligations độc lập: diff DIFFERENT nhưng mọi obligation HOLDS vẫn exit 1.
-Tool commit hiện là unversioned khi chưa có Git build; không claim immutable source provenance.
+Tool commit trong evidence là placeholder `unversioned` để replay và kiểm build identity ổn định; không claim immutable source provenance. Binary build từ Git checkout được Go đóng dấu `vcs.revision`/`vcs.modified` (mặc định `-buildvcs=auto`); `plenilune version` in ra commit/modified. Đó là provenance của binary, không phải của receipt.
 Một witness gồm packet và decision/source refs cho mỗi phía cần kiểm chứng;
 obligation must_permit/deny chỉ cần after, must_remain cần cả before và after.
 Digest = SHA-256 compact JSON toàn Comparison trừ trường sha256 (omitempty).
@@ -113,8 +113,11 @@ hình có thể hạ budget cho một sample minh hoạ; retry mặc định g�
 
 ## 6. Repair và Meta session — implemented
 
-AI tools khởi đầu: `list_changes`, `check_obligations`, `get_evidence`,
-`verify_patch`. Tool input nhận typed ID/condition, không file path/shell.
+AI tools khởi đầu: `list_changes`, `check_obligations`, `get_evidence`. `verify_patch`
+chỉ được thêm vào tool list sau khi session có policy operator-accepted bind đúng input
+digests + conditions digest; gọi sớm bị session trả `obligations_not_checked`, và engine
+trả `operator_policy_not_accepted` nếu policy chưa accepted. Tool input nhận typed
+ID/condition, không file path/shell.
 Patch `plenilune.patch/v1` pin original-before digest, base-after digest,
 accepted-obligations digest, scope và allowed-change region từ policy đã được
 operator accept/freeze; model không được tự đổi policy này. Rule ref là
@@ -135,8 +138,7 @@ Frontend gọi runtime `/api/compare`, `/api/agent/session`, `/api/repair/verify
 là artifact Go thật. Input sample là dữ liệu tổng hợp có nhãn; không còn fixture
 comparison/repair. AI off mặc định, mỗi phiên phải do người dùng bấm và browser
 không giữ khóa. Không có khóa server thì session trả `not_configured` và UI hiển
-thị đúng trạng thái đó, vẫn giữ đường tự soạn điều kiện/bản sửa. Demo server từ
-chối model khác `muse-spark-1.3-contributor` bằng `AI_MODEL_UNSUPPORTED` (không fallback).
+thị đúng trạng thái đó, vẫn giữ đường tự soạn điều kiện/bản sửa. CLI `assist --ai on` và demo server từ chối model khác `muse-spark-1.3-contributor` bằng `AI_MODEL_UNSUPPORTED` trước network (không fallback). Adapter cũng từ chối request thiếu `max_tokens` hoặc ngoài 1..4096; không có fallback 1200.
 UI không tạo evidence schema riêng: JSON tải xuống là response gốc; báo cáo VI/EN
 là một view riêng. Full evidence DTO vẫn do Go sở hữu.
 

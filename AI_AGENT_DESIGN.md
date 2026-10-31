@@ -2,7 +2,7 @@
 
 Status: Responses adapter + exact engine + verified repair đã chạy một ca live
 Contributor synthetic; receipt replay offline matched. Ngày: 30/10/2026.
-Chi tiết và giới hạn tại [handoff hiện hành](docs/handoff/contributor-runtime.md).
+Ghi chú triển khai lịch sử (số liệu cũ, không phải caps hiện hành) tại [Contributor runtime handoff](docs/handoff/contributor-runtime.md); caps/tool hiện hành ở mục Budgets bên dưới và [CONTRACTS](CONTRACTS.md).
 Authority nghĩa obligation tại [VERIFICATION_DESIGN](VERIFICATION_DESIGN.md); DTO tại [CONTRACTS](CONTRACTS.md).
 
 ## Vai trò
@@ -78,8 +78,9 @@ này, 1200 đã bị cạn trong một lượt live UI trước khi có JSON dù
 reasoning medium, stream=false,
 store=false + encrypted reasoning replay trong session. Không lưu opaque reasoning
 vào artifact/log; request 256 KiB / response 1 MiB, 8 model calls/session,
-12 tools, 2 proposals, deadline session 60s. Timeout mỗi request 45s.
-Client public và HTTP guard chỉ cho Contributor; không request override/fallback.
+12 tools, 2 proposals, deadline session 60s. Timeout mỗi request 45s. Mỗi request
+phải đặt `max_output_tokens` trong 1..4096; adapter không có fallback 1200.
+CLI `assist --ai on`, client public và HTTP guard chỉ cho Contributor; không request override/fallback. Build Go từ Git checkout tự đóng dấu `vcs.revision`; `plenilune version` in ra commit/modified. Receipt evidence vẫn dùng placeholder `unversioned` (xem CONTRACTS §5); provenance của binary không được suy từ receipt.
 Một ca live không đủ chứng minh latency/cost/model quality cho corpus rộng.
 Tham chiếu wire: [Responses](https://dev.meta.ai/docs/protocols/responses),
 [tool calling](https://dev.meta.ai/docs/tool-calling).

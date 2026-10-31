@@ -48,6 +48,9 @@ func TestSessionCompletesWithEvidenceBackedClaim(t *testing.T) {
 	if res.Provenance.Requests != 3 || res.Provenance.ToolCalls != 2 || res.Provenance.Usage.TotalTokens != 45 {
 		t.Fatalf("provenance = %+v", res.Provenance)
 	}
+	if res.Provenance.PromptVersion != PromptVersion {
+		t.Fatalf("prompt version = %q, want %q", res.Provenance.PromptVersion, PromptVersion)
+	}
 	if len(res.Provenance.RequestSHA256) != 3 || len(res.Provenance.ResponseSHA256) != 3 {
 		t.Fatalf("hashes = %+v", res.Provenance)
 	}

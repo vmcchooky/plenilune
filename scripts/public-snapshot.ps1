@@ -35,7 +35,7 @@ $rootFiles = @(
     'README.md', 'README.vi.md', 'LICENSE', 'NOTICE', 'SECURITY.md',
     'THIRD_PARTY_NOTICES.md', 'AGENTS.md', 'ARCHITECTURE.md', 'CONTRACTS.md',
     'VERIFICATION_DESIGN.md', 'AI_AGENT_DESIGN.md', 'ENGINEERING_GUARDRAILS.md',
-    'ROADMAP.md', 'REVIEW_NOTES.md', '.env.example', '.gitignore', 'go.mod'
+    'ROADMAP.md', 'REVIEW_NOTES.md', '.env.example', '.gitignore', '.gitattributes', 'go.mod'
 )
 foreach ($name in $rootFiles) { Copy-PublicFile (Get-Item -LiteralPath (Join-Path $root $name)) }
 

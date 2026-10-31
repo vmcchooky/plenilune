@@ -46,6 +46,7 @@ publication step.
 | `VERIFICATION_DESIGN.md`, `AI_AGENT_DESIGN.md` | Proof scope and AI boundary |
 | `ENGINEERING_GUARDRAILS.md`, `ROADMAP.md`, `REVIEW_NOTES.md` | Change discipline and history |
 | `.env.example`, `.gitignore` | Empty example and ignore rules |
+| `.gitattributes` | LF for Go source, byte-exact `testdata/**`, binary assets never converted |
 | `go.mod` | Standard-library-only Go module |
 | `cmd/**`, `internal/**` | Production code and tests |
 | `testdata/**` | Synthetic ACL, packet and obligation fixtures |

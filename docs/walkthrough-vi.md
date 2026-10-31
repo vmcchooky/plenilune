@@ -1,5 +1,8 @@
 # Hai walkthrough Plenilune (VI)
 
+> Mới dùng Plenilune? Bắt đầu từ [hướng dẫn sử dụng từng bước](usage-vi.md);
+> trang này đi sâu hai kịch bản kèm lệnh replay độc lập.
+>
 > Toàn bộ dữ liệu trong hai walkthrough là **synthetic**: địa chỉ tài liệu
 > (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`), không lấy từ thiết bị,
 > khách hàng hay mạng thật. Hai kịch bản dùng các mẫu trong

@@ -49,6 +49,9 @@ type Input struct {
 	// Context supplied by orchestration; acceptance is independently checked
 	// against the engine's frozen policy authority, never inferred from JSON.
 	AcceptedConditions *intent.Set
+	// RepairAvailable tells the tool registry whether accepted policy exists.
+	// It is caller-supplied, not model-supplied, and is not sent in the payload.
+	RepairAvailable bool
 
 	// Base digests and scope are supplied by the deterministic caller. They are
 	// pinned into every patch request; the model cannot change them.

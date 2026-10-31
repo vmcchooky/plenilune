@@ -336,11 +336,30 @@ func providerReason(err error) string {
 	return "provider_unavailable"
 }
 
+func (r *runner) toolsForRequest() []ai.Tool {
+	if r.toolsDisabled {
+		return nil
+	}
+	// Repairs are meaningful only after the operator accepted the policy in the
+	// caller. Offering verify_patch before that produces unverified candidates
+	// and an avoidable partial session.
+	if r.in.RepairAvailable {
+		return r.session.tools
+	}
+	tools := make([]ai.Tool, 0, len(r.session.tools))
+	for _, tool := range r.session.tools {
+		if tool.Function.Name != "verify_patch" {
+			tools = append(tools, tool)
+		}
+	}
+	return tools
+}
+
 func (r *runner) modelCall() (ai.Response, error) {
 	req := ai.Request{
 		Model:     r.session.cfg.Model,
 		Messages:  r.messages,
-		Tools:     r.session.tools,
+		Tools:     r.toolsForRequest(),
 		MaxTokens: outputTokensPerRequest,
 	}
 	if !r.session.cfg.PromptOnlyJSON {

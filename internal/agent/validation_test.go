@@ -296,6 +296,27 @@ func TestSessionUsesRaisedOutputBudget(t *testing.T) {
 	}
 }
 
+func TestVerifyPatchIsUnavailableBeforeAcceptance(t *testing.T) {
+	in := testInput()
+	in.RepairAvailable = false
+	provider := scripted(contentResponse(proposal), contentResponse(finalHolds))
+	s := newSession(t, provider, &fakeEngine{})
+	res := runSession(t, s, in)
+	if res.Status != StatusCompleted {
+		t.Fatalf("result = %s/%s", res.Status, res.Reason)
+	}
+	names := make(map[string]bool)
+	for _, tool := range provider.request(0).Tools {
+		names[tool.Function.Name] = true
+	}
+	if names["verify_patch"] {
+		t.Fatal("verify_patch was offered before operator acceptance")
+	}
+	if !names["check_obligations"] {
+		t.Fatal("check_obligations should remain available")
+	}
+}
+
 func TestContentFilteredOutputIsUnavailable(t *testing.T) {
 	filtered := contentResponse(proposal)
 	filtered.FinishReason = "content_filter"

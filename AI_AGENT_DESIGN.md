@@ -35,6 +35,8 @@ intent + bounded ACL delta
 
 Tools chỉ đọc input hoặc tính candidate trong bộ nhớ, không nhận path/shell/credential từ model.
 Engine không import provider; orchestration giữ registry tools, context, budgets và transcript.
+`verify_patch` chỉ được đưa vào tool list khi session có accepted policy; session đề xuất
+điều kiện trước khi duyệt không thấy repair tool.
 
 ## Intent và output validation
 

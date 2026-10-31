@@ -146,6 +146,26 @@ func TestPatchRequiresPins(t *testing.T) {
 	}
 }
 
+func TestPatchBeforeAcceptedObligationsIsRejected(t *testing.T) {
+	in := testInput()
+	in.RepairAvailable = false
+	engine := &fakeEngine{checkStatuses: map[string]string{"OB-1": ObligationViolated}}
+	provider := scripted(
+		toolResponse(toolCall("c1", "verify_patch", appendPatchCall)),
+		contentResponse(clarification),
+	)
+	s := newSession(t, provider, engine)
+	res := runSession(t, s, in)
+	if res.Status != StatusClarificationNeeded || engine.patchCalls != 0 {
+		t.Fatalf("result = %s/%s patches=%d", res.Status, res.Reason, engine.patchCalls)
+	}
+	second := provider.request(1)
+	last := second.Messages[len(second.Messages)-1]
+	if last.Role != "tool" || !strings.Contains(last.Content, "obligations_not_checked") {
+		t.Fatalf("backend did not reject out-of-order verify_patch: %+v", last)
+	}
+}
+
 func TestPatchRequiresViolation(t *testing.T) {
 	engine := &fakeEngine{}
 	provider := scripted(

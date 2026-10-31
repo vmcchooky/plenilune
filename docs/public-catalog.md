@@ -46,6 +46,7 @@ publication step.
 | `VERIFICATION_DESIGN.md`, `AI_AGENT_DESIGN.md` | Proof scope and AI boundary |
 | `ENGINEERING_GUARDRAILS.md`, `ROADMAP.md`, `REVIEW_NOTES.md` | Change discipline and history |
 | `.env.example`, `.gitignore` | Empty example and ignore rules |
+| `.gitattributes` | LF for Go source, byte-exact `testdata/**`, binary assets never converted |
 | `go.mod` | Standard-library-only Go module |
 | `cmd/**`, `internal/**` | Production code and tests |
 | `testdata/**` | Synthetic ACL, packet and obligation fixtures |
@@ -55,6 +56,7 @@ publication step.
 | `scripts/public-snapshot.ps1` | Builds the review snapshot under ignored `out/` and regenerates the manifest |
 | `web/src/**`, `web/tests/**` except the dated/historical browser harnesses | UI source and product tests |
 | `web/index.html`, `web/package.json`, `web/package-lock.json` | UI entry/build metadata |
+| `web/.gitignore` | Local UI build/dependency ignore rules |
 | `web/tsconfig.json`, `web/vite.config.ts`, `web/vitest.config.ts` | UI configuration |
 | `web/public/**` | Static public assets |
 | `docs/design/product-ux.md` | Product design reference |
@@ -66,7 +68,7 @@ publication step.
 | `examples/moonstorm-client/**` | Independent subprocess JSON client (std-lib only) |
 | `docs/usage-vi.md` | Vietnamese walkthrough of the configuration-level flow |
 | `docs/public-catalog.md` | This catalog |
-| `docs/public-manifest.sha256` | SHA-256 inventory of the files above, generated for the review snapshot; the manifest file itself is not listed |
+| `docs/public-manifest.sha256` | SHA-256 inventory of the files above, generated for the review snapshot; the manifest file itself is not listed. Regenerate with `scripts/public-snapshot.ps1` only from a checkout whose working-tree bytes match Git (LF checkout, `core.autocrlf=false`): `.gitattributes` pins Go source and `testdata/**`, but unattributed text files become CRLF on `core.autocrlf=true` clones and their hashes would drift |
 
 ## Internal — do not publish
 

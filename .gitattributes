@@ -1,0 +1,12 @@
+# Go source must stay LF so gofmt is reproducible on Windows default clones.
+*.go text eol=lf
+go.mod text eol=lf
+
+# Fixtures and frozen receipts are evidence inputs; checkout must preserve their
+# exact bytes, including any deliberate CRLF, without Git EOL conversion.
+testdata/** -text
+
+# Binary assets are never text.
+*.png binary
+*.ico binary
+*.exe binary

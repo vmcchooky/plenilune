@@ -363,6 +363,7 @@ func (e *Engine) Input(intentText string) (agent.Input, error) {
 			in.AcceptedConditions = &conditions
 		}
 	}
+	in.RepairAvailable = in.AcceptedConditions != nil
 	return in, nil
 }
 

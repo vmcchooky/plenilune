@@ -35,7 +35,7 @@ $rootFiles = @(
     'README.md', 'README.vi.md', 'LICENSE', 'NOTICE', 'SECURITY.md',
     'THIRD_PARTY_NOTICES.md', 'AGENTS.md', 'ARCHITECTURE.md', 'CONTRACTS.md',
     'VERIFICATION_DESIGN.md', 'AI_AGENT_DESIGN.md', 'ENGINEERING_GUARDRAILS.md',
-    'ROADMAP.md', 'REVIEW_NOTES.md', '.env.example', '.gitignore', 'go.mod'
+    'ROADMAP.md', 'REVIEW_NOTES.md', '.env.example', '.gitignore', '.gitattributes', 'go.mod'
 )
 foreach ($name in $rootFiles) { Copy-PublicFile (Get-Item -LiteralPath (Join-Path $root $name)) }
 
@@ -47,7 +47,7 @@ foreach ($tree in @('cmd', 'internal', 'testdata', 'docs', 'examples/moonstorm-c
 
 Get-ChildItem -LiteralPath (Join-Path $root 'scripts') -File -Filter '*.ps1' | ForEach-Object { Copy-PublicFile $_ }
 
-foreach ($name in @('index.html', 'package.json', 'package-lock.json', 'tsconfig.json', 'vite.config.ts', 'vitest.config.ts')) {
+foreach ($name in @('index.html', 'package.json', 'package-lock.json', '.gitignore', 'tsconfig.json', 'vite.config.ts', 'vitest.config.ts')) {
     Copy-PublicFile (Get-Item -LiteralPath (Join-Path $root ('web/' + $name)))
 }
 

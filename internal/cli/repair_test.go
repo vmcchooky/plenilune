@@ -2,6 +2,8 @@ package cli
 
 import (
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"plenilune/internal/evidence"
 	"plenilune/internal/intent"
 	"plenilune/internal/patch"
@@ -52,6 +54,27 @@ func TestRepairCLIAndOfflineReplay(t *testing.T) {
 	put(t, dir, "policy.json", string(pb))
 	if code, out, _ := invoke("repair", "--before", b, "--after", a, "--policy", policyPath, "--patch", patchPath); code != 2 || !strings.Contains(out, "UNVERIFIED") {
 		t.Fatal("unaccepted policy verified")
+	}
+}
+
+func TestAssistRejectsNonContributorBeforeNetwork(t *testing.T) {
+	called := false
+	server := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { called = true }))
+	defer server.Close()
+	dir := t.TempDir()
+	b := put(t, dir, "acl.cfg", "ip access-list extended DEMO\n deny ip any any\n")
+	t.Setenv("META_MODEL_API_KEY", "test-not-used")
+	t.Setenv("PLENILUNE_META_BASE_URL", server.URL)
+	t.Setenv("PLENILUNE_META_MODEL", "muse-wonder")
+	code, out, errout := invoke("assist", "--before", b, "--after", b, "--intent", "Keep denied.", "--ai", "on")
+	if code != 2 || !strings.Contains(errout, "AI_MODEL_UNSUPPORTED") {
+		t.Fatalf("non-contributor model: %d out=%s err=%s", code, out, errout)
+	}
+	if called {
+		t.Fatal("non-contributor model reached the provider")
+	}
+	if code, out, errout := invoke("assist", "--before", b, "--after", b, "--ai", "off"); code != 0 || !strings.Contains(out, `"status": "disabled"`) {
+		t.Fatalf("AI-off stopped working: %d %s", code, errout)
 	}
 }
 

@@ -4,12 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
 	"plenilune/internal/ai"
 	"plenilune/internal/intent"
 )
+
+// Reasoning tokens count toward max_output_tokens. The previous 1200-token
+// budget was exhausted before a usable final JSON in a live UI session.
+const outputTokensPerRequest = 3000
 
 type Config struct {
 	Enabled              bool
@@ -190,7 +195,7 @@ func (r *runner) loop() Result {
 		}
 		switch resp.FinishReason {
 		case "length":
-			if !r.correct(resp.Content, "invalid_output", "model output was truncated by the token limit") {
+			if !r.correctTruncated() {
 				return r.limitResult("invalid_model_output")
 			}
 			continue
@@ -331,12 +336,31 @@ func providerReason(err error) string {
 	return "provider_unavailable"
 }
 
+func (r *runner) toolsForRequest() []ai.Tool {
+	if r.toolsDisabled {
+		return nil
+	}
+	// Repairs are meaningful only after the operator accepted the policy in the
+	// caller. Offering verify_patch before that produces unverified candidates
+	// and an avoidable partial session.
+	if r.in.RepairAvailable {
+		return r.session.tools
+	}
+	tools := make([]ai.Tool, 0, len(r.session.tools))
+	for _, tool := range r.session.tools {
+		if tool.Function.Name != "verify_patch" {
+			tools = append(tools, tool)
+		}
+	}
+	return tools
+}
+
 func (r *runner) modelCall() (ai.Response, error) {
 	req := ai.Request{
 		Model:     r.session.cfg.Model,
 		Messages:  r.messages,
-		Tools:     r.session.tools,
-		MaxTokens: 1200,
+		Tools:     r.toolsForRequest(),
+		MaxTokens: outputTokensPerRequest,
 	}
 	if !r.session.cfg.PromptOnlyJSON {
 		req.ResponseFormat = &ai.ResponseFormat{
@@ -420,6 +444,29 @@ func (r *runner) correct(content, code, message string) bool {
 	}{
 		Error:       toolProblem{Code: code, Message: message},
 		Instruction: "Correct it and return only the required JSON object or a valid tool call.",
+	})
+	if err != nil {
+		return false
+	}
+	r.messages = append(r.messages, ai.Message{Role: "user", Content: string(correction)})
+	return true
+}
+
+// correctTruncated starts a fresh, tools-off final turn instead of echoing the
+// truncated assistant payload back into the context. Replaying a full truncated
+// payload on every correction tends to recreate the same truncation.
+func (r *runner) correctTruncated() bool {
+	if r.corrections >= r.session.cfg.MaxOutputCorrections {
+		return false
+	}
+	r.corrections++
+	r.toolsDisabled = true
+	correction, err := json.Marshal(struct {
+		Error       toolProblem `json:"error"`
+		Instruction string      `json:"instruction"`
+	}{
+		Error:       toolProblem{Code: "invalid_output", Message: fmt.Sprintf("model output was truncated by the %d-token limit", outputTokensPerRequest)},
+		Instruction: "Do not repeat or continue truncated text and do not call tools. Return only the smallest valid final JSON object now; keep summary under 200 characters.",
 	})
 	if err != nil {
 		return false

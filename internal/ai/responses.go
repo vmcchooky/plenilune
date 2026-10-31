@@ -35,14 +35,10 @@ func encodeResponses(req Request, model string) ([]byte, error) {
 			input = append(input, map[string]any{"type": "function_call", "call_id": call.ID, "name": call.Function.Name, "arguments": call.Function.Arguments})
 		}
 	}
-	max := req.MaxTokens
-	if max == 0 {
-		max = 1200
-	}
 	body := map[string]any{
 		"model": model, "input": input, "stream": false, "store": false,
 		"include":   []string{"reasoning.encrypted_content"},
-		"reasoning": map[string]string{"effort": "medium"}, "max_output_tokens": max,
+		"reasoning": map[string]string{"effort": "medium"}, "max_output_tokens": req.MaxTokens,
 	}
 	if req.Temperature != nil {
 		body["temperature"] = *req.Temperature

@@ -146,6 +146,26 @@ func TestPatchRequiresPins(t *testing.T) {
 	}
 }
 
+func TestPatchBeforeAcceptedObligationsIsRejected(t *testing.T) {
+	in := testInput()
+	in.RepairAvailable = false
+	engine := &fakeEngine{checkStatuses: map[string]string{"OB-1": ObligationViolated}}
+	provider := scripted(
+		toolResponse(toolCall("c1", "verify_patch", appendPatchCall)),
+		contentResponse(clarification),
+	)
+	s := newSession(t, provider, engine)
+	res := runSession(t, s, in)
+	if res.Status != StatusClarificationNeeded || engine.patchCalls != 0 {
+		t.Fatalf("result = %s/%s patches=%d", res.Status, res.Reason, engine.patchCalls)
+	}
+	second := provider.request(1)
+	last := second.Messages[len(second.Messages)-1]
+	if last.Role != "tool" || !strings.Contains(last.Content, "obligations_not_checked") {
+		t.Fatalf("backend did not reject out-of-order verify_patch: %+v", last)
+	}
+}
+
 func TestPatchRequiresViolation(t *testing.T) {
 	engine := &fakeEngine{}
 	provider := scripted(
@@ -254,6 +274,66 @@ func TestTruncatedModelOutputIsRejected(t *testing.T) {
 	last := second.Messages[len(second.Messages)-1]
 	if !strings.Contains(last.Content, "truncated") {
 		t.Fatalf("truncation correction = %+v", last)
+	}
+}
+
+func TestTruncatedOutputCorrectionStartsFresh(t *testing.T) {
+	truncated := contentResponse(proposal)
+	truncated.FinishReason = "length"
+	provider := scripted(truncated, contentResponse(proposal), contentResponse(finalHolds))
+	s := newSession(t, provider, &fakeEngine{})
+	res := runSession(t, s, testInput())
+	if res.Status != StatusCompleted || provider.count() != 3 {
+		t.Fatalf("result = %s calls=%d", res.Status, provider.count())
+	}
+	second := provider.request(1)
+	if len(second.Tools) != 0 {
+		t.Fatalf("truncation correction kept tools enabled: %d", len(second.Tools))
+	}
+	for _, m := range second.Messages {
+		if m.Role == "assistant" {
+			t.Fatalf("truncated assistant payload was replayed: %+v", m)
+		}
+	}
+	last := second.Messages[len(second.Messages)-1]
+	if !strings.Contains(last.Content, "token limit") || !strings.Contains(last.Content, "smallest valid final JSON") {
+		t.Fatalf("truncation correction is not compact: %+v", last)
+	}
+}
+
+func TestSessionUsesRaisedOutputBudget(t *testing.T) {
+	provider := scripted(contentResponse(proposal), contentResponse(finalHolds))
+	s := newSession(t, provider, &fakeEngine{})
+	res := runSession(t, s, testInput())
+	if res.Status != StatusCompleted {
+		t.Fatalf("result = %s/%s", res.Status, res.Reason)
+	}
+	if got := provider.request(0).MaxTokens; got != outputTokensPerRequest {
+		t.Fatalf("output budget = %d, want %d", got, outputTokensPerRequest)
+	}
+	if outputTokensPerRequest <= 1200 || outputTokensPerRequest > 4096 {
+		t.Fatalf("output budget %d is outside the reviewed range", outputTokensPerRequest)
+	}
+}
+
+func TestVerifyPatchIsUnavailableBeforeAcceptance(t *testing.T) {
+	in := testInput()
+	in.RepairAvailable = false
+	provider := scripted(contentResponse(proposal), contentResponse(finalHolds))
+	s := newSession(t, provider, &fakeEngine{})
+	res := runSession(t, s, in)
+	if res.Status != StatusCompleted {
+		t.Fatalf("result = %s/%s", res.Status, res.Reason)
+	}
+	names := make(map[string]bool)
+	for _, tool := range provider.request(0).Tools {
+		names[tool.Function.Name] = true
+	}
+	if names["verify_patch"] {
+		t.Fatal("verify_patch was offered before operator acceptance")
+	}
+	if !names["check_obligations"] {
+		t.Fatal("check_obligations should remain available")
 	}
 }
 

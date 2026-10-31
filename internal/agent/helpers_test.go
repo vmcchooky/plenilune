@@ -25,6 +25,7 @@ func testInput() Input {
 		After:            []string{"permit tcp 10.20.0.0 0.0.255.255 10.30.0.0 0.0.0.255 eq 3389", "deny ip any any"},
 		BaseBeforeSHA256: testBefore,
 		BaseAfterSHA256:  testAfter,
+		RepairAvailable:  true,
 	}
 }
 

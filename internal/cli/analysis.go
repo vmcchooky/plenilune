@@ -49,11 +49,13 @@ func runAnalysis(ctx context.Context, cmd string, args []string, stdin io.Reader
 	fs := flag.NewFlagSet(cmd, flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
 	var requestPath, beforePath, afterPath, evidencePath, selectList string
+	workers := 0
 	fs.StringVar(&requestPath, "request", "", "request JSON file, or - for standard input")
 	fs.StringVar(&beforePath, "before", "", "before configuration file")
 	fs.StringVar(&afterPath, "after", "", "after configuration file")
 	if cmd == "analyze" {
 		fs.StringVar(&selectList, "select", "", "comma-separated domain:name objects to analyze (default all)")
+		fs.IntVar(&workers, "workers", 0, "parallel object workers (0 = default min(4, GOMAXPROCS); the artifact is identical for any count)")
 	} else {
 		fs.StringVar(&evidencePath, "evidence", "", "analysis artifact JSON")
 	}
@@ -70,6 +72,9 @@ func runAnalysis(ctx context.Context, cmd string, args []string, stdin io.Reader
 		return fail(stderr, "USAGE", "use --request, or --before and --after")
 	}
 	if cmd == "analyze" {
+		if workers < 0 || workers > analysis.MaxWorkers {
+			return fail(stderr, "USAGE", "workers must be between 0 (default) and 64")
+		}
 		var req analysis.Request
 		if requestPath != "" {
 			data, err := readInput(ctx, requestPath, stdin, maxRequestBytes)
@@ -100,7 +105,7 @@ func runAnalysis(ctx context.Context, cmd string, args []string, stdin io.Reader
 				req.Select = append(req.Select, analysis.ObjectRef{Domain: domain, Name: name})
 			}
 		}
-		result, err := analysis.Analyze(ctx, req)
+		result, err := analysis.AnalyzeExec(ctx, req, analysis.ExecOptions{Workers: workers})
 		if err != nil {
 			return analysisFailure(stderr, err)
 		}

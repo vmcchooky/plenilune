@@ -43,6 +43,15 @@ func aclTiming(a *ACLAnalysis) bool {
 // A timing stop excuses only the affected ACL computation, never unrelated
 // prefix results, input metadata, coverage, policy or inventory. It is not a
 // successful full replay. Stored point evidence is still checked independently.
+// deadlineMarked reports whether an object was recorded as cut off by
+// the run's context (P1-5 partial artifacts). Which objects a deadline
+// cut is timing-dependent by construction, so such artifacts replay as
+// TIMING_SENSITIVE, with the completed objects' point evidence still
+// checked exactly.
+func deadlineMarked(o Object) bool {
+	return o.Reason == "deadline_exceeded" || o.Reason == "canceled"
+}
+
 func replaySafety(ctx context.Context, before, after []byte, recorded, fresh Result) (int, bool, error) {
 	if err := ctx.Err(); err != nil {
 		return 0, false, err
@@ -57,9 +66,18 @@ func replaySafety(ctx context.Context, before, after []byte, recorded, fresh Res
 			n += len(o.PrefixList.Report.Classes)
 		}
 	}
+	deadlineCut := false
 	for _, o := range recorded.Objects {
 		timing = timing || aclTiming(o.ACL)
+		deadlineCut = deadlineCut || deadlineMarked(o)
 	}
+	freshCut := false
+	for _, o := range fresh.Objects {
+		freshCut = freshCut || deadlineMarked(o)
+	}
+	// A run cut by its deadline — the recorded one, or this rerun — makes
+	// the comparison timing-dependent in either direction.
+	timing = timing || deadlineCut || freshCut
 	if !timing {
 		return n, false, nil
 	}
@@ -83,6 +101,47 @@ func replaySafety(ctx context.Context, before, after []byte, recorded, fresh Res
 	n = 0
 	for i, o := range recorded.Objects {
 		f := fresh.Objects[i]
+		if deadlineMarked(o) {
+			// The recorded object was cut by the run's deadline; the
+			// fresh run may have completed it. Identity must agree;
+			// status, reason and engine payload are timing-dependent
+			// and leave the projection on both sides.
+			if o.Domain != f.Domain || o.Name != f.Name || o.Kind != f.Kind {
+				return 0, false, mismatch()
+			}
+			x.Objects[i].Status, y.Objects[i].Status = "", ""
+			x.Objects[i].Reason, y.Objects[i].Reason = "", ""
+			x.Objects[i].ACL, y.Objects[i].ACL = nil, nil
+			x.Objects[i].PrefixList, y.Objects[i].PrefixList = nil, nil
+			continue
+		}
+		if deadlineMarked(f) {
+			// The fresh run was cut where the recorded run completed.
+			// The recorded point evidence is still rechecked exactly;
+			// the fresh object's missing payload leaves the projection.
+			if o.ACL != nil {
+				if o.Before == nil || o.After == nil {
+					return 0, false, mismatch()
+				}
+				b, err := sourceACL(before, o.Before)
+				if err != nil {
+					return 0, false, err
+				}
+				a, err := sourceACL(after, o.After)
+				if err != nil {
+					return 0, false, err
+				}
+				if err := validateACLPointEvidence(o, recorded, b, a); err != nil {
+					return 0, false, err
+				}
+				n += len(o.ACL.Witnesses) + len(o.ACL.Changes.Classes)
+			}
+			x.Objects[i].Status, y.Objects[i].Status = "", ""
+			x.Objects[i].Reason, y.Objects[i].Reason = "", ""
+			x.Objects[i].ACL, y.Objects[i].ACL = nil, nil
+			x.Objects[i].PrefixList, y.Objects[i].PrefixList = nil, nil
+			continue
+		}
 		if o.ACL == nil || f.ACL == nil {
 			continue
 		} // Exact projection below checks both.
@@ -117,6 +176,16 @@ func replaySafety(ctx context.Context, before, after []byte, recorded, fresh Res
 		if o.PrefixList != nil {
 			n += len(o.PrefixList.Report.Classes)
 		}
+	}
+	if deadlineCut || freshCut {
+		// Whether a run was cut decides its interruption limitations,
+		// the coverage lines of the cut objects (unanalyzed there,
+		// analyzed here) and whether the global ledger record exists;
+		// all three are timing-dependent. (The recorded limitations
+		// were already validated against its own objects above.)
+		x.Limitations, y.Limitations = nil, nil
+		x.Coverage, y.Coverage = nil, nil
+		x.GlobalBudget, y.GlobalBudget = nil, nil
 	}
 	// JSON equality treats nil/empty exactly as the sealed wire does, and covers
 	// all current fields by default instead of an allowlist that can forget one.

@@ -42,14 +42,14 @@ flowchart LR
 | `internal/ciscoacl` | Parse subset, source line, linear first-match evaluator | Network, file I/O, equivalence |
 | `internal/intent` | Typed obligation, strict validation | Chứng nhận AI hiểu đúng ý định |
 | `internal/evidence` | Trace/full comparison DTO và digest | Tự thay kết quả verifier |
-| `internal/workflow` | Parse pair, compare/seal và semantic replay | Provider, file I/O |
+| `internal/workflow` | Parse pair, compare/seal, semantic replay và cache comparison theo nội dung | Provider, file I/O |
 | `internal/patch`, `internal/repair` | Pinned edits, frozen policy, collateral và repair replay | Device/file apply, provider |
 | `internal/audit` | Sealed single-ACL audit records (`plenilune.audit/v1`) và audit replay | Sửa cấu hình, auto-fix, verdict so sánh |
 | `internal/engineadapter`, `internal/orchestrate` | Agent ports, ownership, policy authority và session facade | Tự tạo verdict |
 | `internal/jsonio` | Bounded strict JSON, reject duplicate/unknown fields | Quyết định domain semantics |
 | `internal/packetset`, `internal/verify` | Exact algebra, witness, obligation checking | Provider, UI, SSH |
 | `internal/ai`, `internal/agent` | Provider/tool loop, budget, evidence refs | Tự tạo verdict hoặc apply thiết bị |
-| `internal/analysis` | Intake cấu hình, inventory đối tượng, dispatch domain, artifact phân tích và replay | Parse/semantics của miền; device/auth |
+| `internal/analysis` | Intake cấu hình, inventory đối tượng, dispatch domain, artifact phân tích và replay; phân loại tuần tự + engine song song theo worker pool, budget toàn cục theo ledger thứ tự canonical | Parse/semantics của miền; device/auth |
 | `internal/prefixlist` | Parse/evaluate/compare IPv4 prefix-list chính xác | Network, file I/O, route-map |
 | `internal/demohttp` | API localhost, opt-in Meta config/session | Quyết định semantics hoặc gọi device |
 

@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"regexp"
+	"runtime"
 	"strings"
+	"sync"
 	"time"
 
 	"plenilune/internal/ciscoacl"
@@ -25,13 +27,19 @@ const (
 	// sources (see Replay).
 	SchemaV1            = "plenilune.analysis/v1"
 	ReplayRequestSchema = "plenilune.analysis-replay-request/v1"
-	MaxAnalyzed         = 16
-	MaxSelect           = 64
-	MaxPolicies         = 16
-	DefaultDeadline     = 30 * time.Second
-	MaxDeadline         = 120 * time.Second
-	maxUnanalyzed       = 100
-	MaxResultBytes      = 16 << 20
+	// MaxAnalyzed is the default cap on behavior-analyzed objects per
+	// request; Options.MaxAnalyzed overrides it within 1..MaxAnalyzedLimit.
+	MaxAnalyzed = 16
+	// MaxAnalyzedLimit bounds the max_analyzed option.
+	MaxAnalyzedLimit = 64
+	// MaxWorkers bounds the worker pool of one analysis run.
+	MaxWorkers      = 64
+	MaxSelect       = 64
+	MaxPolicies     = 16
+	DefaultDeadline = 30 * time.Second
+	MaxDeadline     = 120 * time.Second
+	maxUnanalyzed   = 100
+	MaxResultBytes  = 16 << 20
 )
 
 var refPattern = regexp.MustCompile(`^[\x20-\x7e]{0,256}$`)
@@ -72,10 +80,53 @@ type Options struct {
 	ACL        verify.Options `json:"acl"`
 	MaxClasses int            `json:"max_classes"`
 	DeadlineMS int            `json:"deadline_ms"`
+	// MaxAnalyzed caps behavior-analyzed objects per request (1..64).
+	// Zero means the default (16) and is how pre-P1-5 artifacts record it:
+	// the field is absent from their options echo.
+	MaxAnalyzed int `json:"max_analyzed,omitempty"`
 }
 
 func DefaultOptions() Options {
-	return Options{ACL: verify.DefaultOptions(), MaxClasses: verify.DefaultMaxClasses, DeadlineMS: int(DefaultDeadline / time.Millisecond)}
+	return Options{ACL: verify.DefaultOptions(), MaxClasses: verify.DefaultMaxClasses, DeadlineMS: int(DefaultDeadline / time.Millisecond), MaxAnalyzed: MaxAnalyzed}
+}
+
+// maxAnalyzed resolves the option: 0 is unset (the default), never a cap
+// of zero objects.
+func (o Options) maxAnalyzed() int {
+	if o.MaxAnalyzed <= 0 {
+		return MaxAnalyzed
+	}
+	return o.MaxAnalyzed
+}
+
+// ExecOptions controls how an analysis executes, never what it produces.
+// The sealed artifact is byte-identical for any worker count, so the
+// worker count is deliberately not part of the request or the artifact.
+// Workers <= 0 selects DefaultExecOptions.
+type ExecOptions struct {
+	Workers int
+}
+
+// DefaultExecOptions is the plan's default pool: min(4, GOMAXPROCS).
+func DefaultExecOptions() ExecOptions {
+	w := runtime.GOMAXPROCS(0)
+	if w > 4 {
+		w = 4
+	}
+	if w < 1 {
+		w = 1
+	}
+	return ExecOptions{Workers: w}
+}
+
+func (e ExecOptions) workers() int {
+	if e.Workers <= 0 {
+		return DefaultExecOptions().Workers
+	}
+	if e.Workers > MaxWorkers {
+		return MaxWorkers
+	}
+	return e.Workers
 }
 
 type Request struct {
@@ -177,6 +228,21 @@ type Object struct {
 	PrefixList *PrefixListAnalysis    `json:"prefix_list,omitempty"`
 }
 
+// GlobalBudget records the analysis-wide budget ledger when it
+// constrained the run: the caps are the request's ACL limits applied to
+// the whole analysis instead of per object, and Operations/Boxes are the
+// totals charged by the recorded objects (per object: compare + changes
+// operations; the larger of the two stage peak boxes — an object's stages
+// run in sequence, so that is its live-box footprint). The field is
+// absent whenever the ledger never bound, so unconstrained artifacts are
+// byte-identical to pre-P1-5 artifacts.
+type GlobalBudget struct {
+	MaxOperations int `json:"max_operations"`
+	MaxBoxes      int `json:"max_boxes"`
+	Operations    int `json:"operations"`
+	Boxes         int `json:"boxes"`
+}
+
 type Summary struct {
 	Objects           int `json:"objects"`
 	Changed           int `json:"changed"`
@@ -224,6 +290,7 @@ type Result struct {
 	UnanalyzedChanges   []SectionChange       `json:"unanalyzed_changes"`
 	UnanalyzedTruncated bool                  `json:"unanalyzed_changes_truncated"`
 	Summary             Summary               `json:"summary"`
+	GlobalBudget        *GlobalBudget         `json:"global_budget,omitempty"`
 	Limitations         []string              `json:"limitations"`
 	SHA256              string                `json:"sha256,omitempty"`
 }
@@ -264,7 +331,7 @@ func validateRequest(req Request) (Options, []PolicyEcho, error) {
 	}
 	d := packetset.Defaults()
 	l := opts.ACL.Limits
-	if opts.MaxClasses < 1 || opts.MaxClasses > verify.MaxClasses || opts.ACL.MaxWitnesses < 1 || opts.ACL.MaxWitnesses > 64 || opts.DeadlineMS < 1 || opts.DeadlineMS > int(MaxDeadline/time.Millisecond) ||
+	if opts.MaxClasses < 1 || opts.MaxClasses > verify.MaxClasses || opts.ACL.MaxWitnesses < 1 || opts.ACL.MaxWitnesses > 64 || opts.MaxAnalyzed < 0 || opts.MaxAnalyzed > MaxAnalyzedLimit || opts.DeadlineMS < 1 || opts.DeadlineMS > int(MaxDeadline/time.Millisecond) ||
 		l.MaxOperations < 1 || l.MaxOperations > d.MaxOperations || l.MaxBoxes < 1 || l.MaxBoxes > d.MaxBoxes || l.Timeout <= 0 || l.Timeout > d.Timeout {
 		return Options{}, nil, invalid("OPTIONS_INVALID", "options are outside supported bounds")
 	}
@@ -294,19 +361,28 @@ func validateRequest(req Request) (Options, []PolicyEcho, error) {
 	return opts, policies, nil
 }
 
-// Analyze reviews two configuration versions. Context cancellation or the
-// request deadline aborts without a partial artifact.
+// Analyze reviews two configuration versions with the default worker
+// pool. A context cancelled before the run starts is an error; a deadline
+// or cancellation that lands while objects are being evaluated yields a
+// partial artifact with the unfinished objects marked, not an error.
 func Analyze(ctx context.Context, req Request) (Result, error) {
 	return analyzeVersion(ctx, req, currentVersions())
 }
+
+// AnalyzeExec is Analyze with an explicit worker pool size. The pool is
+// an execution detail only: the artifact is identical for any count.
+func AnalyzeExec(ctx context.Context, req Request, exec ExecOptions) (Result, error) {
+	return analyzeSchema(ctx, req, currentVersions(), Schema, exec)
+}
+
 func analyzeVersion(ctx context.Context, req Request, versions Versions) (Result, error) {
-	return analyzeSchema(ctx, req, versions, Schema)
+	return analyzeSchema(ctx, req, versions, Schema, DefaultExecOptions())
 }
 
 // analyzeSchema emits the artifact in the given schema shape. The v1 shape
 // is produced only to recompute a recorded v1 artifact during replay; new
 // analysis always uses Schema.
-func analyzeSchema(ctx context.Context, req Request, versions Versions, schema string) (Result, error) {
+func analyzeSchema(ctx context.Context, req Request, versions Versions, schema string, exec ExecOptions) (Result, error) {
 	legacy := schema == SchemaV1
 	opts, policies, err := validateRequest(req)
 	if err != nil {
@@ -314,6 +390,9 @@ func analyzeSchema(ctx context.Context, req Request, versions Versions, schema s
 	}
 	ctx, cancel := context.WithTimeout(ctx, time.Duration(opts.DeadlineMS)*time.Millisecond)
 	defer cancel()
+	if err := ctx.Err(); err != nil {
+		return Result{}, deadlineError(err)
+	}
 	selected := req.Select
 	if selected == nil {
 		selected = []ObjectRef{}
@@ -369,18 +448,134 @@ func analyzeSchema(ctx context.Context, req Request, versions Versions, schema s
 	for _, p := range policies {
 		policyFor[p.Name] = p
 	}
+
+	// Phase 1 — sequential classification in canonical order. Structural
+	// outcomes (errors, added, removed, unchanged, not selected, object
+	// limit) are final here; engine-bound objects take a slot. The
+	// classification is pure, so the slot assignment is deterministic.
+	slots := []*analysisSlot{}
 	analyzed := 0
 	for _, f := range order {
-		if err := ctx.Err(); err != nil {
-			return Result{}, deadlineError(err)
-		}
 		sides := pair[key(f.domain, f.kind, f.name)]
-		obj, err := reviewObject(ctx, sides[0], sides[1], wanted(f.domain, f.name), &analyzed, opts, policyFor, versions)
-		if err != nil {
-			return Result{}, err
+		obj, needsEngine := classifyObject(sides[0], sides[1], wanted(f.domain, f.name), analyzed < opts.maxAnalyzed())
+		if needsEngine {
+			analyzed++
+			s := &analysisSlot{index: len(res.Objects), b: sides[0], a: sides[1], base: obj}
+			if p, ok := policyFor[f.name]; ok {
+				s.policy, s.scoped = p, true
+			}
+			slots = append(slots, s)
 		}
 		res.Objects = append(res.Objects, obj)
 	}
+
+	// Phase 2 — engine work on a bounded worker pool. Each worker writes
+	// only its own slot's outcome; nothing shared is mutated, so the
+	// completion order cannot leak into the artifact.
+	if len(slots) > 0 {
+		jobs := make(chan *analysisSlot)
+		var wg sync.WaitGroup
+		n := exec.workers()
+		if n > len(slots) {
+			n = len(slots)
+		}
+		for i := 0; i < n; i++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				for s := range jobs {
+					s.outcome = runSlot(ctx, s, opts, versions)
+				}
+			}()
+		}
+		for _, s := range slots {
+			jobs <- s
+		}
+		close(jobs)
+		wg.Wait()
+	}
+
+	// Phase 3 — canonical-order assembly under the global budget ledger.
+	// The ledger is the request's ACL limits applied to the whole run:
+	// each recorded object is charged its operations (compare + changes)
+	// and its box footprint (the larger stage peak; an object's stages
+	// run in sequence, so their peaks never coexist). An object whose
+	// charge fits the remainder is recorded verbatim — the clamping a
+	// sequential run would apply never binds for it, so the speculative
+	// parallel result is the sequential result. The first object that
+	// does not fit is recomputed with the remainder as its stage limits,
+	// which is exactly what the sequential run would produce, partial
+	// records included. An object whose stages cannot even start under
+	// the remainder is not recorded, and neither is any later object:
+	// remainders never grow.
+	remOps, remBoxes := opts.ACL.Limits.MaxOperations, opts.ACL.Limits.MaxBoxes
+	bound, halted := false, false
+	for _, s := range slots {
+		dst := &res.Objects[s.index]
+		switch s.outcome.kind {
+		case outcomeFailed:
+			return Result{}, s.outcome.err
+		case outcomeUnfinished:
+			markUnfinished(dst, ctx)
+			continue
+		}
+		obj := s.outcome.obj
+		if halted {
+			markGlobalBudget(dst)
+			continue
+		}
+		ops, boxes := objectCharge(obj)
+		if ops <= remOps && boxes <= remBoxes {
+			*dst = obj
+			remOps -= ops
+			remBoxes -= boxes
+			continue
+		}
+		bound = true
+		if obj.Domain != DomainACL || remOps < 1 || remBoxes < 1 {
+			// Prefix-list comparisons expose no limits to clamp, and a
+			// remainder below one unit starts no stage at all.
+			markGlobalBudget(dst)
+			halted = true
+			continue
+		}
+		report, err := compareStage(ctx, s, stageLimits(opts.ACL.Limits, remOps, remBoxes), opts, versions)
+		if err != nil {
+			if ctx.Err() != nil {
+				markUnfinished(dst, ctx)
+				continue
+			}
+			return Result{}, invalid("ANALYSIS_FAILED", "ACL comparison failed")
+		}
+		if remOps-report.Budget.Operations < 1 {
+			// The comparison consumed the remainder; the explanation
+			// stage cannot start, so the object is not recorded
+			// (admission is all-or-nothing per object).
+			markGlobalBudget(dst)
+			halted = true
+			continue
+		}
+		changes, err := changesStage(ctx, s, stageLimits(opts.ACL.Limits, remOps-report.Budget.Operations, remBoxes), opts, versions)
+		if err != nil {
+			if ctx.Err() != nil {
+				markUnfinished(dst, ctx)
+				continue
+			}
+			return Result{}, invalid("ANALYSIS_FAILED", "ACL change explanation failed")
+		}
+		obj = aclObject(s, report, changes, versions)
+		*dst = obj
+		ops, boxes = objectCharge(obj)
+		remOps -= ops
+		remBoxes -= boxes
+	}
+	if bound {
+		res.GlobalBudget = &GlobalBudget{
+			MaxOperations: opts.ACL.Limits.MaxOperations, MaxBoxes: opts.ACL.Limits.MaxBoxes,
+			Operations: opts.ACL.Limits.MaxOperations - remOps, Boxes: opts.ACL.Limits.MaxBoxes - remBoxes,
+		}
+	}
+
 	for _, p := range policies {
 		found := false
 		for _, o := range res.Objects {
@@ -396,10 +591,93 @@ func analyzeSchema(ctx context.Context, req Request, versions Versions, schema s
 		res.UnanalyzedChanges, res.UnanalyzedTruncated = res.UnanalyzedChanges[:maxUnanalyzed], true
 	}
 	summarize(&res)
-	if err := ctx.Err(); err != nil {
-		return Result{}, deadlineError(err)
-	}
 	return Seal(res)
+}
+
+// analysisSlot is one engine-bound object: its classified base (extents,
+// references) plus the inputs and outcome of its engine evaluation.
+type analysisSlot struct {
+	index   int
+	b, a    *found
+	base    Object
+	policy  PolicyEcho
+	scoped  bool
+	outcome slotOutcome
+}
+
+type outcomeKind int
+
+const (
+	outcomeNone outcomeKind = iota
+	outcomeDone
+	outcomeUnfinished // the run's context ended before or during evaluation
+	outcomeFailed
+)
+
+type slotOutcome struct {
+	kind outcomeKind
+	obj  Object
+	err  error
+}
+
+// runSlot evaluates one slot with the per-object limits. A context that
+// ends before or during evaluation makes the outcome unfinished, never a
+// failure; genuine engine failures keep their typed error.
+func runSlot(ctx context.Context, s *analysisSlot, opts Options, versions Versions) slotOutcome {
+	if ctx.Err() != nil {
+		return slotOutcome{kind: outcomeUnfinished}
+	}
+	obj, err := runObjectComparison(ctx, s, opts, versions)
+	if err != nil {
+		if ctx.Err() != nil {
+			return slotOutcome{kind: outcomeUnfinished}
+		}
+		return slotOutcome{kind: outcomeFailed, err: err}
+	}
+	return slotOutcome{kind: outcomeDone, obj: obj}
+}
+
+// stageLimits clamps the per-object limits to a ledger remainder. The
+// per-stage timeout is not part of the ledger and is kept as configured.
+func stageLimits(l packetset.Limits, remOps, remBoxes int) packetset.Limits {
+	return packetset.Limits{
+		MaxOperations: min(l.MaxOperations, remOps),
+		MaxBoxes:      min(l.MaxBoxes, remBoxes),
+		Timeout:       l.Timeout,
+	}
+}
+
+// objectCharge is the global-ledger charge of a recorded object (see the
+// assembly comment in analyzeSchema). Prefix-list comparisons use their
+// own operations counter and no box algebra, so they charge operations
+// only.
+func objectCharge(o Object) (ops, boxes int) {
+	if o.ACL != nil {
+		return o.ACL.Budget.Operations + o.ACL.Changes.Budget.Operations,
+			max(o.ACL.Budget.PeakBoxes, o.ACL.Changes.Budget.PeakBoxes)
+	}
+	if o.PrefixList != nil {
+		return o.PrefixList.Report.Operations, 0
+	}
+	return 0, 0
+}
+
+// markUnfinished records an object the run's context cut off. The object
+// carries no engine payload; the reason separates a deadline from a
+// caller cancellation.
+func markUnfinished(o *Object, ctx context.Context) {
+	o.Status = "not_analyzed"
+	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+		o.Reason = "deadline_exceeded"
+	} else {
+		o.Reason = "canceled"
+	}
+}
+
+// markGlobalBudget records an object the global budget ledger did not
+// admit: it was never begun under the ledger's sequential accounting.
+func markGlobalBudget(o *Object) {
+	o.Status, o.Reason = "not_analyzed", "global_budget"
 }
 
 func deadlineError(err error) error {
@@ -417,7 +695,12 @@ func extentOf(f *found) *Extent {
 	return &e
 }
 
-func reviewObject(ctx context.Context, b, a *found, wanted bool, analyzed *int, opts Options, policies map[string]PolicyEcho, versions Versions) (Object, error) {
+// classifyObject builds an object's base record (extents, references,
+// intake errors) and settles every outcome that needs no engine run, in
+// the historical precedence: unsupported, added, removed, unchanged, not
+// selected, object limit. It reports whether the object is engine-bound;
+// slotAvailable says the max_analyzed cap has room for it.
+func classifyObject(b, a *found, wanted, slotAvailable bool) (Object, bool) {
 	any := b
 	if any == nil {
 		any = a
@@ -442,62 +725,81 @@ func reviewObject(ctx context.Context, b, a *found, wanted bool, analyzed *int, 
 	switch {
 	case len(obj.Errors) > 0:
 		obj.Status = "unsupported"
-		return obj, nil
 	case b == nil:
 		obj.Status = "added"
-		return obj, nil
 	case a == nil:
 		obj.Status = "removed"
-		return obj, nil
 	case b.canonical == a.canonical:
 		obj.Status = "unchanged"
-		return obj, nil
 	case !wanted:
 		obj.Status, obj.Reason = "not_analyzed", "not_selected"
-		return obj, nil
-	case *analyzed >= MaxAnalyzed:
+	case !slotAvailable:
 		obj.Status, obj.Reason = "not_analyzed", "object_limit"
-		return obj, nil
+	default:
+		return obj, true
 	}
-	*analyzed++
-	switch obj.Domain {
+	return obj, false
+}
+
+// runObjectComparison evaluates one slot with the per-object limits (the
+// speculative parallel path). Errors from a live context are typed
+// failures; errors racing a dead context are returned raw for the caller
+// to classify as unfinished.
+func runObjectComparison(ctx context.Context, s *analysisSlot, opts Options, versions Versions) (Object, error) {
+	switch s.base.Domain {
 	case DomainACL:
-		report, err := verify.CompareEngine(ctx, *b.acl, *a.acl, nil, opts.ACL, versions.ACLEngine)
+		report, err := compareStage(ctx, s, opts.ACL.Limits, opts, versions)
 		if err != nil {
 			if ctx.Err() != nil {
-				return Object{}, deadlineError(ctx.Err())
+				return Object{}, err
 			}
 			return Object{}, invalid("ANALYSIS_FAILED", "ACL comparison failed")
 		}
-		var allowed []intent.Region
-		p, scoped := policies[obj.Name]
-		if scoped {
-			allowed = p.Policy.AllowedChanges
-		}
-		changes, err := verify.ChangesEngine(ctx, *b.acl, *a.acl, allowed, verify.ChangeOptions{Limits: opts.ACL.Limits, MaxClasses: opts.MaxClasses}, versions.ACLEngine)
+		changes, err := changesStage(ctx, s, opts.ACL.Limits, opts, versions)
 		if err != nil {
 			if ctx.Err() != nil {
-				return Object{}, deadlineError(ctx.Err())
+				return Object{}, err
 			}
 			return Object{}, invalid("ANALYSIS_FAILED", "ACL change explanation failed")
 		}
-		obj.ACL = &ACLAnalysis{Engine: versions.ACLEngine, Verdict: report.Verdict, SearchComplete: report.SearchComplete, Reason: report.Reason, Witnesses: report.Witnesses, Truncated: report.WitnessesTruncated, Budget: report.Budget, Changes: changes, Partial: report.Partial}
-		if scoped {
-			obj.ACL.PolicySHA256 = p.PolicySHA256
-		}
-		obj.Status = statusFor(report.Verdict)
+		return aclObject(s, report, changes, versions), nil
 	case DomainPrefixList:
-		report, err := prefixlist.CompareVersion(ctx, *b.prefix, *a.prefix, opts.MaxClasses, versions.PrefixListEngine)
+		report, err := prefixlist.CompareVersion(ctx, *s.b.prefix, *s.a.prefix, opts.MaxClasses, versions.PrefixListEngine)
 		if err != nil {
 			if ctx.Err() != nil {
-				return Object{}, deadlineError(ctx.Err())
+				return Object{}, err
 			}
 			return Object{}, invalid("ANALYSIS_FAILED", "prefix-list comparison failed")
 		}
+		obj := s.base
 		obj.PrefixList = &PrefixListAnalysis{Parser: versions.PrefixListParser, Engine: versions.PrefixListEngine, Report: report}
 		obj.Status = statusFor(report.Verdict)
+		return obj, nil
 	}
-	return obj, nil
+	return Object{}, invalid("ANALYSIS_FAILED", "unsupported object domain")
+}
+
+func compareStage(ctx context.Context, s *analysisSlot, limits packetset.Limits, opts Options, versions Versions) (verify.Report, error) {
+	return verify.CompareEngine(ctx, *s.b.acl, *s.a.acl, nil, verify.Options{Limits: limits, MaxWitnesses: opts.ACL.MaxWitnesses}, versions.ACLEngine)
+}
+
+func changesStage(ctx context.Context, s *analysisSlot, limits packetset.Limits, opts Options, versions Versions) (verify.ChangeReport, error) {
+	var allowed []intent.Region
+	if s.scoped {
+		allowed = s.policy.Policy.AllowedChanges
+	}
+	return verify.ChangesEngine(ctx, *s.b.acl, *s.a.acl, allowed, verify.ChangeOptions{Limits: limits, MaxClasses: opts.MaxClasses}, versions.ACLEngine)
+}
+
+// aclObject assembles a completed ACL object from its two stage results.
+func aclObject(s *analysisSlot, report verify.Report, changes verify.ChangeReport, versions Versions) Object {
+	obj := s.base
+	obj.ACL = &ACLAnalysis{Engine: versions.ACLEngine, Verdict: report.Verdict, SearchComplete: report.SearchComplete, Reason: report.Reason, Witnesses: report.Witnesses, Truncated: report.WitnessesTruncated, Budget: report.Budget, Changes: changes, Partial: report.Partial}
+	if s.scoped {
+		obj.ACL.PolicySHA256 = s.policy.PolicySHA256
+	}
+	obj.Status = statusFor(report.Verdict)
+	return obj
 }
 
 func statusFor(verdict string) string {
@@ -648,6 +950,27 @@ func summarize(r *Result) {
 	if s.Added+s.Removed > 0 {
 		r.Limitations = append(r.Limitations, "added_or_removed_objects_not_behavior_compared")
 	}
+	// Interruption and ledger marks are derived from the recorded objects
+	// (and the ledger record), never inferred away, so replay recomputes
+	// the same list from the same artifact content.
+	deadline, canceled := false, false
+	for _, o := range r.Objects {
+		switch o.Reason {
+		case "deadline_exceeded":
+			deadline = true
+		case "canceled":
+			canceled = true
+		}
+	}
+	if deadline {
+		r.Limitations = append(r.Limitations, "analysis_deadline_exceeded")
+	}
+	if canceled {
+		r.Limitations = append(r.Limitations, "analysis_canceled")
+	}
+	if r.GlobalBudget != nil {
+		r.Limitations = append(r.Limitations, "global_budget_exhausted")
+	}
 }
 
 // Seal stamps the digest over the full artifact except the digest field.
@@ -693,7 +1016,7 @@ func Replay(ctx context.Context, before, after []byte, r Result) (ReplayResult, 
 	for _, p := range r.Request.Policies {
 		req.Policies = append(req.Policies, ObjectPolicy{Domain: p.Domain, Name: p.Name, Policy: p.Policy})
 	}
-	fresh, err := analyzeSchema(ctx, req, r.Versions, r.Schema)
+	fresh, err := analyzeSchema(ctx, req, r.Versions, r.Schema, DefaultExecOptions())
 	if err != nil {
 		return ReplayResult{}, err
 	}

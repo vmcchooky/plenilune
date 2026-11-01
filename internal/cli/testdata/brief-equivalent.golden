@@ -1,0 +1,5 @@
+verdict: EQUIVALENT
+object: acl DEMO EQUIVALENT
+obligations: OB-1 HOLDS, OB-2 HOLDS
+limitations: scope=ipv4-unfragmented-or-initial-with-complete-l4/v1
+artifact: ARTIFACT_PATH

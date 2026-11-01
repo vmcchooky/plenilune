@@ -82,6 +82,15 @@ outside the analyzed objects (v2 redaction); frozen `plenilune.analysis/v1`
 artifacts remain replayable from their original sources. An independent client that only spawns the
 binary and reads JSON lives in `examples/moonstorm-client/`.
 
+For terminals and scripts, `diff --brief --out FILE` keeps the same sealed
+evidence artifact (byte-identical JSON) but writes it to the named file and
+prints a fixed five-line summary instead: the verdict (INCONCLUSIVE always
+with its stop reason), the compared ACL's status line, the per-obligation
+listing (`none evaluated` when no conditions were given), the modeled-scope
+limitations line, and the artifact path. Brief exit codes are scriptable:
+0 EQUIVALENT, 1 DIFFERENT, 2 INCONCLUSIVE, 3 any usage/parse/IO error, with
+errors as a single line on stderr.
+
 `scripts/demo.ps1` builds, traces, and replays the sample packet.
 `scripts/demo-exact.ps1` exercises exact comparison and replay;
 `scripts/demo-repair.ps1` exercises an in-memory repair and its receipt. All

@@ -226,10 +226,13 @@ liệu: nghiên cứu NN/g về chatbot cho thấy gõ câu hỏi chậm hơn nh
 có cấu trúc ở tác vụ dạng này, và hộp chat trống làm mất tính khám phá.
 
 **Làm:** panel hỏi đáp neo vào một artifact đã hoàn tất trên màn verdict.
-Mọi câu trả lời phải bám artifact qua engine tools — AI đề xuất, engine
-quyết định (đúng quy tắc dự án và ngân sách rủi ro ở master plan); mọi
-khẳng định thực tế trong câu trả lời phải truy được về field của artifact
-hoặc kết quả engine tool.
+Mọi câu trả lời phải bám artifact: retrieval do core tất định thực hiện
+trực tiếp trên field của artifact đã seal, model (khi bật diễn đạt) không
+được cấp tool nào — AI chỉ diễn đạt, sự thật do artifact quyết định (đúng
+quy tắc dự án và ngân sách rủi ro ở master plan); mọi khẳng định thực tế
+trong câu trả lời phải truy được về field của artifact. (Chỉnh theo quyết
+định D5, 01/11/2026 — xem STATUS: cách này chặt hơn bản "qua engine tools"
+ban đầu và được Chooky chấp nhận thay cho tool-use của model.)
 
 **Không làm (đường đỏ):** chat không bao giờ là đường nhập cấu hình hay
 obligation; không chặn và không thay thế màn verdict; chat không phát ra
@@ -237,5 +240,5 @@ và không sửa được bất kỳ verdict nào.
 
 **Nghiệm thu:** panel chạy trên artifact đã hoàn tất mà không phải nhập
 lại cấu hình; test với artifact fixture + bộ câu hỏi kịch bản, kiểm mọi
-khẳng định truy được về artifact/tool; AI chưa cấu hình → thông báo rõ
+khẳng định truy được về field của artifact; AI chưa cấu hình → thông báo rõ
 ràng, màn verdict vẫn dùng được đầy đủ.

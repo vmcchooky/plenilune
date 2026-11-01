@@ -30,8 +30,14 @@ func (d delta) region(ps []piece) packetset.Region {
 
 // rulesIndex files each rule's raw boxes in rule order with their ordinal.
 func rulesIndex(acl ciscoacl.ACL, b *packetset.Budget) (*packetset.Index, []int, error) {
+	return rulesIndexOf(acl.Rules, b)
+}
+
+// rulesIndexOf is rulesIndex over an explicit rule slice; owner entries are
+// the rules' own ordinals, so a residual slice keeps global ordinals.
+func rulesIndexOf(rules []ciscoacl.Rule, b *packetset.Budget) (*packetset.Index, []int, error) {
 	idx, owner := packetset.NewIndex(), []int{}
-	for _, rule := range acl.Rules {
+	for _, rule := range rules {
 		raw, err := ruleRegion(rule, b)
 		if err != nil {
 			return nil, nil, err
@@ -49,13 +55,19 @@ func rulesIndex(acl ciscoacl.ACL, b *packetset.Budget) (*packetset.Index, []int,
 // taggedPermitSet returns the effective permit boxes of acl, sorted, with the
 // permitting rule ordinal of each box. Boxes equal v0.1's permitSet output.
 func taggedPermitSet(acl ciscoacl.ACL, b *packetset.Budget, held int) (packetset.Region, []int, error) {
-	covered := packetset.NewIndex()
+	return taggedPermitSetOver(acl.Rules, packetset.NewIndex(), b, held)
+}
+
+// taggedPermitSetOver runs the taggedPermitSet loop over rules with the
+// covered index as the caller prepared it. The output depends only on the
+// sequence of raw regions the index was fed, in order, and on rules.
+func taggedPermitSetOver(rules []ciscoacl.Rule, covered *packetset.Index, b *packetset.Budget, held int) (packetset.Region, []int, error) {
 	type tagged struct {
 		box  packetset.Box
 		rule int
 	}
 	out := []tagged{}
-	for _, rule := range acl.Rules {
+	for _, rule := range rules {
 		if err := b.SetReserved(held + len(out) + covered.Len()); err != nil {
 			return nil, nil, err
 		}
@@ -147,9 +159,11 @@ func actionOf(acl ciscoacl.ACL, ordinal int) string {
 	return acl.Rules[ordinal].Action
 }
 
-// exactDelta computes every packet whose decision differs, partitioned by
-// the deciding rule on each side. lost: before permits, after denies.
-func exactDelta(before, after ciscoacl.ACL, b *packetset.Budget) (delta, error) {
+// exactDeltaV2 computes every packet whose decision differs, partitioned by
+// the deciding rule on each side, building both full permit sets. It is the
+// v0.2 construction, kept so v0.2 evidence replays with its own accounting.
+// lost: before permits, after denies.
+func exactDeltaV2(before, after ciscoacl.ACL, b *packetset.Budget) (delta, error) {
 	bp, bTags, err := taggedPermitSet(before, b, 0)
 	if err != nil {
 		return delta{}, err

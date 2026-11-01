@@ -35,6 +35,9 @@ func CompareEngine(ctx context.Context, before, after ciscoacl.ACL, conditions *
 }
 
 func compareWithBudget(ctx context.Context, eng engine, before, after ciscoacl.ACL, conditions *intent.Set, opts Options, budget *packetset.Budget) (Report, error) {
+	if eng.lcp {
+		return compareResidual(ctx, before, after, conditions, opts, budget)
+	}
 	if eng.indexed {
 		return compareIndexed(ctx, before, after, conditions, opts, budget)
 	}

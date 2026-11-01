@@ -61,7 +61,7 @@ func PreserveOutsideEngine(ctx context.Context, before, candidate ciscoacl.ACL, 
 	var changes [2]packetset.Region
 	held := 0
 	if eng.indexed {
-		d, err := exactDelta(before, candidate, b)
+		d, err := eng.delta(before, candidate, b)
 		if err != nil {
 			return finish(err)
 		}

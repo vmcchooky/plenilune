@@ -46,47 +46,59 @@ func ordinalOf(d ciscoacl.Decision) int {
 
 // Every packet in the reduced grid lands in exactly the delta piece whose
 // deciding rules match the linear evaluator; equal decisions land nowhere.
+// Both delta constructions (v0.2 full, v0.3 LCP-residual) must satisfy this.
 func TestChangePiecesMatchLinearEvaluatorExhaustively(t *testing.T) {
+	constructors := []struct {
+		name string
+		fn   func(ciscoacl.ACL, ciscoacl.ACL, *packetset.Budget) (delta, error)
+	}{{"v0.2", exactDeltaV2}, {"v0.3-residual", exactDeltaResidual}}
 	rng := rand.New(rand.NewSource(4242))
 	for seed := 0; seed < 60; seed++ {
 		b, a := smallACL(t, rng, 2+rng.Intn(6)), smallACL(t, rng, 2+rng.Intn(6))
-		budget, err := packetset.NewBudget(context.Background(), packetset.Defaults())
-		if err != nil {
-			t.Fatal(err)
+		for _, ctor := range constructors {
+			budget, err := packetset.NewBudget(context.Background(), packetset.Defaults())
+			if err != nil {
+				t.Fatal(err)
+			}
+			d, err := ctor.fn(b, a, budget)
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkPiecesAgainstEvaluator(t, seed, ctor.name, b, a, d)
 		}
-		d, err := exactDelta(b, a, budget)
-		if err != nil {
-			t.Fatal(err)
-		}
-		pieces := append(append([]piece(nil), d.lost...), d.gained...)
-		for _, proto := range []uint8{1, 6, 17, 47} {
-			for src := 0; src < 4; src++ {
-				for dst := 0; dst < 4; dst++ {
-					ports := []int{0}
-					if proto == 6 || proto == 17 {
-						ports = []int{0, 1, 2, 3, 4}
-					}
-					for _, dp := range ports {
-						p := ciscoacl.Packet{Protocol: proto, SrcIP: netip.AddrFrom4([4]byte{192, 0, 2, byte(src)}), DstIP: netip.AddrFrom4([4]byte{198, 51, 100, byte(dst)}), DstPort: uint16(dp)}
-						x, _ := b.Evaluate(p)
-						y, _ := a.Evaluate(p)
-						s, dd := uint32(0xC0000200|src), uint32(0xC6336400|dst)
-						hits := 0
-						for _, pc := range pieces {
-							if packetset.Contains(pc.box, proto, s, dd, 0, uint16(dp)) {
-								hits++
-								if pc.before != ordinalOf(x) || pc.after != ordinalOf(y) {
-									t.Fatalf("seed %d: packet %+v in piece (%d,%d), evaluator (%d,%d)", seed, p, pc.before, pc.after, ordinalOf(x), ordinalOf(y))
-								}
+	}
+}
+
+func checkPiecesAgainstEvaluator(t *testing.T, seed int, ctor string, b, a ciscoacl.ACL, d delta) {
+	t.Helper()
+	pieces := append(append([]piece(nil), d.lost...), d.gained...)
+	for _, proto := range []uint8{1, 6, 17, 47} {
+		for src := 0; src < 4; src++ {
+			for dst := 0; dst < 4; dst++ {
+				ports := []int{0}
+				if proto == 6 || proto == 17 {
+					ports = []int{0, 1, 2, 3, 4}
+				}
+				for _, dp := range ports {
+					p := ciscoacl.Packet{Protocol: proto, SrcIP: netip.AddrFrom4([4]byte{192, 0, 2, byte(src)}), DstIP: netip.AddrFrom4([4]byte{198, 51, 100, byte(dst)}), DstPort: uint16(dp)}
+					x, _ := b.Evaluate(p)
+					y, _ := a.Evaluate(p)
+					s, dd := uint32(0xC0000200|src), uint32(0xC6336400|dst)
+					hits := 0
+					for _, pc := range pieces {
+						if packetset.Contains(pc.box, proto, s, dd, 0, uint16(dp)) {
+							hits++
+							if pc.before != ordinalOf(x) || pc.after != ordinalOf(y) {
+								t.Fatalf("%s seed %d: packet %+v in piece (%d,%d), evaluator (%d,%d)", ctor, seed, p, pc.before, pc.after, ordinalOf(x), ordinalOf(y))
 							}
 						}
-						want := 0
-						if x.Action != y.Action {
-							want = 1
-						}
-						if hits != want {
-							t.Fatalf("seed %d: packet %+v in %d pieces, want %d (before %s after %s)", seed, p, hits, want, x.Action, y.Action)
-						}
+					}
+					want := 0
+					if x.Action != y.Action {
+						want = 1
+					}
+					if hits != want {
+						t.Fatalf("%s seed %d: packet %+v in %d pieces, want %d (before %s after %s)", ctor, seed, p, hits, want, x.Action, y.Action)
 					}
 				}
 			}

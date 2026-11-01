@@ -457,7 +457,7 @@ func reviewObject(ctx context.Context, b, a *found, wanted bool, analyzed *int, 
 	*analyzed++
 	switch obj.Domain {
 	case DomainACL:
-		report, err := verify.Compare(ctx, *b.acl, *a.acl, nil, opts.ACL)
+		report, err := verify.CompareEngine(ctx, *b.acl, *a.acl, nil, opts.ACL, versions.ACLEngine)
 		if err != nil {
 			if ctx.Err() != nil {
 				return Object{}, deadlineError(ctx.Err())
@@ -469,14 +469,14 @@ func reviewObject(ctx context.Context, b, a *found, wanted bool, analyzed *int, 
 		if scoped {
 			allowed = p.Policy.AllowedChanges
 		}
-		changes, err := verify.Changes(ctx, *b.acl, *a.acl, allowed, verify.ChangeOptions{Limits: opts.ACL.Limits, MaxClasses: opts.MaxClasses})
+		changes, err := verify.ChangesEngine(ctx, *b.acl, *a.acl, allowed, verify.ChangeOptions{Limits: opts.ACL.Limits, MaxClasses: opts.MaxClasses}, versions.ACLEngine)
 		if err != nil {
 			if ctx.Err() != nil {
 				return Object{}, deadlineError(ctx.Err())
 			}
 			return Object{}, invalid("ANALYSIS_FAILED", "ACL change explanation failed")
 		}
-		obj.ACL = &ACLAnalysis{Engine: verify.EngineVersion, Verdict: report.Verdict, SearchComplete: report.SearchComplete, Reason: report.Reason, Witnesses: report.Witnesses, Truncated: report.WitnessesTruncated, Budget: report.Budget, Changes: changes}
+		obj.ACL = &ACLAnalysis{Engine: versions.ACLEngine, Verdict: report.Verdict, SearchComplete: report.SearchComplete, Reason: report.Reason, Witnesses: report.Witnesses, Truncated: report.WitnessesTruncated, Budget: report.Budget, Changes: changes}
 		if scoped {
 			obj.ACL.PolicySHA256 = p.PolicySHA256
 		}

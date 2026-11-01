@@ -110,6 +110,39 @@ do caller chỉ định; repair version tương ứng `acl-repair/v0.2|v0.1`.
 Không thay đổi hash projection, witness selection hay scope; v0.2 được kiểm
 box-for-box với full scan và verdict/obligation với v0.1 trên corpus.
 
+## Engine v0.3: LCP residual (01/11/2026)
+
+v0.3 căn chỉnh tiền tố chung dài nhất của các rule giống nhau về ngữ nghĩa
+(cùng match + action; bỏ qua sequence, log, vị trí dòng) và chỉ tính delta
+chính xác trên các rule còn lại (residual), trên phần bù của vùng covered —
+hợp của các region thô của tiền tố. Packet được tiền tố quyết định thì cả
+hai phía quyết định giống hệt nhau, nên không thuộc delta; permit set của
+tiền tố không bao giờ được vật chất hóa (đây là điểm v0.2 chạm cap box ở
+512 rule). Residual dùng lại đúng dãy cut mà vòng lặp v0.2 xây cho từng
+rule, nên các box hiệu lực của residual và lost/gained giống v0.2 từng box.
+Obligation must_permit/must_deny được đánh giá trên permit cover — các box
+hiệu lực của đúng những rule có thể chạm tới vùng điều kiện — qua cùng phép
+difference/intersection dạng index của v0.2; must_remain dùng lost/gained
+như trước. Không có tiền tố chung thì v0.3 suy biến về đúng phép tính v0.2.
+
+Đo trên cùng corpus cố định của cổng P1-1 (chi tiết:
+`docs/benchmarks/p1-1-v03-2026-11-01.md`): identical 512 rule hoàn tất
+EQUIVALENT ở 1.733 ops (v0.2 INCONCLUSIVE ở 261.044 ops, stop=boxes);
+append_rule/change_last còn 589/589 ops ở 100 rule và 1.373/1.901 ops ở
+250 rule (giảm trên 99% so với v0.2, cổng yêu cầu 50%); insert-at-head bằng
+đúng số v0.2 ở cả hai cỡ. Ca swap/change-port ở 512 rule vẫn INCONCLUSIVE:
+residual của chúng vẫn chứa các rule rộng mà phép hiệu từng rule tự nó đã
+phân mảnh chạm cap — LCP chỉ giúp khi phần thay đổi nằm sau tiền tố dài.
+
+Version vẫn là một phần evidence: `acl-exact/v0.3` cho evidence mới,
+`acl-exact/v0.2` và `acl-exact/v0.1` được replay bằng đúng accounting cũ;
+repair version tương ứng `acl-repair/v0.3|v0.2|v0.1`. Verdict, change class
+và trạng thái obligation được kiểm differential với v0.2 trên corpus ngẫu
+nhiên seed cố định (`TestP11DifferentialV03AgainstV02`, 600 ca kèm
+obligation); witness của delta và của change class giống hệt; witness của
+obligation có thể khác biểu diễn box nhưng luôn được evaluator tuyến tính
+kiểm lại độc lập, như bước v0.1→v0.2 đã quy định.
+
 Change class (`plenilune.acl-changes/v1`) phân hoạch chính xác symmetric
 difference theo cặp quy tắc quyết định before/after. Mỗi class có witness được
 evaluator tuyến tính kiểm lại, ví dụ vùng rời rạc (cap), và scope chỉ được gắn

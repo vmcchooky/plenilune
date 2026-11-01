@@ -1,0 +1,600 @@
+{
+  "cpus": 4,
+  "engine": "acl-exact/v0.2",
+  "go": "go1.26.7",
+  "goarch": "amd64",
+  "gomaxprocs": 4,
+  "goos": "linux",
+  "limits": {
+    "max_operations": 2000000,
+    "max_boxes": 50000,
+    "timeout_ns": 2000000000
+  },
+  "rows": [
+    {
+      "rules": 100,
+      "case": "identical",
+      "verdict": "EQUIVALENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 96894,
+      "ops_all_runs": [
+        96894,
+        96894,
+        96894,
+        96894,
+        96894
+      ],
+      "peak_boxes": 6664,
+      "witnesses": 0,
+      "run_ms": [
+        43.964,
+        33.261,
+        31.569,
+        30.729,
+        31.421
+      ],
+      "median_ms": 31.569,
+      "min_ms": 30.729,
+      "max_ms": 43.964,
+      "allocated_mib_per_run": 5.410284423828125
+    },
+    {
+      "rules": 100,
+      "case": "insert_top_deny",
+      "verdict": "DIFFERENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 105291,
+      "ops_all_runs": [
+        105291,
+        105291,
+        105291,
+        105291,
+        105291
+      ],
+      "peak_boxes": 7147,
+      "witnesses": 6,
+      "run_ms": [
+        35.164,
+        34.58,
+        33.976,
+        34.246,
+        35.334
+      ],
+      "median_ms": 34.58,
+      "min_ms": 33.976,
+      "max_ms": 35.334,
+      "allocated_mib_per_run": 5.998597717285156
+    },
+    {
+      "rules": 100,
+      "case": "swap_adjacent",
+      "verdict": "EQUIVALENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 96894,
+      "ops_all_runs": [
+        96894,
+        96894,
+        96894,
+        96894,
+        96894
+      ],
+      "peak_boxes": 6664,
+      "witnesses": 0,
+      "run_ms": [
+        32.103,
+        31.329,
+        32.008,
+        33.587,
+        33.304
+      ],
+      "median_ms": 32.103,
+      "min_ms": 31.329,
+      "max_ms": 33.587,
+      "allocated_mib_per_run": 5.409196472167968
+    },
+    {
+      "rules": 100,
+      "case": "change_port",
+      "verdict": "DIFFERENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 100196,
+      "ops_all_runs": [
+        100196,
+        100196,
+        100196,
+        100196,
+        100196
+      ],
+      "peak_boxes": 6834,
+      "witnesses": 8,
+      "run_ms": [
+        31.665,
+        33.608,
+        32.084,
+        31.265,
+        33.91
+      ],
+      "median_ms": 32.084,
+      "min_ms": 31.265,
+      "max_ms": 33.91,
+      "allocated_mib_per_run": 5.570587158203125
+    },
+    {
+      "rules": 100,
+      "case": "shadow_all",
+      "verdict": "DIFFERENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 44854,
+      "ops_all_runs": [
+        44854,
+        44854,
+        44854,
+        44854,
+        44854
+      ],
+      "peak_boxes": 4047,
+      "witnesses": 8,
+      "run_ms": [
+        13.691,
+        14.048,
+        13.754,
+        13.525,
+        13.163
+      ],
+      "median_ms": 13.691,
+      "min_ms": 13.163,
+      "max_ms": 14.048,
+      "allocated_mib_per_run": 2.52130126953125
+    },
+    {
+      "rules": 100,
+      "case": "append_rule",
+      "verdict": "DIFFERENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 97134,
+      "ops_all_runs": [
+        97134,
+        97134,
+        97134,
+        97134,
+        97134
+      ],
+      "peak_boxes": 6667,
+      "witnesses": 1,
+      "run_ms": [
+        31.821,
+        34.97,
+        32.658,
+        32.022,
+        30.31
+      ],
+      "median_ms": 32.022,
+      "min_ms": 30.31,
+      "max_ms": 34.97,
+      "allocated_mib_per_run": 5.413906860351562
+    },
+    {
+      "rules": 100,
+      "case": "change_last",
+      "verdict": "DIFFERENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 97064,
+      "ops_all_runs": [
+        97064,
+        97064,
+        97064,
+        97064,
+        97064
+      ],
+      "peak_boxes": 6663,
+      "witnesses": 1,
+      "run_ms": [
+        32.269,
+        30.877,
+        31.105,
+        30.682,
+        32.372
+      ],
+      "median_ms": 31.105,
+      "min_ms": 30.682,
+      "max_ms": 32.372,
+      "allocated_mib_per_run": 5.410905456542968
+    },
+    {
+      "rules": 250,
+      "case": "identical",
+      "verdict": "EQUIVALENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 463980,
+      "ops_all_runs": [
+        463980,
+        463980,
+        463980,
+        463980,
+        463980
+      ],
+      "peak_boxes": 15867,
+      "witnesses": 0,
+      "run_ms": [
+        121.6,
+        122.311,
+        152.123,
+        145.749,
+        137.258
+      ],
+      "median_ms": 137.258,
+      "min_ms": 121.6,
+      "max_ms": 152.123,
+      "allocated_mib_per_run": 26.183433532714844
+    },
+    {
+      "rules": 250,
+      "case": "insert_top_deny",
+      "verdict": "DIFFERENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 508952,
+      "ops_all_runs": [
+        508952,
+        508952,
+        508952,
+        508952,
+        508952
+      ],
+      "peak_boxes": 18688,
+      "witnesses": 8,
+      "run_ms": [
+        139.143,
+        142.064,
+        141.723,
+        137.233,
+        135.55
+      ],
+      "median_ms": 139.143,
+      "min_ms": 135.55,
+      "max_ms": 142.064,
+      "allocated_mib_per_run": 29.355563354492187
+    },
+    {
+      "rules": 250,
+      "case": "swap_adjacent",
+      "verdict": "EQUIVALENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 463980,
+      "ops_all_runs": [
+        463980,
+        463980,
+        463980,
+        463980,
+        463980
+      ],
+      "peak_boxes": 15867,
+      "witnesses": 0,
+      "run_ms": [
+        146.433,
+        126.618,
+        124.687,
+        137.796,
+        121.347
+      ],
+      "median_ms": 126.618,
+      "min_ms": 121.347,
+      "max_ms": 146.433,
+      "allocated_mib_per_run": 26.183369445800782
+    },
+    {
+      "rules": 250,
+      "case": "change_port",
+      "verdict": "DIFFERENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 464996,
+      "ops_all_runs": [
+        464996,
+        464996,
+        464996,
+        464996,
+        464996
+      ],
+      "peak_boxes": 15869,
+      "witnesses": 2,
+      "run_ms": [
+        124.072,
+        130.921,
+        126.868,
+        128.211,
+        126.009
+      ],
+      "median_ms": 126.868,
+      "min_ms": 124.072,
+      "max_ms": 130.921,
+      "allocated_mib_per_run": 26.1880126953125
+    },
+    {
+      "rules": 250,
+      "case": "shadow_all",
+      "verdict": "DIFFERENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 196659,
+      "ops_all_runs": [
+        196659,
+        196659,
+        196659,
+        196659,
+        196659
+      ],
+      "peak_boxes": 9632,
+      "witnesses": 8,
+      "run_ms": [
+        48.749,
+        46.846,
+        48.403,
+        47.596,
+        46.577
+      ],
+      "median_ms": 47.596,
+      "min_ms": 46.577,
+      "max_ms": 48.749,
+      "allocated_mib_per_run": 11.396873474121094
+    },
+    {
+      "rules": 250,
+      "case": "append_rule",
+      "verdict": "DIFFERENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 464545,
+      "ops_all_runs": [
+        464545,
+        464545,
+        464545,
+        464545,
+        464545
+      ],
+      "peak_boxes": 15870,
+      "witnesses": 1,
+      "run_ms": [
+        121.285,
+        125.244,
+        121.471,
+        125.778,
+        131.901
+      ],
+      "median_ms": 125.244,
+      "min_ms": 121.285,
+      "max_ms": 131.901,
+      "allocated_mib_per_run": 26.188038635253907
+    },
+    {
+      "rules": 250,
+      "case": "change_last",
+      "verdict": "DIFFERENT",
+      "search_complete": true,
+      "stop_reason": "",
+      "operations": 464852,
+      "ops_all_runs": [
+        464852,
+        464852,
+        464852,
+        464852,
+        464852
+      ],
+      "peak_boxes": 15865,
+      "witnesses": 2,
+      "run_ms": [
+        123.826,
+        136.034,
+        144.392,
+        128.923,
+        127.848
+      ],
+      "median_ms": 128.923,
+      "min_ms": 123.826,
+      "max_ms": 144.392,
+      "allocated_mib_per_run": 26.18317565917969
+    },
+    {
+      "rules": 512,
+      "case": "identical",
+      "verdict": "INCONCLUSIVE",
+      "search_complete": false,
+      "stop_reason": "boxes",
+      "operations": 261044,
+      "ops_all_runs": [
+        261044,
+        261044,
+        261044,
+        261044,
+        261044
+      ],
+      "peak_boxes": 38612,
+      "witnesses": 0,
+      "run_ms": [
+        151.638,
+        136.886,
+        137.413,
+        139.378,
+        129.758
+      ],
+      "median_ms": 137.413,
+      "min_ms": 129.758,
+      "max_ms": 151.638,
+      "allocated_mib_per_run": 54.88060455322265
+    },
+    {
+      "rules": 512,
+      "case": "insert_top_deny",
+      "verdict": "NOT_MEASURED",
+      "search_complete": false,
+      "stop_reason": "",
+      "operations": 0,
+      "ops_all_runs": null,
+      "peak_boxes": 0,
+      "witnesses": 0,
+      "run_ms": null,
+      "median_ms": 0,
+      "min_ms": 0,
+      "max_ms": 0,
+      "allocated_mib_per_run": 0,
+      "note": "after parse: PARSE_LIMIT at line 514: ACL exceeds rule limit"
+    },
+    {
+      "rules": 512,
+      "case": "swap_adjacent",
+      "verdict": "INCONCLUSIVE",
+      "search_complete": false,
+      "stop_reason": "boxes",
+      "operations": 261044,
+      "ops_all_runs": [
+        261044,
+        261044,
+        261044,
+        261044,
+        261044
+      ],
+      "peak_boxes": 38612,
+      "witnesses": 0,
+      "run_ms": [
+        131.257,
+        138.8,
+        134.184,
+        179.111,
+        137.169
+      ],
+      "median_ms": 137.169,
+      "min_ms": 131.257,
+      "max_ms": 179.111,
+      "allocated_mib_per_run": 54.88070526123047
+    },
+    {
+      "rules": 512,
+      "case": "change_port",
+      "verdict": "INCONCLUSIVE",
+      "search_complete": false,
+      "stop_reason": "boxes",
+      "operations": 261044,
+      "ops_all_runs": [
+        261044,
+        261044,
+        261044,
+        261044,
+        261044
+      ],
+      "peak_boxes": 38612,
+      "witnesses": 0,
+      "run_ms": [
+        141.854,
+        178.714,
+        136.379,
+        136.241,
+        138.453
+      ],
+      "median_ms": 138.453,
+      "min_ms": 136.241,
+      "max_ms": 178.714,
+      "allocated_mib_per_run": 54.88062286376953
+    },
+    {
+      "rules": 512,
+      "case": "shadow_all",
+      "verdict": "NOT_MEASURED",
+      "search_complete": false,
+      "stop_reason": "",
+      "operations": 0,
+      "ops_all_runs": null,
+      "peak_boxes": 0,
+      "witnesses": 0,
+      "run_ms": null,
+      "median_ms": 0,
+      "min_ms": 0,
+      "max_ms": 0,
+      "allocated_mib_per_run": 0,
+      "note": "after parse: PARSE_LIMIT at line 514: ACL exceeds rule limit"
+    },
+    {
+      "rules": 512,
+      "case": "append_rule",
+      "verdict": "NOT_MEASURED",
+      "search_complete": false,
+      "stop_reason": "",
+      "operations": 0,
+      "ops_all_runs": null,
+      "peak_boxes": 0,
+      "witnesses": 0,
+      "run_ms": null,
+      "median_ms": 0,
+      "min_ms": 0,
+      "max_ms": 0,
+      "allocated_mib_per_run": 0,
+      "note": "after parse: PARSE_LIMIT at line 514: ACL exceeds rule limit"
+    },
+    {
+      "rules": 512,
+      "case": "change_last",
+      "verdict": "INCONCLUSIVE",
+      "search_complete": false,
+      "stop_reason": "boxes",
+      "operations": 261044,
+      "ops_all_runs": [
+        261044,
+        261044,
+        261044,
+        261044,
+        261044
+      ],
+      "peak_boxes": 38612,
+      "witnesses": 0,
+      "run_ms": [
+        136.944,
+        145.141,
+        135.139,
+        137.273,
+        137.279
+      ],
+      "median_ms": 137.273,
+      "min_ms": 135.139,
+      "max_ms": 145.141,
+      "allocated_mib_per_run": 54.88070526123047
+    },
+    {
+      "rules": 511,
+      "case": "append_rule_to_512",
+      "verdict": "INCONCLUSIVE",
+      "search_complete": false,
+      "stop_reason": "boxes",
+      "operations": 692840,
+      "ops_all_runs": [
+        692840,
+        692840,
+        692840,
+        692840,
+        692840
+      ],
+      "peak_boxes": 46073,
+      "witnesses": 0,
+      "run_ms": [
+        364.205,
+        343.168,
+        345.005,
+        351.224,
+        356.391
+      ],
+      "median_ms": 351.224,
+      "min_ms": 343.168,
+      "max_ms": 364.205,
+      "allocated_mib_per_run": 128.6286376953125,
+      "note": "base 511 rules, after exactly 512 rules (parser cap); the 512-base append is not constructible"
+    }
+  ],
+  "runs_per_case": 5
+}

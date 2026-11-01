@@ -18,13 +18,16 @@ const Schema = "plenilune.repair/v1"
 
 // Version is stamped on new receipts. Each repair version is bound to the ACL
 // engine whose accounting its embedded comparison and collateral record.
-const Version = "acl-repair/v0.2"
+const Version = "acl-repair/v0.3"
+const IndexedVersion = "acl-repair/v0.2"
 const LegacyVersion = "acl-repair/v0.1"
 
 func engineForRepair(version string) (string, error) {
 	switch version {
 	case Version:
 		return verify.EngineVersion, nil
+	case IndexedVersion:
+		return verify.IndexedEngineVersion, nil
 	case LegacyVersion:
 		return verify.LegacyEngineVersion, nil
 	}

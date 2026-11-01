@@ -81,6 +81,17 @@ type ChangeReport struct {
 // Changes partitions the exact behavior difference by deciding rules. allowed
 // nil means no accepted scope was supplied; [] means no change is allowed.
 func Changes(ctx context.Context, before, after ciscoacl.ACL, allowed []intent.Region, opts ChangeOptions) (ChangeReport, error) {
+	return ChangesEngine(ctx, before, after, allowed, opts, EngineVersion)
+}
+
+// ChangesEngine runs the named engine version, mirroring CompareEngine:
+// replay passes the version recorded in evidence so older change reports
+// keep their exact accounting.
+func ChangesEngine(ctx context.Context, before, after ciscoacl.ACL, allowed []intent.Region, opts ChangeOptions, version string) (ChangeReport, error) {
+	eng, err := engineFor(version)
+	if err != nil {
+		return ChangeReport{}, err
+	}
 	if opts.MaxClasses < 1 || opts.MaxClasses > MaxClasses {
 		return ChangeReport{}, errors.New("max classes must be 1 to 128")
 	}
@@ -102,7 +113,7 @@ func Changes(ctx context.Context, before, after ciscoacl.ACL, allowed []intent.R
 		return ChangeReport{}, err
 	}
 	defer b.Close()
-	r := ChangeReport{Schema: ChangeSchema, Engine: EngineVersion, ScopeDeclared: allowed != nil, Classes: []ChangeClass{}, Options: opts}
+	r := ChangeReport{Schema: ChangeSchema, Engine: version, ScopeDeclared: allowed != nil, Classes: []ChangeClass{}, Options: opts}
 	finish := func(cause error) (ChangeReport, error) {
 		r.Budget = b.Stats()
 		if cause != nil {
@@ -113,7 +124,7 @@ func Changes(ctx context.Context, before, after ciscoacl.ACL, allowed []intent.R
 		}
 		return r, nil
 	}
-	d, err := exactDelta(before, after, b)
+	d, err := eng.delta(before, after, b)
 	if err != nil {
 		return finish(err)
 	}

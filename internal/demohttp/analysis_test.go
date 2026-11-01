@@ -31,6 +31,7 @@ func postJSON(t *testing.T, path string, body any) *httptest.ResponseRecorder {
 		t.Fatal(err)
 	}
 	req := httptest.NewRequest(http.MethodPost, path, strings.NewReader(string(raw)))
+	req.Host = "127.0.0.1:8080" // the API guard only accepts loopback authorities
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 	NewHandler("").ServeHTTP(rec, req)
@@ -67,6 +68,7 @@ func TestAnalyzeHTTPRejectsInvalidRequests(t *testing.T) {
 		"policy":  `{"schema":"plenilune.analysis-request/v1","before":{"text":""},"after":{"text":""},"policies":[{"domain":"prefix-list","name":"X","policy":{}}]}`,
 	} {
 		req := httptest.NewRequest(http.MethodPost, "/api/analyze", strings.NewReader(body))
+		req.Host = "127.0.0.1:8080" // the API guard only accepts loopback authorities
 		req.Header.Set("Content-Type", "application/json")
 		rec := httptest.NewRecorder()
 		NewHandler("").ServeHTTP(rec, req)

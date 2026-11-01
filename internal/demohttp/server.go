@@ -57,22 +57,36 @@ type errorEnvelope struct {
 
 // NewHandler serves the built UI and same-origin localhost API. Exact comparison
 // and repair are offline; only an explicitly enabled AI session uses a provider.
+// Every /api/* route sits behind the localOnly guard (Host/Origin/Fetch
+// Metadata) and the heavy routes share one concurrency semaphore.
 func NewHandler(webDir string) http.Handler {
+	return newHandler(webDir, "")
+}
+
+// NewHandlerForAddr is NewHandler with the server's listen address, so the
+// guard can also require the Host authority to carry the exact listen port.
+func NewHandlerForAddr(webDir, addr string) http.Handler {
+	_, port := splitAuthority(addr)
+	return newHandler(webDir, port)
+}
+
+func newHandler(webDir, expectedPort string) http.Handler {
+	sem := make(chan struct{}, maxConcurrentAnalyses)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/health", handleHealth)
 	mux.HandleFunc("POST /api/parse", handleParse)
-	mux.HandleFunc("POST /api/analyze", handleAnalyze)
-	mux.HandleFunc("POST /api/analyze/replay", handleAnalyzeReplay)
+	mux.HandleFunc("POST /api/analyze", limitConcurrent(sem, handleAnalyze))
+	mux.HandleFunc("POST /api/analyze/replay", limitConcurrent(sem, handleAnalyzeReplay))
 	mux.HandleFunc("POST /api/obligations/normalize", handleNormalize)
 	mux.HandleFunc("POST /api/policy/normalize", handlePolicyNormalize)
 	mux.HandleFunc("POST /api/trace", handleTrace)
-	mux.HandleFunc("POST /api/compare", handleCompare)
-	mux.HandleFunc("POST /api/compare/replay", handleComparisonReplay)
-	mux.HandleFunc("POST /api/repair/verify", handleRepair)
-	mux.HandleFunc("POST /api/repair/replay", handleRepairReplay)
-	mux.HandleFunc("POST /api/agent/session", handleAgentSession)
+	mux.HandleFunc("POST /api/compare", limitConcurrent(sem, handleCompare))
+	mux.HandleFunc("POST /api/compare/replay", limitConcurrent(sem, handleComparisonReplay))
+	mux.HandleFunc("POST /api/repair/verify", limitConcurrent(sem, handleRepair))
+	mux.HandleFunc("POST /api/repair/replay", limitConcurrent(sem, handleRepairReplay))
+	mux.HandleFunc("POST /api/agent/session", limitConcurrent(sem, handleAgentSession))
 	mux.Handle("GET /", staticHandler(webDir))
-	return securityHeaders(mux)
+	return securityHeaders(localOnly(expectedPort, mux))
 }
 
 func handleHealth(w http.ResponseWriter, _ *http.Request) {
@@ -158,8 +172,13 @@ func decodeRequest(w http.ResponseWriter, r *http.Request, limit int, dst any) b
 		writeError(w, http.StatusUnsupportedMediaType, apiError{Code: "CONTENT_TYPE", Message: "expected application/json"})
 		return false
 	}
-	body, err := io.ReadAll(io.LimitReader(r.Body, int64(limit)+1))
+	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, int64(limit)))
 	if err != nil {
+		var maxErr *http.MaxBytesError
+		if errors.As(err, &maxErr) {
+			writeError(w, http.StatusBadRequest, apiError{Code: "JSON_INVALID", Message: "request body exceeds size limit"})
+			return false
+		}
 		writeError(w, http.StatusBadRequest, apiError{Code: "INPUT_READ", Message: "could not read request"})
 		return false
 	}

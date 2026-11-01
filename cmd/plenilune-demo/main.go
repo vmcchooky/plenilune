@@ -32,12 +32,7 @@ func run() error {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	server := &http.Server{
-		Addr:              *addr,
-		Handler:           demohttp.NewHandler(*webDir),
-		ReadHeaderTimeout: 5 * time.Second,
-		IdleTimeout:       60 * time.Second,
-	}
+	server := newServer(*addr, demohttp.NewHandlerForAddr(*webDir, *addr))
 	errCh := make(chan error, 1)
 	go func() {
 		log.Printf("Plenilune demo listening on http://%s", *addr)
@@ -54,6 +49,26 @@ func run() error {
 			return nil
 		}
 		return err
+	}
+}
+
+// newServer builds the demo HTTP server with bounded header, read and write
+// phases so a slow or stalled client cannot hold a connection forever.
+// ReadTimeout (60s) covers headers plus the largest accepted body (a replay
+// request can reach ~26 MiB, still seconds over loopback) and bounds
+// slow-body drips. WriteTimeout (180s) must outlast the longest legitimate
+// handler: one analysis may run up to the 120s maximum analysis deadline
+// before its response is written. MaxHeaderBytes is set explicitly to the
+// net/http default so the bound is visible rather than implied.
+func newServer(addr string, handler http.Handler) *http.Server {
+	return &http.Server{
+		Addr:              addr,
+		Handler:           handler,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       60 * time.Second,
+		WriteTimeout:      180 * time.Second,
+		IdleTimeout:       60 * time.Second,
+		MaxHeaderBytes:    1 << 20,
 	}
 }
 

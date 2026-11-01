@@ -21,6 +21,7 @@ func TestExactComparisonHTTPAndReplay(t *testing.T) {
 	}
 	h := NewHandler("")
 	req := httptest.NewRequest(http.MethodPost, "/api/compare", bytes.NewReader(body))
+	req.Host = "127.0.0.1:8080" // the API guard only accepts loopback authorities
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	h.ServeHTTP(w, req)
@@ -43,6 +44,7 @@ func TestExactComparisonHTTPAndReplay(t *testing.T) {
 		t.Fatal(err)
 	}
 	req = httptest.NewRequest(http.MethodPost, "/api/compare/replay", bytes.NewReader(body))
+	req.Host = "127.0.0.1:8080" // the API guard only accepts loopback authorities
 	req.Header.Set("Content-Type", "application/json")
 	w = httptest.NewRecorder()
 	h.ServeHTTP(w, req)

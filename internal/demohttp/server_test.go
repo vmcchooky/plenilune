@@ -44,6 +44,7 @@ func fixture(t *testing.T, name string) []byte {
 func do(t *testing.T, handler http.Handler, method, target, contentType string, body []byte) *httptest.ResponseRecorder {
 	t.Helper()
 	req := httptest.NewRequest(method, target, strings.NewReader(string(body)))
+	req.Host = "127.0.0.1:8080" // the API guard only accepts loopback authorities
 	if contentType != "" {
 		req.Header.Set("Content-Type", contentType)
 	}

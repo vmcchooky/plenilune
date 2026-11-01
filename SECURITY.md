@@ -41,6 +41,17 @@ The security model is a **single-user localhost trust model**:
 - Anyone who can reach the loopback port can call the local API while the server
   runs. Do not expose the port through a proxy, tunnel, port-forward or container
   publish.
+- As defense in depth inside that single-user model, every `/api/*` route sits
+  behind a local-request guard: the `Host` authority must be a loopback name or
+  address carrying the server's listen port, a present `Origin` must be an
+  http(s) loopback origin, and `Sec-Fetch-Site: cross-site` is rejected. This
+  blunts DNS-rebinding and cross-site requests from other pages in the same
+  browser; it is a localhost mitigation, **not** multi-user security and not a
+  substitute for authentication. The server also bounds its header, read and
+  write phases with timeouts, caps request bodies per route, and runs at most
+  two heavy analyses (analyze/compare/repair/replay/agent session)
+  concurrently — excess requests get a typed `429 SERVER_BUSY` instead of
+  queueing without bound.
 - Configuration files, obligations and receipts are handled in memory for the
   current session. The UI does not persist configuration or receipts in
   `localStorage`; it stores only the locale choice.

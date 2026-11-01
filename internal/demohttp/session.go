@@ -2,10 +2,8 @@ package demohttp
 
 import (
 	"errors"
-	"net"
 	"net/http"
 	"net/netip"
-	"net/url"
 	"os"
 	"plenilune/internal/ai"
 	"plenilune/internal/orchestrate"
@@ -51,11 +49,12 @@ func handleAgentSession(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, result)
 }
 
+// localAIRequest is the AI session's own second check, kept alongside the
+// shared localOnly guard: an enabled AI session spends a provider key, so it
+// re-verifies the loopback host and origin before any provider configuration
+// is read.
 func localAIRequest(r *http.Request) bool {
-	host := r.Host
-	if h, _, err := net.SplitHostPort(host); err == nil {
-		host = h
-	}
+	host, _ := splitAuthority(r.Host)
 	if !loopbackHost(host) {
 		return false
 	}
@@ -63,8 +62,7 @@ func localAIRequest(r *http.Request) bool {
 	if origin == "" {
 		return true
 	}
-	u, err := url.Parse(origin)
-	return err == nil && (u.Scheme == "http" || u.Scheme == "https") && u.User == nil && loopbackHost(u.Hostname())
+	return loopbackOrigin(origin)
 }
 func loopbackHost(host string) bool {
 	if host == "localhost" {

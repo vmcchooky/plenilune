@@ -47,10 +47,15 @@ type Result struct {
 }
 
 func Verify(ctx context.Context, before, after []byte, policy *Policy, request patch.Request, opts verify.Options) (Result, error) {
-	return verifyVersion(ctx, before, after, policy, request, opts, Version)
+	return verifyVersion(ctx, before, after, policy, request, opts, Version, evidence.ComparisonSchema)
 }
 
-func verifyVersion(ctx context.Context, before, after []byte, policy *Policy, request patch.Request, opts verify.Options, version string) (Result, error) {
+// verifyVersion recomputes a receipt of the given repair version. The
+// evidence schema names the shape the embedded candidate comparison is
+// sealed in: fresh verification uses the current evidence schema, while
+// Replay passes the recorded comparison's own schema so a receipt from
+// an earlier evidence era recomputes byte-identically (P2-1).
+func verifyVersion(ctx context.Context, before, after []byte, policy *Policy, request patch.Request, opts verify.Options, version string, evidenceSchema string) (Result, error) {
 	engine, err := engineForRepair(version)
 	if err != nil {
 		return Result{}, err
@@ -118,7 +123,7 @@ func verifyVersion(ctx context.Context, before, after []byte, policy *Policy, re
 	if r.Policy == nil {
 		return finish("UNVERIFIED", "policy_missing")
 	}
-	comparison, err := workflow.CompareEngine(ctx, before, candidate, &r.Conditions, opts, evidence.Tool{Version: evidence.ToolVersion, Commit: "unversioned"}, engine)
+	comparison, err := workflow.CompareEngineSchema(ctx, before, candidate, &r.Conditions, opts, evidence.Tool{Version: evidence.ToolVersion, Commit: "unversioned"}, engine, evidenceSchema)
 	if err != nil {
 		return Result{}, err
 	}

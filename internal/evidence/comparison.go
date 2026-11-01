@@ -10,7 +10,15 @@ import (
 	"plenilune/internal/verify"
 )
 
-const ComparisonSchema = "plenilune.evidence/v1"
+// ComparisonSchema is the current evidence schema (P2-1): the artifact
+// carries two digests — content_sha256 over the semantic payload and the
+// whole-envelope sha256 (the artifact digest). See CONTRACTS §5.
+const ComparisonSchema = "plenilune.evidence/v2"
+
+// ComparisonSchemaV1 is the frozen pre-dual-digest schema. New comparisons
+// are never emitted as v1; v1 artifacts remain checkable and replayable
+// under the original single-digest rules (see CheckComparison).
+const ComparisonSchemaV1 = "plenilune.evidence/v1"
 const ToolVersion = "0.2.0-dev"
 const MaxComparisonBytes = 4 << 20
 
@@ -25,8 +33,16 @@ type Input struct {
 	Kind   string `json:"kind"`
 }
 
-// Comparison binds definitions, scope and a verifier-owned report. The digest
-// is a content receipt, not a signature or a certification of intent fidelity.
+// Comparison binds definitions, scope and a verifier-owned report. The
+// digests are content receipts, not signatures or a certification of intent
+// fidelity. Two identities are stamped (P2-1): ContentSHA256 is the digest
+// of the semantic payload only (inputs, definitions, scope, parser/engine
+// versions, options and results — the Report carries the options), so the
+// same result produced by a different build keeps one content identity;
+// SHA256 remains the whole-envelope digest (the artifact digest), computed
+// over every field including the tool provenance and the content digest
+// itself, and identifies this exact artifact. Frozen v1 artifacts carry
+// only the envelope digest, in the same field.
 type Comparison struct {
 	Schema        string        `json:"schema"`
 	Tool          Tool          `json:"tool"`
@@ -37,16 +53,34 @@ type Comparison struct {
 	After         Input         `json:"after"`
 	Conditions    *intent.Set   `json:"conditions"`
 	Report        verify.Report `json:"report"`
+	ContentSHA256 string        `json:"content_sha256,omitempty"`
 	SHA256        string        `json:"sha256,omitempty"`
 }
 
 // SealComparison stamps the current engine unless the caller names the
-// supported engine that actually produced the report.
+// supported engine that actually produced the report, and seals under
+// the current (v2) schema: both digests.
 func SealComparison(c Comparison) (Comparison, error) {
+	return SealComparisonAs(c, ComparisonSchema)
+}
+
+// SealComparisonAs seals a comparison in the shape of the named evidence
+// schema. The current schema stamps both digests; the frozen v1 schema
+// stamps only the envelope digest under the original rules and must not
+// carry a content digest. The v1 shape exists so replay paths that embed
+// comparisons (repair receipts) can recompute a recorded artifact in its
+// own shape; new comparisons are only ever sealed by SealComparison.
+func SealComparisonAs(c Comparison, schema string) (Comparison, error) {
+	if schema != ComparisonSchema && schema != ComparisonSchemaV1 {
+		return Comparison{}, errors.New("unsupported comparison schema")
+	}
+	if schema == ComparisonSchemaV1 && c.ContentSHA256 != "" {
+		return Comparison{}, errors.New("v1 comparison must not carry a content digest")
+	}
 	if c.EngineVersion == "" {
 		c.EngineVersion = verify.EngineVersion
 	}
-	c.Schema, c.ParserVersion, c.Scope = ComparisonSchema, ciscoacl.ParserVersion, intent.Scope
+	c.Schema, c.ParserVersion, c.Scope = schema, ciscoacl.ParserVersion, intent.Scope
 	if c.Conditions != nil {
 		n, err := intent.Normalize(*c.Conditions)
 		if err != nil {
@@ -57,6 +91,13 @@ func SealComparison(c Comparison) (Comparison, error) {
 	if err := validateComparison(c); err != nil {
 		return Comparison{}, err
 	}
+	if schema == ComparisonSchema {
+		content, err := comparisonContentDigest(c)
+		if err != nil {
+			return Comparison{}, err
+		}
+		c.ContentSHA256 = content
+	}
 	h, err := comparisonDigest(c)
 	if err != nil {
 		return Comparison{}, err
@@ -65,6 +106,13 @@ func SealComparison(c Comparison) (Comparison, error) {
 	return c, nil
 }
 
+// CheckComparison verifies a recorded comparison under the rules of its
+// own schema version. A v2 artifact must carry a content digest that
+// recomputes from its semantic payload AND an envelope digest that
+// recomputes over the whole artifact, so a payload tamper is caught even
+// when the forger recomputes the envelope over a forged content claim.
+// A frozen v1 artifact is checked under the original rules: envelope
+// digest only, and it must not carry a content digest.
 func CheckComparison(c Comparison) error {
 	if err := validateComparison(c); err != nil {
 		return err
@@ -76,7 +124,43 @@ func CheckComparison(c Comparison) error {
 	if c.SHA256 != h {
 		return errors.New("comparison digest mismatch")
 	}
+	if c.Schema == ComparisonSchema {
+		content, err := comparisonContentDigest(c)
+		if err != nil {
+			return err
+		}
+		if c.ContentSHA256 != content {
+			return errors.New("comparison content digest mismatch")
+		}
+	}
 	return nil
+}
+
+// comparisonContent is the fixed-order semantic projection a v2 content
+// digest is taken over: inputs, definitions, scope, the parser/engine
+// versions and the report (options and results). Build provenance — the
+// Tool identity — and both digest fields are excluded by construction.
+type comparisonContent struct {
+	Schema        string        `json:"schema"`
+	ParserVersion string        `json:"parser_version"`
+	EngineVersion string        `json:"engine_version"`
+	Scope         string        `json:"scope"`
+	Before        Input         `json:"before"`
+	After         Input         `json:"after"`
+	Conditions    *intent.Set   `json:"conditions"`
+	Report        verify.Report `json:"report"`
+}
+
+func comparisonContentDigest(c Comparison) (string, error) {
+	p := comparisonContent{Schema: c.Schema, ParserVersion: c.ParserVersion, EngineVersion: c.EngineVersion, Scope: c.Scope, Before: c.Before, After: c.After, Conditions: c.Conditions, Report: c.Report}
+	b, err := json.Marshal(p)
+	if err != nil {
+		return "", err
+	}
+	if len(b) > MaxComparisonBytes {
+		return "", errors.New("comparison exceeds output limit")
+	}
+	return ConfigDigest(b), nil
 }
 
 // validatePartial checks the structural invariants of a partial result
@@ -167,8 +251,11 @@ func comparisonDigest(c Comparison) (string, error) {
 }
 
 func validateComparison(c Comparison) error {
-	if c.Schema != ComparisonSchema || c.ParserVersion != ciscoacl.ParserVersion || !verify.SupportedEngine(c.EngineVersion) || c.Scope != intent.Scope || c.Tool.Version != ToolVersion || c.Tool.Commit == "" {
+	if c.Schema != ComparisonSchema && c.Schema != ComparisonSchemaV1 || c.ParserVersion != ciscoacl.ParserVersion || !verify.SupportedEngine(c.EngineVersion) || c.Scope != intent.Scope || c.Tool.Version != ToolVersion || c.Tool.Commit == "" {
 		return errors.New("unsupported comparison schema or version")
+	}
+	if c.Schema == ComparisonSchemaV1 && c.ContentSHA256 != "" {
+		return errors.New("v1 comparison must not carry a content digest")
 	}
 	for _, in := range []Input{c.Before, c.After} {
 		h, err := hex.DecodeString(in.SHA256)

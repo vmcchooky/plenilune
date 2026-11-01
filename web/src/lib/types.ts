@@ -155,7 +155,7 @@ export interface ComparisonInput {
 }
 
 export interface Comparison {
-  schema: 'plenilune.evidence/v1';
+  schema: 'plenilune.evidence/v1' | 'plenilune.evidence/v2';
   tool: { version: string; commit: string };
   parser_version: string;
   engine_version: string;
@@ -164,6 +164,9 @@ export interface Comparison {
   after: ComparisonInput;
   conditions: ObligationSet | null;
   report: ComparisonReport;
+  // P2-1 dual digest: content_sha256 identifies the semantic payload
+  // (present on v2 artifacts); sha256 is the whole-envelope digest.
+  content_sha256?: string;
   sha256: string;
 }
 
@@ -522,7 +525,7 @@ export interface AnalysisSummary {
 }
 
 export interface Analysis {
-  schema: 'plenilune.analysis/v1' | 'plenilune.analysis/v2';
+  schema: 'plenilune.analysis/v1' | 'plenilune.analysis/v2' | 'plenilune.analysis/v3';
   tool: { version: string; commit: string };
   versions: Record<string, string>;
   request: { select: { domain: string; name: string }[]; policies: { domain: string; name: string; policy_sha256: string }[]; options: unknown };
@@ -533,6 +536,9 @@ export interface Analysis {
   unanalyzed_changes_truncated: boolean;
   summary: AnalysisSummary;
   limitations: string[];
+  // P2-1 dual digest: present on v3 artifacts; sha256 stays the
+  // whole-envelope digest.
+  content_sha256?: string;
   sha256: string;
 }
 

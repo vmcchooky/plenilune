@@ -46,6 +46,13 @@ Commands:
                                      Verify an in-memory patch and collateral
   repair-replay --before FILE --after FILE --evidence FILE
                                      Rerender and replay repair evidence offline
+  repair-enumerate --before FILE --after FILE [--policy FILE] [--proposals FILE]
+                                     Deterministically enumerate repair candidates
+                                     from change classes and obligation violations;
+                                     every candidate carries its repair receipt.
+                                     Optional proposals FILE (JSON array of patch
+                                     requests, e.g. AI proposals) folds into the
+                                     same deterministic order
   assist --before FILE --after FILE [--policy FILE] --intent TEXT --ai off|on
                                      Real engine tool loop; AI defaults off
 
@@ -55,7 +62,9 @@ exits 0 ANALYSIS_REPLAYED, 2 TIMING_SENSITIVE/error. Errors are JSON on stderr.
 Diff exits: 0 EQUIVALENT, 1 DIFFERENT, 2 INCONCLUSIVE/error.
 Diff --brief exits: 0 EQUIVALENT, 1 DIFFERENT, 2 INCONCLUSIVE, 3 error;
 brief errors are a single line on stderr, and --out is required with --brief.
-Repair exits: 0 VERIFIED, 1 REJECTED, 2 UNVERIFIED/error. Other commands: 0/2.
+Repair exits: 0 VERIFIED, 1 REJECTED, 2 UNVERIFIED/error.
+Repair-enumerate exits: 0 complete with a VERIFIED candidate, 1 complete
+with none, 2 incomplete/error. Other commands: 0/2.
 Use --help after any command for its flags.
 `
 
@@ -78,6 +87,9 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if cmd == "repair" || cmd == "repair-replay" || cmd == "assist" {
 		return runRepair(ctx, cmd, args[1:], stdout, stderr)
+	}
+	if cmd == "repair-enumerate" {
+		return runRepairEnumerate(ctx, args[1:], stdout, stderr)
 	}
 	fs := flag.NewFlagSet(cmd, flag.ContinueOnError)
 	fs.SetOutput(io.Discard)

@@ -19,6 +19,7 @@ Go DTO hiện tại ở `internal/ciscoacl`, `internal/intent`, `internal/eviden
 | `replay --before FILE --after FILE --evidence FILE` | Original pair + full evidence | COMPARISON_REPLAYED hoặc TIMING_SENSITIVE |
 | `repair --before FILE --after FILE --policy FILE --patch FILE` | Frozen policy + pinned patch | Repair receipt; 0 VERIFIED / 1 REJECTED / 2 UNVERIFIED/error |
 | `repair-replay --before FILE --after FILE --evidence FILE` | Original pair + repair receipt | REPAIR_REPLAYED hoặc TIMING_SENSITIVE |
+| `repair-enumerate --before FILE --after FILE [--policy FILE] [--proposals FILE]` | Original pair + optional frozen policy + optional proposals | Enumeration record đã seal (xem §6); 0 có candidate VERIFIED / 1 không có / 2 incomplete/error |
 | `assist --before FILE --after FILE --intent TEXT --ai off\|on [--policy FILE]` | Intent + optional frozen policy | Session sidecar + deterministic receipts; AI defaults off |
 
 Exit 0: operation thành công, kể cả packet bị deny. Exit 2: usage/input,
@@ -181,6 +182,30 @@ phải xử lý mọi repair receipt như dữ liệu nhạy cảm.
 VERIFIED cần acceptance thật từ caller policy, all HOLDS và collateral VERIFIED;
 UNVERIFIED không được nâng thành thành công. Replay rerenders original-after + patch
 và so bytes/policy trước timing shortcut; replay PASS không đổi status gốc của proposal.
+
+Enumeration deterministic (P1-3) `plenilune.repair-enumeration/v1`, scheme
+`repair-enumeration/v1`: từ change classes (vùng box exact đầy đủ, không chỉ
+example) và obligation violations (vùng vi phạm exact tính bằng permit-cover
+như engine), sinh candidate hữu hạn bằng 5 phép biến đổi có giới hạn (xóa rule
+quyết định; đảo action rule quyết định; chèn rule ngoại lệ đúng vùng vi phạm
+trước rule quyết định; reorder remove+add cho ca hai rule bị hoán đổi; thu hẹp
+predicate về `rule \ vùng vi phạm` khi hiệu là đúng một box biểu diễn được).
+Mỗi candidate là patch v1 và qua đúng `Verify` ở trên — enumeration không có
+đường tắt nào quanh obligations/collateral/acceptance. Target và candidate bị
+chặn (32 target, 64 candidate sinh, 8 box/rule quyết định mỗi target, deadline
+của caller); analysis dừng budget thì record ghi `complete=false` + stop reason
+và không có candidate. Thứ tự hiển thị tất định theo (số edit, số target giải
+quyết, hash candidate) — chỉ là thứ tự trình bày, không phải tuyên bố "best"
+hay "safest"; số target giải quyết tính từ receipt của chính candidate
+(obligation vi phạm thành HOLDS; class target tính trọn khi collateral
+VERIFIED). Proposal từ ngoài (kể cả AI) vào cùng khung qua cùng dedup theo
+digest của request, cùng Verify, cùng thứ tự — nguồn proposal không tạo lợi
+thế thứ hạng. Record tự seal bằng SHA-256 (nhãn `sensitive` bị loại khỏi
+digest như receipt, vì record nhúng candidate text); replay chạy lại
+enumeration từ input gốc + proposals đã ghi và đòi cùng seal, lệch thuần
+timing trả TIMING_SENSITIVE. Enumeration không đổi format receipt: receipt
+nó cấp vẫn là `plenilune.repair/v1` version hiện hành và replay bằng đường
+repair replay thường.
 
 API: POST `/api/repair/verify` `{before,after,policy,patch,options?}` cap 8 MiB;
 POST `/api/repair/replay` `{before,after,evidence}` cap 16 MiB. Domain statuses HTTP200;

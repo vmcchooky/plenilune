@@ -319,7 +319,7 @@ function DeltaEvidence({ review }: { review: Review }) {
 
 // Source configurations and the domain-neutral analysis record. Source files
 // are only offered when they differ from the analyzed object block.
-function AnalysisDownloads({ review }: { review: Review }) {
+export function AnalysisDownloads({ review }: { review: Review }) {
   const { t } = useI18n();
   const analysis = review.analysis;
   if (!analysis) return null;
@@ -344,7 +344,7 @@ function AnalysisDownloads({ review }: { review: Review }) {
   );
 }
 
-function AnalysisReplay({ review }: { review: Review }) {
+export function AnalysisReplay({ review }: { review: Review }) {
   const { t } = useI18n();
   if (!review.analysis) return null;
   const replay = review.analysisReplay;

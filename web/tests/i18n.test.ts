@@ -28,8 +28,10 @@ describe('VI/EN dictionary', () => {
   });
 
   it('interpolates values without touching the raw evidence terms', () => {
-    expect(translate('vi', 'result.conditionsSummary', { holds: 2, total: 3 })).toBe('Điều kiện đạt: 2/3');
-    expect(translate('en', 'result.conditionsSummary', { holds: 2, total: 3 })).toBe('Conditions passed: 2/3');
+    expect(translate('vi', 'result.outcomeWord.VIOLATED')).toBe('không đạt');
+    expect(translate('en', 'result.outcomeWord.HOLDS')).toBe('holds');
+    expect(translate('vi', 'overview.status.equivalent')).toBe('Đổi văn bản; hành vi tương đương trong phạm vi mô hình');
+    expect(translate('en', 'overview.status.equivalent')).toBe('Text changed; behavior equivalent in modeled scope');
     expect(translate('vi', 'result.verdictRaw')).toBe('Mã kết luận');
     expect(translate('vi', 'repair.status.VERIFIED')).toBe('Đã kiểm chứng');
   });

@@ -13,6 +13,7 @@ import type { ReportInput } from '../lib/report';
 import {
   aiStatusLabel,
   collateralStatusLabel,
+  obligationStatusList,
   outcomeLabel,
   repairReasonLabel,
   repairStatusLabel,
@@ -102,10 +103,7 @@ export function ReportView({ input }: { input: ReportInput }) {
         </p>
         <p>{verdictBody(t, report.verdict, report.reason)}</p>
         <p className="field-hint">
-          {t('result.conditionsSummary', {
-            holds: report.obligations.filter((item) => item.status === 'HOLDS').length,
-            total: report.obligations.length,
-          })}
+          {obligationStatusList(t, report.obligations)}
           {' · '}
           {t('result.searchComplete')}: {report.search_complete ? t('result.yes') : t('result.no')}
           {report.witnesses_truncated ? ` · ${t('result.truncated')}` : ''}

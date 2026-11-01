@@ -5,7 +5,7 @@ import type { Review } from '../hooks/useReview';
 import { downloadText } from '../lib/download';
 import { fileStamp, prettyJson } from '../lib/format';
 import { replayLabel } from '../lib/labels';
-import { buildMarkdownReport } from '../lib/report';
+import { buildMarkdownReport, buildTicketSummary } from '../lib/report';
 import type { ReportInput } from '../lib/report';
 import { replayInstructions, reviewCopy, standaloneRepairRaw } from '../lib/reviewArtifacts';
 import { Icon } from './Icon';
@@ -56,6 +56,8 @@ export function EvidenceStep({ review }: { review: Review }) {
   };
   const markdown = buildMarkdownReport(reportInput);
   const reportName = `plenilune-report-${locale}-${stamp}.md`;
+  const ticketSummary = buildTicketSummary(reportInput);
+  const ticketName = `plenilune-ticket-${locale}.md`;
 
   const artifacts: ArtifactItem[] = [
     {
@@ -239,6 +241,9 @@ export function EvidenceStep({ review }: { review: Review }) {
           <AnalysisDownloads review={review} />
           <button type="button" className="download-item" onClick={() => downloadText('replay-instructions.md', replayInstructions(locale, Boolean(repair), comparison.comparison.tool.version, Boolean(review.analysis)), 'text/markdown;charset=utf-8')}>
             <Icon name="file" size={18} /><span><strong>{copy.instructions}</strong><small>replay-instructions.md</small></span><Icon name="download" size={16} />
+          </button>
+          <button type="button" className="download-item" onClick={() => downloadText(ticketName, ticketSummary, 'text/markdown;charset=utf-8')}>
+            <Icon name="file" size={18} /><span><strong>{t('evidence.downloadTicket')}</strong><small>{ticketName}</small></span><Icon name="download" size={16} />
           </button>
           {repair?.receipt.candidate && <button type="button" className="download-item" onClick={() => downloadText('candidate.acl', repair.receipt.candidate!, 'text/plain;charset=utf-8')}>
             <Icon name="file" size={18} /><span><strong>{copy.candidate}</strong><small>candidate.acl</small></span><Icon name="download" size={16} />

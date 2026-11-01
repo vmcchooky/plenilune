@@ -1626,6 +1626,11 @@
 .object-errors { grid-column: 1 / -1; margin: 0; padding-left: 18px; font-size: var(--text-sm); color: var(--bad); }
 .section-changes { margin: 0 0 8px; padding-left: 18px; font-size: var(--text-sm); }
 .section-changes code { font-size: var(--text-xs); }
+.object-references { display: flex; flex-direction: column; gap: 6px; }
+.object-references h3 { margin: 0; font-size: var(--text-base); color: var(--ink); }
+.reference-list { margin: 0; padding-left: 18px; font-size: var(--text-sm); }
+.reference-list code { font-size: var(--text-xs); }
+.reference-list small { color: var(--muted); }
 .object-heading { margin: 0; color: var(--muted); font-size: var(--text-sm); }
 .object-heading strong { color: var(--ink); }
 .object-detail { display: flex; flex-direction: column; gap: 12px; }

@@ -33,7 +33,8 @@ describe('translated Markdown report', () => {
     expect(markdown).toContain('# Plenilune — Báo cáo kiểm chứng thay đổi ACL');
     expect(markdown).toContain('## Kết luận');
     expect(markdown).toContain('Có thay đổi hành vi');
-    expect(markdown).toContain('Điều kiện đạt: 2/3');
+    expect(markdown).toContain('OB-1 không đạt · OB-2 đạt · OB-3 đạt');
+    expect(markdown).not.toContain('Điều kiện đạt:');
     expect(markdown).toContain('Cho phép TCP từ 192.0.2.0/24 đến 198.51.100.10/32 ở cổng đích 22.');
     expect(markdown).toContain('Đã kiểm chứng');
     expect(markdown).toContain('192.0.2.10');
@@ -58,7 +59,8 @@ describe('translated Markdown report', () => {
     expect(markdown).toContain('# Plenilune — ACL change verification report');
     expect(markdown).toContain('## Conclusion');
     expect(markdown).toContain('Behavior changes');
-    expect(markdown).toContain('Conditions passed: 2/3');
+    expect(markdown).toContain('OB-1 violated · OB-2 holds · OB-3 holds');
+    expect(markdown).not.toContain('Conditions passed:');
     expect(markdown).toContain('Permit TCP from 192.0.2.0/24');
     expect(markdown).toContain('Verified');
     expect(markdown).toContain('192.0.2.10:0 → 198.51.100.10:22');

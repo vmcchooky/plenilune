@@ -5,7 +5,7 @@ import { actionLabel, kindLabel, obligationSentence, sourceLine, sourceLines } f
 import { changedLines } from '../lib/lineDiff';
 import { downloadText } from '../lib/download';
 import { fileStamp, prettyJson, shortHash } from '../lib/format';
-import { outcomeLabel, decisionRefLabel, resultNextKey, stopReasonLabel, verdictBody, verdictTitle } from '../lib/labels';
+import { obligationStatusList, outcomeLabel, decisionRefLabel, resultNextKey, stopReasonLabel, verdictBody, verdictTitle } from '../lib/labels';
 import type { ObligationResult, Packet } from '../lib/types';
 import { collectWitnesses } from '../lib/witnesses';
 import { ChangeClasses } from './ChangeClasses';
@@ -135,7 +135,7 @@ export function ResultStep({ review }: { review: Review }) {
         <h2 id="verdict-title">{changedPacket ? t('result.behaviorHeadline', { packet: packetSummary(changedPacket.packet), before: actionLabel(t, changedPacket.before.action), after: actionLabel(t, changedPacket.after.action) }) : verdictTitle(t, report.verdict)}</h2>
         <p>{verdictBody(t, report.verdict, report.reason)}</p>
         <div className="verdict-plate__facts">
-          <span>{accepted ? t('result.conditionsSummary', { holds: review.holdsCount, total: review.totalConditions }) : t('result.noPolicy')}</span>
+          <span>{accepted ? obligationStatusList(t, report.obligations) : t('result.noPolicy')}</span>
           <span>{t('result.witnessCount', { count: witnessCount })}</span>
           <span>{t('result.searchComplete')}: {report.search_complete ? t('result.yes') : t('result.no')}</span>
         </div>

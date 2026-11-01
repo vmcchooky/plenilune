@@ -7,6 +7,7 @@ package workflow
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"sync"
 	"testing"
@@ -141,12 +142,23 @@ func TestCompareCacheEvictsFIFOAndSkipsTiming(t *testing.T) {
 		t.Fatal("evicted entry still hits")
 	}
 
-	// A timing-limited result is never stored.
+	// A timing-limited result is never stored. Force the timing stop
+	// with a workload that cannot finish inside the limit on any
+	// machine: the 512-rule cacheHeavyPair comparison needs ~500k
+	// operations (tens of milliseconds even on fast hardware) against
+	// a 2 ms wall-clock limit, so the budget's wall_clock stop lands
+	// mid-run at an enforcement point. The original version raced a
+	// 1 ns limit against the tiny pair above: on a fast machine the
+	// whole 76-operation comparison completed before the deadline was
+	// observed (Windows gate for PR #19: failed 10/10,
+	// TimingLimited=false). A pre-expired context is not a substitute:
+	// by design it returns an error, not a timing-limited result.
+	heavyBefore, heavyAfter := cacheHeavyPair()
 	timing := verify.DefaultOptions()
-	timing.Limits.Timeout = time.Nanosecond
+	timing.Limits.Timeout = 2 * time.Millisecond
 	c2 := NewCompareCache(4)
 	for i := 0; i < 2; i++ {
-		r, err := c2.Compare(ctx, []byte(cacheACLBefore), []byte(cacheACLAfter), nil, timing, cacheTool())
+		r, err := c2.Compare(ctx, []byte(heavyBefore), []byte(heavyAfter), nil, timing, cacheTool())
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -181,4 +193,30 @@ func TestCompareCacheConcurrent(t *testing.T) {
 	if _, _, entries := c.Stats(); entries != 1 {
 		t.Fatalf("entries=%d", entries)
 	}
+}
+
+// cacheHeavyPair builds a 512-rule ACL pair (one middle rule's port
+// range shifted) whose exact comparison needs ~500k operations: the
+// overlapping port ranges fragment the packet sets, so the comparison
+// takes tens of milliseconds on any target machine. It exists so the
+// timing segment of TestCompareCacheEvictsFIFOAndSkipsTiming can
+// force a mid-run wall-clock stop without racing machine speed.
+func cacheHeavyPair() (string, string) {
+	mk := func(shift int) string {
+		var b strings.Builder
+		b.WriteString("ip access-list extended HEAVY\n")
+		for i := 0; i < 512; i++ {
+			action := "permit"
+			if i%5 == 4 {
+				action = "deny"
+			}
+			lo := i * 37 % 60000
+			if i == 256 {
+				lo += shift
+			}
+			fmt.Fprintf(&b, " %d %s tcp any any range %d %d\n", (i+1)*10, action, lo, lo+997)
+		}
+		return b.String()
+	}
+	return mk(0), mk(500)
 }

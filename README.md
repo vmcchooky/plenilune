@@ -76,8 +76,10 @@ go build -o bin/plenilune.exe ./cmd/plenilune
 ```
 
 `analyze --before before.cfg --after after.cfg` (or `--request FILE|-` for
-in-memory JSON input) emits `plenilune.analysis/v1`; `analyze-replay` reproduces
-it offline from the original bytes. An independent client that only spawns the
+in-memory JSON input) emits `plenilune.analysis/v2`; `analyze-replay` reproduces
+it offline from the original bytes. Artifacts carry no raw configuration text
+outside the analyzed objects (v2 redaction); frozen `plenilune.analysis/v1`
+artifacts remain replayable from their original sources. An independent client that only spawns the
 binary and reads JSON lives in `examples/moonstorm-client/`.
 
 `scripts/demo.ps1` builds, traces, and replays the sample packet.

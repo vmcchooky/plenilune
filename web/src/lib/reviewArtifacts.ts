@@ -41,7 +41,7 @@ export function inspectReceipt(raw: string): ImportedReceipt {
   const receipt = value as Record<string, unknown>;
   const kind = receipt.schema === 'plenilune.evidence/v1' ? 'comparison'
     : receipt.schema === 'plenilune.repair/v1' ? 'repair'
-      : receipt.schema === 'plenilune.analysis/v1' ? 'analysis' : null;
+      : receipt.schema === 'plenilune.analysis/v1' || receipt.schema === 'plenilune.analysis/v2' ? 'analysis' : null;
   if (!kind || typeof receipt.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(receipt.sha256)) {
     throw new Error('RECEIPT_INVALID');
   }

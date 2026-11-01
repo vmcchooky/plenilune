@@ -111,9 +111,16 @@ type Extent struct {
 	Units     int      `json:"units"`
 }
 
+// Reference records one structural use of an object. The current (v2)
+// artifact shape carries only the line, the referencing mechanism (kind) and
+// the referenced object name; the raw source line never leaves the caller's
+// machine in an artifact. Text is the frozen v1 field, populated only when
+// reproducing a v1 artifact for replay.
 type Reference struct {
 	Line int    `json:"line"`
-	Text string `json:"text"`
+	Text string `json:"text,omitempty"`
+	Kind string `json:"kind,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 type ObjectError struct {
@@ -214,6 +221,12 @@ func sectionKind(f []string) string {
 
 func intake(data []byte) inventory { return intakeWithParser(data, prefixlist.ParserVersion) }
 func intakeWithParser(data []byte, parser string) inventory {
+	return intakeFormat(data, parser, false)
+}
+
+// intakeFormat with legacyText=true reproduces the frozen v1 reference shape
+// (raw line text) so a v1 artifact can be recomputed byte-for-byte at replay.
+func intakeFormat(data []byte, parser string, legacyText bool) inventory {
 	inv := inventory{byKey: map[string]*found{}}
 	lines := splitLines(data)
 	inv.lines = len(lines)
@@ -314,7 +327,7 @@ func intakeWithParser(data []byte, parser string) inventory {
 		}
 		obj.prefix, obj.extent.Units = &list, len(list.Entries)
 	}
-	collectReferences(lines, inv)
+	collectReferences(lines, inv, legacyText)
 	return inv
 }
 
@@ -338,10 +351,16 @@ func prefixError(err error) *ObjectError {
 
 // collectReferences records where objects are used. References are structural
 // context; Plenilune does not model interface or routing binding semantics.
-func collectReferences(lines []line, inv inventory) {
-	note := func(domain, kind, name string, l line) {
+// The current shape records the referencing mechanism and the referenced name
+// only; legacyText reproduces the v1 shape (raw line text) for replay.
+func collectReferences(lines []line, inv inventory, legacyText bool) {
+	note := func(domain, kind, name, mechanism string, l line) {
 		if obj, ok := inv.byKey[key(domain, kind, name)]; ok && len(obj.refs) < maxReferences && (len(obj.refs) == 0 || obj.refs[len(obj.refs)-1].Line != l.number) {
-			obj.refs = append(obj.refs, Reference{Line: l.number, Text: strings.TrimSpace(l.text)})
+			ref := Reference{Line: l.number, Kind: mechanism, Name: name}
+			if legacyText {
+				ref = Reference{Line: l.number, Text: strings.TrimSpace(l.text)}
+			}
+			obj.refs = append(obj.refs, ref)
 		}
 	}
 	for _, l := range lines {
@@ -356,20 +375,20 @@ func collectReferences(lines []line, inv inventory) {
 				if lower(f, 0) == "ipv6" {
 					kind = "ipv6"
 				}
-				note(DomainACL, kind, f[i+1], l)
-				note(DomainACL, "numbered", f[i+1], l)
+				note(DomainACL, kind, f[i+1], t, l)
+				note(DomainACL, "numbered", f[i+1], t, l)
 			}
 			if t == "prefix-list" && i+1 < len(f) {
 				if i >= 2 && lower(f, i-2) == "match" {
 					for _, name := range f[i+1:] {
-						note(DomainPrefixList, "ipv4", name, l)
+						note(DomainPrefixList, "ipv4", name, "prefix-list", l)
 					}
 				} else {
-					note(DomainPrefixList, "ipv4", f[i+1], l)
+					note(DomainPrefixList, "ipv4", f[i+1], "prefix-list", l)
 				}
 			}
 			if t == "prefix" && i >= 1 && lower(f, i-1) == "distribute-list" && i+1 < len(f) {
-				note(DomainPrefixList, "ipv4", f[i+1], l)
+				note(DomainPrefixList, "ipv4", f[i+1], "distribute-list", l)
 			}
 		}
 	}

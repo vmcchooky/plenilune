@@ -65,7 +65,7 @@ func TestRefactorChangesTextButNotBehavior(t *testing.T) {
 	if len(r.UnanalyzedChanges) != 0 || r.Summary.Equivalent != 2 {
 		t.Fatalf("summary %+v changes %+v", r.Summary, r.UnanalyzedChanges)
 	}
-	if len(acl.References["before"]) != 1 || acl.References["before"][0].Text != "ip access-group MGMT in" || len(pl.References["after"]) != 1 {
+	if len(acl.References["before"]) != 1 || acl.References["before"][0].Kind != "access-group" || acl.References["before"][0].Name != "MGMT" || acl.References["before"][0].Text != "" || len(pl.References["after"]) != 1 || pl.References["after"][0].Kind != "prefix-list" || pl.References["after"][0].Name != "CUSTOMER" {
 		t.Fatalf("references %+v %+v", acl.References, pl.References)
 	}
 	// Engine input is the exact block, mapped back to source lines.
@@ -157,9 +157,12 @@ func TestUnsupportedAndUnanalyzedAreExplicit(t *testing.T) {
 	}
 	got := map[string]string{}
 	for _, c := range r.UnanalyzedChanges {
-		got[c.Header] = c.Change
+		if c.Header != "" {
+			t.Fatalf("v2 section change carries raw header text: %+v", c)
+		}
+		got[c.HeaderKind] = c.Change
 	}
-	if got["object-group network WEB"] != "added" || got["interface GigabitEthernet0/1"] != "modified" || len(got) != 2 {
+	if got["object-group network"] != "added" || got["interface GigabitEthernet0/1"] != "modified" || len(got) != 2 {
 		t.Fatalf("unanalyzed %+v", r.UnanalyzedChanges)
 	}
 	limits := strings.Join(r.Limitations, ",")

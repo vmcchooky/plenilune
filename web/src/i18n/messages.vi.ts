@@ -703,7 +703,7 @@ const vi = {
   'object.notAnalyzed': "Đối tượng có thay đổi văn bản nhưng chưa được phân tích trong lần chạy này.",
   'object.structural': "Chỉ có ở một phiên bản; không có so sánh hành vi.",
   'result.objectHeader': "{domain} {name}",
-  'evidence.analysis': "Hồ sơ phân tích (plenilune.analysis/v1)",
+  'evidence.analysis': "Hồ sơ phân tích (plenilune.analysis/v2)",
   'evidence.sourceBefore': "Cấu hình trước nguyên byte",
   'evidence.sourceAfter': "Cấu hình sau nguyên byte",
   'evidence.replayAnalysis': "Phát lại hồ sơ phân tích",

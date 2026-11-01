@@ -47,7 +47,7 @@ function prefixAnalysis(): Analysis {
     },
   };
   return {
-    schema: 'plenilune.analysis/v1', tool: { version: '0.2.0-dev', commit: 'unversioned' }, versions: {},
+    schema: 'plenilune.analysis/v2', tool: { version: '0.2.0-dev', commit: 'unversioned' }, versions: {},
     request: { select: [], policies: [], options: {} },
     sources: { before: { sha256: '1'.repeat(64), bytes: 10, lines: 2 }, after: { sha256: '2'.repeat(64), bytes: 10, lines: 2 } },
     objects: [object], coverage: {

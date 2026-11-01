@@ -192,6 +192,7 @@ export interface RepairResult {
   options: CompareOptions;
   candidate?: string;
   candidate_sha256?: string;
+  sensitive?: boolean;
   conditions: ObligationSet;
   obligations_digest?: string;
   comparison?: Comparison | null;
@@ -449,7 +450,7 @@ export interface AnalysisObject {
   reason?: string;
   before?: Extent;
   after?: Extent;
-  references: { before: { line: number; text: string }[]; after: { line: number; text: string }[] };
+  references: { before: { line: number; kind: string; name: string }[]; after: { line: number; kind: string; name: string }[] };
   errors?: ObjectError[];
   acl?: ACLAnalysis;
   prefix_list?: { parser: string; engine: string; report: PrefixReport };
@@ -468,7 +469,9 @@ export interface AnalysisCoverage {
 
 export interface SectionChange {
   kind: string;
-  header: string;
+  header_kind: string;
+  lines: number;
+  section_sha256: string;
   change: 'added' | 'removed' | 'modified';
   before_line?: number;
   after_line?: number;
@@ -488,7 +491,7 @@ export interface AnalysisSummary {
 }
 
 export interface Analysis {
-  schema: 'plenilune.analysis/v1';
+  schema: 'plenilune.analysis/v1' | 'plenilune.analysis/v2';
   tool: { version: string; commit: string };
   versions: Record<string, string>;
   request: { select: { domain: string; name: string }[]; policies: { domain: string; name: string; policy_sha256: string }[]; options: unknown };

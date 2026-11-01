@@ -13,6 +13,7 @@ import {
 import { readReviewFile } from '../lib/reviewArtifacts';
 import type { ObligationStatus, Verdict } from '../lib/types';
 import { collectWitnesses } from '../lib/witnesses';
+import { ChatPanel } from './ChatPanel';
 import { ConditionEditorList, ScopeEditor, draftCanAccept } from './ConditionEditor';
 import { ConfigOverview } from './ConfigOverview';
 import { Icon } from './Icon';
@@ -342,6 +343,7 @@ export function QuickScreen({ review }: { review: Review }) {
         </section>
       )}
       <QuickEvidence review={review} />
+      <ChatPanel comparison={review.comparison?.comparison ?? null} analysis={review.analysis?.result ?? null} />
     </div>
   );
 }

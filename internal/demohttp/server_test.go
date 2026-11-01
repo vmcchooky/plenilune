@@ -336,7 +336,7 @@ func TestHealthPublishesRuntimeAndFixtureBoundaries(t *testing.T) {
 	want := map[string]string{
 		"parse": "available", "trace": "available", "obligations": "available",
 		"comparison": "available", "repair": "available", "ai": "available_opt_in",
-		"analysis": "available",
+		"analysis": "available", "chat": "available",
 	}
 	if !reflect.DeepEqual(health.Runtime, want) {
 		t.Fatalf("runtime = %+v, want %+v", health.Runtime, want)

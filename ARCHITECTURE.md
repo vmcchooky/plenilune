@@ -45,6 +45,7 @@ flowchart LR
 | `internal/workflow` | Parse pair, compare/seal, semantic replay và cache comparison theo nội dung | Provider, file I/O |
 | `internal/patch`, `internal/repair` | Pinned edits, frozen policy, collateral và repair replay | Device/file apply, provider |
 | `internal/audit` | Sealed single-ACL audit records (`plenilune.audit/v1`) và audit replay | Sửa cấu hình, auto-fix, verdict so sánh |
+| `internal/chat` | Thẩm vấn tất định trên artifact đã seal (`plenilune.chat/v1`) + diễn đạt AI opt-in | Chạy analysis, đổi verdict, accept obligation, ghi artifact |
 | `internal/engineadapter`, `internal/orchestrate` | Agent ports, ownership, policy authority và session facade | Tự tạo verdict |
 | `internal/jsonio` | Bounded strict JSON, reject duplicate/unknown fields | Quyết định domain semantics |
 | `internal/packetset`, `internal/verify` | Exact algebra, witness, obligation checking | Provider, UI, SSH |

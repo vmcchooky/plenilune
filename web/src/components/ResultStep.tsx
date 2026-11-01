@@ -9,6 +9,7 @@ import { obligationStatusList, outcomeLabel, decisionRefLabel, resultNextKey, st
 import type { ObligationResult, Packet } from '../lib/types';
 import { collectWitnesses } from '../lib/witnesses';
 import { ChangeClasses } from './ChangeClasses';
+import { ChatPanel } from './ChatPanel';
 import { ConfigOverview } from './ConfigOverview';
 import { PartialNotice } from './PartialNotice';
 import { Icon } from './Icon';
@@ -48,6 +49,7 @@ function AnalysisOnly({ review }: { review: Review }) {
       </StepHeader>
       <ConfigOverview review={review} />
       {object && <ObjectDetail object={object} />}
+      <ChatPanel comparison={null} analysis={review.analysis?.result ?? null} />
       <ActionBar note={object ? t('result.next.object') : t('overview.pick')}>
         <button type="button" className="button button--secondary" onClick={() => review.navigate('source')}>{t('accept.back')}</button>
         <button type="button" className="button button--primary" onClick={() => review.navigate('evidence')}>
@@ -274,6 +276,8 @@ export function ResultStep({ review }: { review: Review }) {
         <p className="field-hint">{t('common.rawDisplay')}</p>
         <pre className="raw-block" tabIndex={0} role="region" aria-label={t('result.rawJson')}>{prettyJson(snapshot.raw)}</pre>
       </TechnicalDetails>
+
+      <ChatPanel comparison={snapshot.comparison} analysis={review.analysis?.result ?? null} />
 
       <ActionBar note={note}>
         <button type="button" className="button button--secondary" onClick={() => review.navigate('conditions')}>

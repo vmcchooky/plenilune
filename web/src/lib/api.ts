@@ -1,5 +1,6 @@
 import type {
   Analysis,
+  ChatAnswer,
   Comparison,
   CompareOptions,
   Health,
@@ -146,5 +147,17 @@ export const runtime = {
   },
   repairReplay(before: string, after: string, evidence: RepairResult, signal?: AbortSignal) {
     return request<ReplayResult>('/api/repair/replay', post({ before, after, evidence }, signal));
+  },
+  // P1-10: interrogation over a completed artifact. The request carries
+  // only the sealed artifacts and the question — no configuration text,
+  // so this client method cannot start an analysis or a repair.
+  chatAsk(comparison: Comparison | null, analysis: Analysis | null, question: string, locale: string, ai: boolean, signal?: AbortSignal) {
+    return request<ChatAnswer>('/api/chat/ask', post({
+      ...(comparison ? { comparison } : {}),
+      ...(analysis ? { analysis } : {}),
+      question,
+      locale,
+      ai,
+    }, signal));
   },
 };

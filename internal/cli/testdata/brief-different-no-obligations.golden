@@ -1,0 +1,5 @@
+verdict: DIFFERENT
+object: acl DEMO DIFFERENT witnesses=1
+obligations: none evaluated
+limitations: scope=ipv4-unfragmented-or-initial-with-complete-l4/v1
+artifact: ARTIFACT_PATH

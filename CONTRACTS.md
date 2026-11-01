@@ -15,6 +15,7 @@ Go DTO hiện tại ở `internal/ciscoacl`, `internal/intent`, `internal/eviden
 | `verify --config FILE --evidence FILE` | Original bytes + trace | `TRACE_REPLAYED`, digest, scope |
 | `obligations --file FILE` | Condition set | `VALIDATED_NOT_EVALUATED`, canonical conditions, digest |
 | `diff --before FILE --after FILE [--obligations FILE]` | Hai ACL + optional conditions | Full comparison evidence; exit 0/1/2 |
+| `diff --brief --out FILE --before FILE --after FILE [--obligations FILE]` | Như `diff` + path artifact do caller chọn | Evidence JSON ghi vào FILE (bytes y hệt output mặc định); stdout là tóm tắt cố định 5 dòng; exit 0/1/2 theo verdict, 3 khi lỗi |
 | `replay --before FILE --after FILE --evidence FILE` | Original pair + full evidence | COMPARISON_REPLAYED hoặc TIMING_SENSITIVE |
 | `repair --before FILE --after FILE --policy FILE --patch FILE` | Frozen policy + pinned patch | Repair receipt; 0 VERIFIED / 1 REJECTED / 2 UNVERIFIED/error |
 | `repair-replay --before FILE --after FILE --evidence FILE` | Original pair + repair receipt | REPAIR_REPLAYED hoặc TIMING_SENSITIVE |
@@ -92,6 +93,14 @@ obligations, budget và options. Mỗi witness có ID, packet, before/after deci
 Global verdict và từng obligation có outcome riêng.
 Obligation VIOLATED có witness riêng, không buộc phải trỏ global difference.
 Lệnh `diff`: 0=EQUIVALENT, 1=DIFFERENT, 2=INCONCLUSIVE/error; unsupported input trả typed error exit 2.
+Chế độ `diff --brief` (bắt buộc kèm `--out FILE`; `--out` không có `--brief` bị từ chối): artifact
+không đổi — cùng bytes như output JSON mặc định — nhưng ghi vào FILE do caller đặt tên, còn stdout
+chỉ gồm 5 dòng ổn định để grep: `verdict:` (INCONCLUSIVE luôn kèm `reason=` stop reason),
+`object:` (status của ACL đã so + số witness khi DIFFERENT), `obligations:` (liệt kê từng
+obligation + status; không có conditions thì ghi `none evaluated`, không ngụ ý đã kiểm),
+`limitations: scope=...`, `artifact: <path>`. Mã thoát brief: 0=EQUIVALENT, 1=DIFFERENT,
+2=INCONCLUSIVE, 3=mọi lỗi usage/parse/IO; lỗi brief là đúng một dòng `error: CODE message`
+ở stderr, không phải JSON.
 Obligations độc lập: diff DIFFERENT nhưng mọi obligation HOLDS vẫn exit 1.
 Tool commit trong evidence là placeholder `unversioned` để replay và kiểm build identity ổn định; không claim immutable source provenance. Binary build từ Git checkout được Go đóng dấu `vcs.revision`/`vcs.modified` (mặc định `-buildvcs=auto`); `plenilune version` in ra commit/modified. Đó là provenance của binary, không phải của receipt.
 Một witness gồm packet và decision/source refs cho mỗi phía cần kiểm chứng;

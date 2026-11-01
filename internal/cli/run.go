@@ -36,6 +36,10 @@ Commands:
   obligations --file FILE            Validate/normalize conditions and hash them
   diff --before FILE --after FILE [--obligations FILE]
                                      Exact comparison and full evidence JSON
+  diff --brief --out FILE --before FILE --after FILE [--obligations FILE]
+                                     Write the full evidence JSON to FILE and print
+                                     a five-line summary: verdict, object status,
+                                     obligations, limitations, artifact path
   replay --before FILE --after FILE --evidence FILE
                                      Replay full comparison evidence offline
   repair --before FILE --after FILE --policy FILE --patch FILE
@@ -49,6 +53,8 @@ Only assist --ai on calls Meta with ACL excerpts/intent; all other commands are 
 Analyze exits 0 when an artifact is produced (any object status); analyze-replay
 exits 0 ANALYSIS_REPLAYED, 2 TIMING_SENSITIVE/error. Errors are JSON on stderr.
 Diff exits: 0 EQUIVALENT, 1 DIFFERENT, 2 INCONCLUSIVE/error.
+Diff --brief exits: 0 EQUIVALENT, 1 DIFFERENT, 2 INCONCLUSIVE, 3 error;
+brief errors are a single line on stderr, and --out is required with --brief.
 Repair exits: 0 VERIFIED, 1 REJECTED, 2 UNVERIFIED/error. Other commands: 0/2.
 Use --help after any command for its flags.
 `

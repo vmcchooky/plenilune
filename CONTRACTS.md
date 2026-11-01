@@ -20,6 +20,8 @@ Go DTO hiện tại ở `internal/ciscoacl`, `internal/intent`, `internal/eviden
 | `repair --before FILE --after FILE --policy FILE --patch FILE` | Frozen policy + pinned patch | Repair receipt; 0 VERIFIED / 1 REJECTED / 2 UNVERIFIED/error |
 | `repair-replay --before FILE --after FILE --evidence FILE` | Original pair + repair receipt | REPAIR_REPLAYED hoặc TIMING_SENSITIVE |
 | `repair-enumerate --before FILE --after FILE [--policy FILE] [--proposals FILE]` | Original pair + optional frozen policy + optional proposals | Enumeration record đã seal (xem §6); 0 có candidate VERIFIED / 1 không có / 2 incomplete/error |
+| `audit --config FILE [--max-operations N] [--max-boxes N] [--timeout D]` | Một ACL | Audit record đã seal (xem §9); 0 complete / 2 incomplete/error; budget flags chỉ được hạ thấp default |
+| `audit-replay --config FILE --evidence FILE` | ACL + audit record | AUDIT_REPLAYED hoặc TIMING_SENSITIVE; 0 replayed / 2 còn lại |
 | `assist --before FILE --after FILE --intent TEXT --ai off\|on [--policy FILE]` | Intent + optional frozen policy | Session sidecar + deterministic receipts; AI defaults off |
 
 Exit 0: operation thành công, kể cả packet bị deny. Exit 2: usage/input,
@@ -395,3 +397,70 @@ order, producing the same boxes/verdicts as v0.1 with its own accounting.
 `acl-repair/v0.3`/`acl-repair/v0.2`/`acl-repair/v0.1`
 remain supported for replay with their original accounting; SealComparison
 preserves a caller-supplied supported version.
+
+## 9. Single-ACL audit — implemented (P1-4)
+
+Exact, report-only audit of ONE named extended IPv4 ACL (the comparison
+engine's modeled scope). The audit never modifies the configuration and
+offers no removal or auto-fix path. The record is
+`plenilune.audit/v1` (`audit_version` `acl-audit/v1`): it binds the
+configuration digest, ACL name/kind, comparison engine version and modeled
+scope, embeds the full audit report, and seals with `sha256` over the
+compact JSON of everything except `sha256`. The record carries no raw
+configuration text, line text or remarks — only the digest.
+
+Definitions (rule `i` matches region `R_i`; its effective region is
+`E_i = R_i \ union(R_1..R_{i-1})`; decisions are first-match with an
+implicit final deny):
+
+- `unreachable` (finding, exact): `E_i` is empty — every packet the rule
+  matches is decided by an earlier rule. The witness is a packet from
+  `R_i` that the linear evaluator decides at an earlier rule (absent
+  only when `R_i` itself is empty).
+- `redundant` (finding, exact): `E_i` is nonempty, but replaying
+  first-match over `E_i` with only the later rules — the exact
+  post-removal semantics — decides every packet with rule `i`'s own
+  action. Evidence is regional, not a packet: `covered_by` lists the
+  later same-action rules deciding part of `E_i`, and `implicit_deny`
+  records that the remainder falls through to the implicit final deny
+  (possible only for a deny rule — an explicit final
+  `deny ip any any` whose effective region survives is therefore
+  redundant in this model, because removal leaves the implicit deny).
+  For the covered part this implies the classic coverage form
+  `E_i ⊆ union(later same-action matches)`.
+- `generalization` / `correlation` (relations, exact relations,
+  heuristic warnings): for a different-action pair (earlier `i`, later
+  `j`) — generalization when `R_i ⊊ R_j` (an exception before a broader
+  rule of the other action), correlation when the matches partially
+  overlap both ways. Equal matches are not relations (the later rule is
+  already an unreachable finding); `R_j ⊆ R_i` is shadowing territory,
+  covered by findings; same-action pairs are never relations. The
+  witness packet lies in both matches — inside `E_i` when part of it
+  reaches `R_j` — with the decision the evaluator actually gives. The
+  two layers are never mixed: relations carry no claim that either
+  rule is wrong.
+
+A rule carries at most one finding; unreachable takes precedence over
+redundant. Findings are ordered unreachable-first, then redundant, each
+in ascending rule order; relations are ordered by (earlier, later).
+
+The whole audit runs under one comparison budget (operations/boxes/
+wall-clock). No effective region is materialized: passes stream carve
+pieces of `E_i` (the effective region of a broad late rule fragments
+beyond the box budget even for small ACLs), deciding each piece as it
+is emitted. Budget exhaustion ends the audit with `complete=false`,
+the budget stop `reason`, and the `stage`
+(`effective|redundancy|relations`) plus rule cursors where the search
+stopped; findings decided before the stop stay (each is exact on its
+own), everything from the stop onward is unexamined — never a clean
+bill of health. `relations_complete` is set only when the relation
+pass finishes. Box counts in findings describe the streaming carve
+decomposition; like all box counts in this engine they are
+representation-dependent, not semantic quantities.
+
+Replay (`audit-replay`, or `audit.Replay`) re-derives the audit from
+the same configuration: `AUDIT_REPLAYED` when the re-derived record
+hash matches, `TIMING_SENSITIVE` when only budget accounting differs
+(the findings must still agree), otherwise an error. CLI `audit`
+exits 0 when the audit completes and 2 when it is incomplete or fails;
+`audit-replay` exits 0 on `AUDIT_REPLAYED`, 2 otherwise.

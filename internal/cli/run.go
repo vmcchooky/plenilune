@@ -53,6 +53,13 @@ Commands:
                                      Optional proposals FILE (JSON array of patch
                                      requests, e.g. AI proposals) folds into the
                                      same deterministic order
+  audit --config FILE                Exact audit of one ACL: unreachable and
+                                     redundant rules (exact findings) plus
+                                     generalization/correlation relations
+                                     (heuristic layer), as a sealed record;
+                                     report-only, never edits the config
+  audit-replay --config FILE --evidence FILE
+                                     Recompute an audit record offline
   assist --before FILE --after FILE [--policy FILE] --intent TEXT --ai off|on
                                      Real engine tool loop; AI defaults off
 
@@ -64,7 +71,9 @@ Diff --brief exits: 0 EQUIVALENT, 1 DIFFERENT, 2 INCONCLUSIVE, 3 error;
 brief errors are a single line on stderr, and --out is required with --brief.
 Repair exits: 0 VERIFIED, 1 REJECTED, 2 UNVERIFIED/error.
 Repair-enumerate exits: 0 complete with a VERIFIED candidate, 1 complete
-with none, 2 incomplete/error. Other commands: 0/2.
+with none, 2 incomplete/error. Audit exits: 0 complete, 2 incomplete/error;
+audit-replay exits 0 AUDIT_REPLAYED, 2 TIMING_SENSITIVE/error.
+Other commands: 0/2.
 Use --help after any command for its flags.
 `
 
@@ -90,6 +99,12 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if cmd == "repair-enumerate" {
 		return runRepairEnumerate(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "audit" {
+		return runAudit(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "audit-replay" {
+		return runAuditReplay(ctx, args[1:], stdout, stderr)
 	}
 	fs := flag.NewFlagSet(cmd, flag.ContinueOnError)
 	fs.SetOutput(io.Discard)

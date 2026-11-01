@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"plenilune/internal/ciscoacl"
+	"plenilune/internal/errtax"
 	"plenilune/internal/evidence"
 	"plenilune/internal/intent"
 	"plenilune/internal/jsonio"
@@ -25,10 +26,14 @@ Commands:
   analyze --before FILE --after FILE [--select domain:name,...]
   analyze --request FILE|-          Inventory two configuration versions, compare
                                      supported objects (acl, prefix-list) and emit
-                                     plenilune.analysis/v2; - reads stdin
+                                     plenilune.analysis/v3; - reads stdin
   analyze-replay --before FILE --after FILE --evidence FILE
   analyze-replay --request FILE|-   Recompute an analysis artifact offline
   version                            Print tool, build and parser versions
+  capabilities [--json]              Print the capabilities document
+                                     (plenilune.capabilities/v1): supported schemas,
+                                     domains, limits, options, features, error codes.
+                                     Callers check compatibility BEFORE submitting work
   parse --config FILE                Parse one named extended ACL-only file
   trace --config FILE --packet FILE  Evaluate one IPv4 packet; emit trace JSON
   verify --config FILE --evidence FILE
@@ -53,6 +58,33 @@ Commands:
                                      Optional proposals FILE (JSON array of patch
                                      requests, e.g. AI proposals) folds into the
                                      same deterministic order
+  bundle-export --out DIR --before FILE --after FILE --comparison FILE [--repair FILE] [--report FILE] [--instructions FILE]
+                                     Export one review case as a bundle directory:
+                                     the case files under canonical names plus a
+                                     plenilune.bundle/v1 manifest (SHA-256 per
+                                     file). The manifest is an integrity index;
+                                     the receipts inside the files stay the proof
+  bundle-replay --dir DIR            Verify a bundle directory against its
+                                     manifest, then replay the comparison/analysis
+                                     and repair artifacts inside; exits 0 when
+                                     everything replays, 2 on a bundle integrity
+                                     failure or a timing-sensitive replay
+  sign-keygen --out FILE             Generate an Ed25519 signing key: the
+                                     private key is written to FILE (0600,
+                                     never overwritten); only the fingerprint
+                                     and public key are printed
+  sign --key FILE --evidence FILE [--out FILE]
+                                     Detached signature (plenilune.signature/v1)
+                                     binding BOTH digests of a sealed evidence
+                                     (v2) or analysis (v3) artifact:
+                                     content_sha256 and the artifact sha256
+  verify-signature --evidence FILE --signature FILE [--fingerprint HEX] [--pubkey FILE]
+                                     Verify a detached signature: the artifact
+                                     digests are recomputed from the payload,
+                                     never trusted from the envelope; exits 0
+                                     SIGNATURE_VALID. A signature attests key
+                                     possession only — it never changes a
+                                     verdict or a replay outcome
   audit --config FILE                Exact audit of one ACL: unreachable and
                                      redundant rules (exact findings) plus
                                      generalization/correlation relations
@@ -99,6 +131,24 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if cmd == "repair-enumerate" {
 		return runRepairEnumerate(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "bundle-export" {
+		return runBundleExport(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "bundle-replay" {
+		return runBundleReplay(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "capabilities" {
+		return runCapabilities(args[1:], stdout, stderr)
+	}
+	if cmd == "sign-keygen" {
+		return runSignKeygen(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "sign" {
+		return runSign(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "verify-signature" {
+		return runVerifySignature(ctx, args[1:], stdout, stderr)
 	}
 	if cmd == "audit" {
 		return runAudit(ctx, args[1:], stdout, stderr)
@@ -278,6 +328,14 @@ func output(out, stderr io.Writer, value any) int {
 }
 
 func outputError(stderr io.Writer, value any) int {
+	// Typed domain errors carrying a published code are emitted as
+	// the shared taxonomy envelope (code/stage/message/retryable plus
+	// line/side when known); anything else keeps its own shape.
+	if err, ok := value.(error); ok {
+		if env, adapted := errtax.FromError(err); adapted {
+			value = env
+		}
+	}
 	if err := json.NewEncoder(stderr).Encode(value); err != nil {
 		return 2
 	}
@@ -285,10 +343,7 @@ func outputError(stderr io.Writer, value any) int {
 }
 
 func fail(stderr io.Writer, code, message string) int {
-	return outputError(stderr, struct {
-		Code    string `json:"code"`
-		Message string `json:"message"`
-	}{code, message})
+	return outputError(stderr, errtax.For(code, message))
 }
 
 func buildVersion() any {

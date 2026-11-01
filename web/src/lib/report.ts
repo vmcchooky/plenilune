@@ -15,6 +15,7 @@ import {
 } from './conditions';
 import type { Translate } from './conditions';
 import { formatTimestamp } from './format';
+import { partialReportLines } from './partial';
 import {
   aiStatusLabel,
   collateralStatusLabel,
@@ -105,6 +106,7 @@ export function buildMarkdownReport(input: ReportInput): string {
   push('');
   push(`- ${obligationStatusList(t, report.obligations)}`);
   push(`- ${t('result.searchComplete')}: ${report.search_complete ? t('result.yes') : t('result.no')}`);
+  if (report.partial) for (const line of partialReportLines(t, report.partial)) push(line);
   if (report.witnesses_truncated) push(`- ${t('result.truncated')}`);
   push('');
 
@@ -271,6 +273,7 @@ export function buildTicketSummary(input: ReportInput): string {
   push('');
   push(`- ${obligationStatusList(t, report.obligations)}`);
   push(`- ${t('result.searchComplete')}: ${report.search_complete ? t('result.yes') : t('result.no')}`);
+  if (report.partial) for (const line of partialReportLines(t, report.partial)) push(line);
   if (report.witnesses_truncated) push(`- ${t('result.truncated')}`);
   push('');
 

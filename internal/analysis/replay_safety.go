@@ -17,22 +17,19 @@ import (
 
 func supportedVersions(v Versions) bool {
 	current := currentVersions()
-	if v == current {
-		return true
+	if v.Intake != current.Intake || v.ACLParser != current.ACLParser {
+		return false
 	}
-	// Artifacts sealed under the previous ACL engine replay with that
+	// Artifacts sealed under a previous ACL engine replay with that
 	// engine's accounting (reviewObject dispatches on Versions.ACLEngine).
-	legacyACL := current
-	legacyACL.ACLEngine = verify.IndexedEngineVersion
-	if v == legacyACL {
-		return true
+	switch v.ACLEngine {
+	case verify.EngineVersion, verify.ResidualEngineVersion, verify.IndexedEngineVersion:
+	default:
+		return false
 	}
-	current.PrefixListParser, current.PrefixListEngine = prefixlist.LegacyParserVersion, prefixlist.LegacyEngineVersion
-	if v == current {
-		return true
-	}
-	legacyACL.PrefixListParser, legacyACL.PrefixListEngine = prefixlist.LegacyParserVersion, prefixlist.LegacyEngineVersion
-	return v == legacyACL
+	prefixCurrent := v.PrefixListParser == current.PrefixListParser && v.PrefixListEngine == current.PrefixListEngine
+	prefixLegacy := v.PrefixListParser == prefixlist.LegacyParserVersion && v.PrefixListEngine == prefixlist.LegacyEngineVersion
+	return prefixCurrent || prefixLegacy
 }
 
 func mismatch() error {
@@ -136,6 +133,8 @@ func clearComparisonTiming(a *ACLAnalysis) {
 	a.SearchComplete, a.Truncated = false, false
 	a.Witnesses = nil
 	a.Budget = packetset.Stats{}
+	// How much a timing-stopped search had decided is timing-dependent.
+	a.Partial = nil
 }
 func clearChangesTiming(r *verify.ChangeReport) {
 	r.Complete, r.ClassesTruncated = false, false
@@ -143,6 +142,7 @@ func clearChangesTiming(r *verify.ChangeReport) {
 	r.Classes = nil
 	r.TotalClasses = 0
 	r.Budget = packetset.Stats{}
+	r.Partial = nil
 }
 
 func sourceACL(source []byte, e *Extent) (ciscoacl.ACL, error) {
@@ -201,8 +201,38 @@ func validateACLPointEvidence(o Object, r Result, b, a ciscoacl.ACL) error {
 		if len(c.Classes) != min(c.TotalClasses, c.Options.MaxClasses) {
 			return mismatch()
 		}
-	} else if c.Reason == "" || len(c.Classes) != 0 || c.TotalClasses != 0 || c.ClassesTruncated {
-		return mismatch()
+		if c.Partial != nil {
+			return mismatch()
+		}
+	} else if c.Partial == nil {
+		// Engines before v0.4 withhold everything on a budget stop.
+		if c.Reason == "" || len(c.Classes) != 0 || c.TotalClasses != 0 || c.ClassesTruncated {
+			return mismatch()
+		}
+	} else {
+		// A v0.4 partial explanation: every emitted class must be one of
+		// the partial's decided pairs with the same fragment count, so a
+		// class the search never decided cannot be smuggled in. (The
+		// class witnesses themselves are re-evaluated below.)
+		if c.Reason == "" || c.ClassesTruncated || len(c.Classes) > c.Options.MaxClasses {
+			return mismatch()
+		}
+		decided := map[[2]int]int{}
+		for _, pair := range c.Partial.DecidedPairs {
+			decided[[2]int{pair.Before, pair.After}] = pair.Pieces
+		}
+		for _, cl := range c.Classes {
+			bo, ao := -1, -1
+			if cl.Before.Ordinal != nil {
+				bo = *cl.Before.Ordinal
+			}
+			if cl.After.Ordinal != nil {
+				ao = *cl.After.Ordinal
+			}
+			if pieces, ok := decided[[2]int{bo, ao}]; !ok || pieces != cl.Pieces {
+				return mismatch()
+			}
+		}
 	}
 	for _, cl := range c.Classes {
 		if cl.Pieces < 1 || len(cl.Examples) != min(cl.Pieces, 3) || cl.ExamplesTruncated != (cl.Pieces > len(cl.Examples)) || !validWitness(b, a, cl.Witness, "change") || !matchesRef(cl.Before, cl.Witness.Before) || !matchesRef(cl.After, cl.Witness.After) {

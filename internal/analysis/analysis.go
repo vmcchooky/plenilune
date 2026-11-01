@@ -150,6 +150,11 @@ type ACLAnalysis struct {
 	Budget         packetset.Stats     `json:"budget"`
 	Changes        verify.ChangeReport `json:"changes"`
 	PolicySHA256   string              `json:"policy_sha256,omitempty"`
+	// Partial is present only when the comparison's budget stopped the
+	// search (engine v0.4+): it separates the rule pairs already decided
+	// from the undecided remainder. The changes report carries its own
+	// partial for the explanation stage.
+	Partial *verify.PartialResult `json:"partial,omitempty"`
 }
 
 type PrefixListAnalysis struct {
@@ -476,7 +481,7 @@ func reviewObject(ctx context.Context, b, a *found, wanted bool, analyzed *int, 
 			}
 			return Object{}, invalid("ANALYSIS_FAILED", "ACL change explanation failed")
 		}
-		obj.ACL = &ACLAnalysis{Engine: versions.ACLEngine, Verdict: report.Verdict, SearchComplete: report.SearchComplete, Reason: report.Reason, Witnesses: report.Witnesses, Truncated: report.WitnessesTruncated, Budget: report.Budget, Changes: changes}
+		obj.ACL = &ACLAnalysis{Engine: versions.ACLEngine, Verdict: report.Verdict, SearchComplete: report.SearchComplete, Reason: report.Reason, Witnesses: report.Witnesses, Truncated: report.WitnessesTruncated, Budget: report.Budget, Changes: changes, Partial: report.Partial}
 		if scoped {
 			obj.ACL.PolicySHA256 = p.PolicySHA256
 		}

@@ -149,6 +149,59 @@ evaluator tuyến tính kiểm lại, ví dụ vùng rời rạc (cap), và scop
 khi caller cung cấp policy đã accept; ngoài phạm vi có witness riêng kiểm bằng
 predicate. Budget cạn → không công bố class; không trình bày giải thích một phần.
 
+## Engine v0.4: partial INCONCLUSIVE (01/11/2026)
+
+v0.4 giữ nguyên phép tính của v0.3 và chỉ thay đổi điều xảy ra khi budget
+dừng search (P1-2). Mọi ca hoàn tất cho verdict, change class, trạng thái
+obligation và accounting giống hệt v0.3 (`TestP12DifferentialV04AgainstV03`:
+600 ca seed cố định, so sánh toàn bộ report). Câu ở đoạn trên — budget cạn
+thì không công bố class, không trình bày giải thích một phần — vẫn đúng
+nguyên văn cho v0.3 trở về trước; v0.4 thay nó bằng mô hình sau.
+
+Khi search bị dừng, report mang `partial`: stage đã dừng (`prefix`,
+`permit_before`, `permit_after`, `decide_lost`, `decide_gained`,
+`witnesses`, `scope_index`, `classes`) và cursor rule đang xử lý, đặt cạnh
+`budget.stop_reason` có sẵn — tức accounting theo từng chiều budget: dừng ở
+chiều nào (operations/boxes/time) và dừng ở đâu. Phần đã chứng minh gồm
+`prefix_pairs` (các cặp rule đầu giống hệt nhau về ngữ nghĩa — chứng minh
+từng cặp, không cần box algebra) và `decided_pairs` (cặp rule đã quyết định
+khác nhau, kèm số mảnh). Việc cứu dữ liệu (salvage) chạy theo từng work box
+của vòng decide: một work box hoặc được phân loại trọn vẹn, hoặc nằm hẳn ở
+phần chưa quyết định — không có trạng thái nửa vời. Witness của phần đã
+chứng minh được vật chất hóa từ đúng các mảnh đó, sắp xếp theo box và được
+evaluator tuyến tính kiểm lại như witness thường; salvage không tốn thêm
+tick budget nào, nên accounting của ca dừng giống hệt v0.3. Phần chưa quyết
+định (`undecided`) chỉ là các khoảng ordinal rule bị chặn theo hướng
+`delta|lost|gained` (và `classes` cho báo cáo changes): không khẳng định
+tương đương, không khẳng định khác biệt bên trong khoảng. Với changes,
+class chỉ được công bố khi đã hình thành trọn vẹn (witness + refs + scope);
+dừng trong delta thì salvage class chỉ khi scope là `undeclared` — có policy
+đã accept mà delta chưa xong thì class bị giữ lại, chỉ ghi decided pairs.
+
+Hệ quả lên verdict: đã có mảnh chứng minh khác nhau → verdict DIFFERENT
+nhưng `search_complete=false` và luôn kèm `partial`; chưa có mảnh nào →
+INCONCLUSIVE kèm `partial`, witness để trống. Delta đã dừng thì mọi
+obligation đều INCONCLUSIVE với stop reason của comparison (không obligation
+nào được đánh giá). Dừng ở stage obligation (delta đã xong) giữ nguyên hành
+vi cũ: không có `partial`, report khớp v0.3 từng trường. Schema là field
+cộng thêm — evidence v1 và analysis v2 không bump; validator từ chối mọi
+partial mâu thuẫn (search_complete=true, reason khác stop reason, stage lạ,
+cặp không sắp xếp/trùng, khoảng đảo ngược, cờ truncated không khớp độ dài
+danh sách, thiếu phần undecided ngoài stage witnesses).
+
+Hai ca động lực của kế hoạch cho thấy đúng giới hạn thật của mô hình:
+swap_adjacent ở 512 rule dừng tại `permit_before`, cursor rule 330 —
+prefix_pairs=256, undecided là toàn bộ residual rule 256–511 ở cả hai phía;
+change_port ở 512 rule dừng tại `permit_before`, cursor rule 288 —
+prefix_pairs=13, undecided là rule 13–511. Phần đã chứng minh chỉ là tiền
+tố, vì điểm dừng nằm ngay khi vật chất hóa permit set của residual BEFORE,
+trước khi bất kỳ cặp residual nào được quyết định; nới mô hình để "có thêm
+phần chứng minh" ở hai ca này sẽ phải quyết định những mảnh mà budget chưa
+hề chạm tới. Các stage muộn hơn có ca chứng minh riêng trong test
+(decide_lost/decide_gained bằng cap operations trên change_port 100 rule;
+vòng class trên change_port 250 rule công bố đúng class đầu của bản chạy
+tham chiếu và nêu tên cặp còn lại là undecided).
+
 Prefix-list IPv4 dùng partition interval theo từng prefix length 0–32, sweep hai
 partition để lấy class; route count là số route canonical chính xác, không phải
 số witness. Semantics: seq order, first match, implicit deny, ge/le theo tài liệu

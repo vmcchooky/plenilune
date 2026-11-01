@@ -277,8 +277,10 @@ their original sources (replay recomputes the v1 shape). Request
 `{schema,before:{text,ref?},after:{text,ref?},select?,policies?,options?}`;
 `ref` is an opaque caller correlation label, not identity/authentication.
 Options: ACL compare options, `max_classes` 1–128, `deadline_ms` 1–120000
-(default 30000). Sources ≤4 MiB and ≤200000 lines each; unknown fields and wrong
-types are rejected by the strict decoder.
+(default 30000), `max_analyzed` 1–64 (default 16; an absent field means the
+default, which is how artifacts recorded before P1-5 carry it). Sources ≤4 MiB
+and ≤200000 lines each; unknown fields and wrong types are rejected by the
+strict decoder.
 
 Result `{schema,tool,versions,request,sources,objects,coverage,unanalyzed_changes,
 summary,limitations,sha256}`. `sha256` is SHA-256 of compact JSON of the whole
@@ -288,8 +290,9 @@ required to replay.
 Objects are paired by `(domain,kind,name)` and carry `status`:
 `changed|equivalent|unchanged|added|removed|unsupported|inconclusive|not_analyzed`.
 Only `changed|equivalent|unchanged|inconclusive` have a behavior comparison; added
-and removed objects are structural only. Up to 16 objects are behavior-analyzed
-per request; the rest are `not_analyzed` with a reason. `unchanged` means
+and removed objects are structural only. Up to `max_analyzed` objects (default
+16) are behavior-analyzed per request; the rest are `not_analyzed` with a
+reason. `unchanged` means
 canonical object text is identical; it short-circuits an engine run only for that
 reason.
 
@@ -307,6 +310,54 @@ NUL separator and the after text (capped, with a truncated flag). `limitations` 
 includes per-object behavior without application binding and both domain scopes,
 and adds unanalyzed/unsupported/added-removed qualifiers when present. No
 unanalyzed change becomes a behavior verdict.
+
+### Parallel execution, global budget, deadline partials
+
+Execution is two-phase (P1-5). Classification (pairing, extents, references,
+structural statuses, the `max_analyzed` slot assignment) is sequential in
+canonical order; engine evaluation then runs on a bounded worker pool
+(default `min(4, GOMAXPROCS)`; CLI `--workers`; library `AnalyzeExec`). The
+worker count is an execution detail only: results are assembled in canonical
+order and the artifact — digest included — is byte-identical for any worker
+count and any GOMAXPROCS.
+
+One global budget ledger applies to the whole run, in addition to the
+per-object budgets: the caps are the request's ACL limits (`max_operations`,
+`max_boxes`). Objects are admitted in canonical order and charged, per
+recorded object, the sum of their compare and changes operations and the
+larger of the two stages' peak boxes (an object's stages run in sequence, so
+that is its live-box footprint; prefix-list comparisons charge their
+operations counter only, they use no box algebra). While an object's charge
+fits the remainder it is recorded exactly as computed — the clamping a
+sequential run would apply never binds for it. The first object that does
+not fit is recomputed with the remainder as its stage limits, so its
+recorded result, budget-stopped partials included, is the exact sequential
+result under the shared budget; an object whose stages cannot start under
+the remainder is `not_analyzed` with reason `global_budget`, and so is every
+later object. When the ledger constrains anything, the artifact carries a
+`global_budget` record (the caps plus the totals charged by the recorded
+objects) and the `global_budget_exhausted` limitation. When it never binds,
+neither appears and unconstrained artifacts are byte-identical to pre-P1-5
+artifacts; pre-P1-5 artifacts replay unchanged.
+
+A request deadline or caller cancellation that lands while objects are
+being evaluated no longer aborts the analysis. Objects that did not finish
+are `not_analyzed` with reason `deadline_exceeded` or `canceled` and carry
+no engine payload; the artifact gains the `analysis_deadline_exceeded` /
+`analysis_canceled` limitation and stays sealed. (A context already
+cancelled before the run starts remains an error.) Which objects a deadline
+cut is timing-dependent, so such artifacts replay as `TIMING_SENSITIVE` —
+the completed objects' point evidence is still rechecked exactly — never
+as a full replay and never silently upgraded.
+
+The demo server memoizes sealed comparisons (`internal/workflow`
+`CompareCache`, process scope, FIFO-bounded) keyed by the digests of both
+inputs plus the conditions as supplied, the full options, the engine
+version and the tool identity, so reopening an already-compared object
+does not recompute it. A hit is the exact artifact a fresh computation
+produced for those inputs; timing-limited results are never stored; the
+cache is an internal optimization only and evidence replays independently
+of it.
 
 ### ACL change classes
 
@@ -368,8 +419,9 @@ region matching and never upgrades the original verdict or authenticates produce
 - `POST /api/analyze/replay` `{before,after,evidence}` → HTTP 200
   `{status,sha256,rechecked_witnesses}`; `ANALYSIS_REPLAYED` or
   `TIMING_SENSITIVE`. Source/digest/version/result mismatch → HTTP 400.
-- CLI `analyze --before FILE --after FILE [--select domain:name,...]` or
-  `analyze --request FILE|-`; exit 0 any artifact, 2 error.
+- CLI `analyze --before FILE --after FILE [--select domain:name,...]
+  [--workers N]` or `analyze --request FILE|-`; `--workers` 0 = default
+  `min(4, GOMAXPROCS)`, explicit range 1–64; exit 0 any artifact, 2 error.
 - CLI `analyze-replay --before FILE --after FILE --evidence FILE` or
   `--request FILE|-` (`plenilune.analysis-replay-request/v1`); exit 0 replayed,
   2 TIMING_SENSITIVE/error.

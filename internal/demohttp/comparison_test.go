@@ -53,3 +53,35 @@ func TestExactComparisonHTTPAndReplay(t *testing.T) {
 		t.Fatalf("replay: %d %s", w.Code, w.Body.String())
 	}
 }
+
+func TestCompareServedFromSessionCache(t *testing.T) {
+	// A name no other test uses: the package cache is process-wide.
+	before := "ip access-list extended CACHEP15\n permit tcp any any eq 22\n"
+	after := "ip access-list extended CACHEP15\n deny ip any any\n"
+	body, err := json.Marshal(compareRequest{Before: before, After: after})
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := NewHandler("")
+	post := func() string {
+		req := httptest.NewRequest(http.MethodPost, "/api/compare", bytes.NewReader(body))
+		req.Host = "127.0.0.1:8080"
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		h.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Fatalf("compare: %d %s", w.Code, w.Body.String())
+		}
+		return w.Body.String()
+	}
+	hitsBefore, _, _ := compareCache.Stats()
+	first := post()
+	second := post()
+	if first != second {
+		t.Fatal("cached compare response differs from the computed one")
+	}
+	hitsAfter, _, _ := compareCache.Stats()
+	if hitsAfter != hitsBefore+1 {
+		t.Fatalf("second identical compare did not hit the cache: hits %d -> %d", hitsBefore, hitsAfter)
+	}
+}

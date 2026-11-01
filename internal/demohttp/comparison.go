@@ -16,6 +16,13 @@ type compareRequest struct {
 	Options    *verify.Options `json:"options,omitempty"`
 }
 
+// compareCache memoizes sealed comparisons for the life of the demo
+// server process (P1-5): reopening an object the UI already compared
+// (useReview.openObject) is served from the cache instead of recomputed.
+// It is an internal optimization only — a hit is the exact sealed
+// artifact a fresh computation produced for the same inputs.
+var compareCache = workflow.NewCompareCache(128)
+
 func handleCompare(w http.ResponseWriter, r *http.Request) {
 	var in compareRequest
 	if !decodeRequest(w, r, maxParseBody, &in) {
@@ -25,7 +32,7 @@ func handleCompare(w http.ResponseWriter, r *http.Request) {
 	if in.Options != nil {
 		opts = *in.Options
 	}
-	c, err := workflow.Compare(r.Context(), []byte(in.Before), []byte(in.After), in.Conditions, opts, evidence.Tool{Version: evidence.ToolVersion, Commit: "unversioned"})
+	c, err := compareCache.Compare(r.Context(), []byte(in.Before), []byte(in.After), in.Conditions, opts, evidence.Tool{Version: evidence.ToolVersion, Commit: "unversioned"})
 	if err != nil {
 		comparisonError(w, err)
 		return

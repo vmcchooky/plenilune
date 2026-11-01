@@ -53,12 +53,18 @@ Engine không import provider; orchestration giữ registry tools, context, budg
 
 ## Budgets và failure
 
-Một session có tối đa 8 model requests (bao gồm retry), 12 local tool invocations, 2 repair proposals và deadline 60s;
+Một session có tối đa 16 model requests (bao gồm retry), 24 local tool invocations, 6 repair proposals và deadline 120s;
 verifier mỗi lần vẫn có budget riêng. Dừng ngay khi hết cap, cancel hoặc user không xác định được scope.
 Một retry cho transient 429/5xx chỉ khi còn tổng budget; auth/schema không có loop vô hạn.
 AI lỗi vẫn giữ deterministic result; repair lỗi vẫn giữ original-after và evidence thất bại.
 Status phân biệt disabled, not_configured, unavailable, clarification_needed, partial và completed.
-Tất cả cap là giới hạn ban đầu cần đo bằng corpus; không hứa chạy đủ hai vòng trong mọi session.
+Tất cả cap là giới hạn cứng, không phải mục tiêu dùng hết; provenance của session ghi cả cap lẫn lượng đã dùng,
+nên một lượt proposal dừng đúng ở cap đọc được từ record là cạn ngân sách, không phải model tự dừng.
+Ngân sách ban đầu (8/12/2/60s) được P1-7 nới ở tầng đề xuất sau khi P1-3 (enumeration deterministic) chạy:
+mọi proposal vẫn qua đúng verifier và acceptance vẫn thuộc người, nên nới số proposal không đổi tầng phán quyết.
+Đo trên corpus session synthetic (fake provider, `TestP17SessionBudgetCorpus`): draft verify ở lượt 1/3/6 —
+caps cũ chỉ xong lượt 1 (dừng ở 2 attempts), defaults mới xong cả ba; draft không bao giờ verify bị chặn ở đúng 6 attempts.
+Chi phí/latency live vẫn là việc qualification riêng, không suy từ mock.
 
 ## Dữ liệu và Meta adapter
 
@@ -77,8 +83,8 @@ Transport hiện dùng POST `/v1/responses`, flat function tools, `text.format`,
 này, 1200 đã bị cạn trong một lượt live UI trước khi có JSON dùng được),
 reasoning medium, stream=false,
 store=false + encrypted reasoning replay trong session. Không lưu opaque reasoning
-vào artifact/log; request 256 KiB / response 1 MiB, 8 model calls/session,
-12 tools, 2 proposals, deadline session 60s. Timeout mỗi request 45s. Mỗi request
+vào artifact/log; request 256 KiB / response 1 MiB, 16 model calls/session,
+24 tools, 6 proposals, deadline session 120s. Timeout mỗi request 45s. Mỗi request
 phải đặt `max_output_tokens` trong 1..4096; adapter không có fallback 1200.
 CLI `assist --ai on`, client public và HTTP guard chỉ cho Contributor; không request override/fallback. Build Go từ Git checkout tự đóng dấu `vcs.revision`; `plenilune version` in ra commit/modified. Receipt evidence vẫn dùng placeholder `unversioned` (xem CONTRACTS §5); provenance của binary không được suy từ receipt.
 Một ca live không đủ chứng minh latency/cost/model quality cho corpus rộng.

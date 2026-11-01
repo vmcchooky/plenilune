@@ -71,7 +71,7 @@ func New(cfg Config) (*Session, error) {
 	}
 	if cfg.MaxModelRequests < 1 || cfg.MaxModelRequests > 32 ||
 		cfg.MaxToolCalls < 1 || cfg.MaxToolCalls > 64 ||
-		cfg.MaxRepairProposals < 0 || cfg.MaxRepairProposals > 8 ||
+		cfg.MaxRepairProposals < 0 || cfg.MaxRepairProposals > 16 ||
 		cfg.MaxOutputCorrections < 1 || cfg.MaxOutputCorrections > 8 {
 		return nil, errors.New("invalid session budget")
 	}
@@ -119,12 +119,25 @@ type runner struct {
 	toolNoteAdded bool
 }
 
+// budgets snapshots the effective (post-default) session caps for the
+// session record. It is called only after New has resolved defaults.
+func (c Config) budgets() SessionBudgets {
+	return SessionBudgets{
+		MaxModelRequests:     c.MaxModelRequests,
+		MaxToolCalls:         c.MaxToolCalls,
+		MaxRepairProposals:   c.MaxRepairProposals,
+		MaxOutputCorrections: c.MaxOutputCorrections,
+		SessionDeadlineMS:    c.SessionDeadline.Milliseconds(),
+	}
+}
+
 func (s *Session) Run(ctx context.Context, in Input) (Result, error) {
 	start := time.Now()
 	base := Provenance{
 		Provider:      ProviderName,
 		Model:         s.cfg.Model,
 		PromptVersion: s.cfg.PromptVersion,
+		Budgets:       s.cfg.budgets(),
 	}
 	if !s.cfg.Enabled {
 		base.ElapsedMS = time.Since(start).Milliseconds()
@@ -574,6 +587,7 @@ func (r *runner) provenance(start time.Time) Provenance {
 		Provider:        ProviderName,
 		Model:           model,
 		PromptVersion:   r.session.cfg.PromptVersion,
+		Budgets:         r.session.cfg.budgets(),
 		Requests:        r.requests,
 		Retries:         r.retries,
 		ToolCalls:       r.toolCalls,

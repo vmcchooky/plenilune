@@ -252,7 +252,10 @@ func TestSessionRepairProposalCap(t *testing.T) {
 		toolResponse(toolCall("c4", "verify_patch", appendPatchCall)),
 		contentResponse(finalEmpty),
 	)
-	s := newSession(t, provider, engine)
+	// The cap is pinned to the pre-P1-7 value: this test asserts cap
+	// enforcement itself, independent of the current default (P1-7
+	// raised the default to 6; see p17_budget_test.go).
+	s := newSession(t, provider, engine, func(c *Config) { c.MaxRepairProposals = 2 })
 	res := runSession(t, s, testInput())
 	if res.Status != StatusPartial || res.Reason != "repair_unverified" {
 		t.Fatalf("result = %s/%s", res.Status, res.Reason)

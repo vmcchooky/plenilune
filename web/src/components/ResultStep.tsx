@@ -129,10 +129,10 @@ export function ResultStep({ review }: { review: Review }) {
         </p>
       )}
 
-      <section className={`verdict-plate verdict-plate--${report.verdict.toLowerCase()}`} aria-labelledby="verdict-title">
+      <section className={`card verdict-plate verdict-plate--${report.verdict.toLowerCase()}`} aria-labelledby="verdict-title">
         <div className="verdict-plate__head">
           <ProvenanceTag tone={verdictTone === 'bad' ? 'info' : verdictTone} icon="shield">{t('result.runtime')}</ProvenanceTag>
-          <code className="verdict-plate__code">{report.verdict}</code>
+          <code className="badge">{report.verdict}</code>
           {report.partial && <span className="field-label">{t('partial.badge')}</span>}
           {report.witnesses_truncated && <span className="field-label">{t('result.truncated')}</span>}
         </div>

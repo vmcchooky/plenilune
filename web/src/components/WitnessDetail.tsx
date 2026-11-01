@@ -22,7 +22,7 @@ function DecisionBlock({
   const text = sourceLine(source, decision.line);
   const lineChanged = decision.line !== undefined && changed.has(decision.line);
   return (
-    <div className={`decision-block decision-block--${decision.action}`}>
+    <div className={`card decision-block decision-block--${decision.action}`}>
       <div className="decision-block__head">
         <span>{label}</span>
         <StatusMark
@@ -58,7 +58,7 @@ export function SourceLines({
 }) {
   const { t } = useI18n();
   return (
-    <div className="source-pane">
+    <div className="card source-pane">
       <div className="source-pane__head">
         <h3>{title}</h3>
         <span>{t('source.lines', { count: lines.length })}</span>

@@ -181,9 +181,9 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
         </StepHeader>
       )}
 
-      {scopeMode === 'undeclared'  && <p className="notice-line notice-line--warn">{t('repair.scope.undeclaredWarn')}</p>}
-      {scopeMode === 'none' && <p className="notice-line notice-line--neutral">{t('repair.scope.noneNote')}</p>}
-      {scopeMode === 'regions' && <p className="notice-line notice-line--neutral">{t('repair.scope.regionsNote', { count: accepted.allowedChanges.length })}</p>}
+      {scopeMode === 'undeclared'  && <p className="banner banner--warn">{t('repair.scope.undeclaredWarn')}</p>}
+      {scopeMode === 'none' && <p className="banner banner--neutral">{t('repair.scope.noneNote')}</p>}
+      {scopeMode === 'regions' && <p className="banner banner--neutral">{t('repair.scope.regionsNote', { count: accepted.allowedChanges.length })}</p>}
 
       <section className="ai-band" aria-labelledby="repair-ai-title">
         <div className="ai-band__head">
@@ -195,7 +195,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
           <ProvenanceTag tone="info" icon="info">{t('term.ai')}</ProvenanceTag>
         </div>
         {review.busy === 'aiRepair' && <BusyPanel label={t('repair.ai.busy')} onCancel={review.cancel} />}
-        {review.canceled === 'aiRepair' && <p className="notice-line notice-line--neutral">{t('repair.ai.canceled')}</p>}
+        {review.canceled === 'aiRepair' && <p className="banner banner--neutral">{t('repair.ai.canceled')}</p>}
         {ai && (
           <div className="ai-result">
             <div className="ai-result__head">
@@ -203,7 +203,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
               <StatusMark tone={aiTone(ai.status)} label={aiStatusLabel(t, ai.status)} />
             </div>
             <p className="ai-model">{t('ai.model')}: <code>{ai.provenance.model}</code></p>
-            {aiNotice && <p className={`notice-line notice-line--${aiTone(ai.status)}`}>{aiNotice}</p>}
+            {aiNotice && <p className={`banner banner--${aiTone(ai.status)}`}>{aiNotice}</p>}
             {aiRepairs.length > 0 && (
               <div className="candidate-switch" role="group" aria-label={t('repair.ai.candidates')}>
                 <span className="field-label">{t('repair.ai.candidates')}</span>
@@ -271,7 +271,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
           aside={<ProvenanceTag>{t('repair.manual.editCount', { count: review.edits.length })}</ProvenanceTag>}
         />
         {rules.length === 0 ? (
-          <p className="notice-line notice-line--neutral">{t('repair.manual.emptyRules')}</p>
+          <p className="banner banner--neutral">{t('repair.manual.emptyRules')}</p>
         ) : (
           <div className="rule-builder" role="group" aria-label={t('repair.manual.afterRules')}>
             {rules.map((rule) => {
@@ -286,10 +286,10 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
                       <span>{actionLabel(t, rule.action)}</span>
                     </span>
                     <code className="rule-builder__text">{text}</code>
-                    {inDraft && <span className="rule-builder__tag rule-builder__tag--draft">{t('repair.manual.inDraft')}</span>}
+                    {inDraft && <span className="badge badge--info">{t('repair.manual.inDraft')}</span>}
                   </div>
                   <div className="rule-builder__actions">
-                    <button type="button" className="button button--quiet button--small" disabled={busy || inDraft || review.edits.length >= 5} onClick={() => addRemove(rule.line, rule.ordinal)}>
+                    <button type="button" className="button button--quiet button--small button--danger" disabled={busy || inDraft || review.edits.length >= 5} onClick={() => addRemove(rule.line, rule.ordinal)}>
                       <Icon name="trash" size={15} /> {t('repair.manual.op.remove')}
                     </button>
                     <button type="button" className="button button--quiet button--small" disabled={busy || inDraft || review.edits.length >= 5} onClick={() => startEdit(rule.line, rule.ordinal, 'replace')}>
@@ -352,7 +352,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
                   <span>{editLabel(edit.edit)}</span>
                   {edit.edit.op !== 'remove' && edit.edit.content && <code>{edit.edit.content}</code>}
                   {edit.edit.op === 'remove' && <code>{sourceLine(accepted.after, edit.edit.ref?.line) ?? ''}</code>}
-                  <button type="button" className="button button--quiet button--small" aria-label={t('repair.manual.removeEdit')} disabled={busy} onClick={() => review.removeEdit(edit.id)}>
+                  <button type="button" className="button button--quiet button--small button--danger" aria-label={t('repair.manual.removeEdit')} disabled={busy} onClick={() => review.removeEdit(edit.id)}>
                     <Icon name="trash" size={15} />
                   </button>
                 </li>
@@ -362,7 +362,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
           {formError && <p className="field-error" role="alert">{formError}</p>}
         </div>
 
-        {review.canceled === 'repair' && <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>}
+        {review.canceled === 'repair' && <p className="banner banner--neutral">{t('common.canceled')}</p>}
       </section>
 
       {receipt && (
@@ -384,7 +384,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
             )}
           </div>
           {receipt.receipt.status !== 'VERIFIED' && (
-            <p className="notice-line notice-line--warn">{repairReasonLabel(t, receipt.receipt.reason)}</p>
+            <p className="banner banner--warn">{repairReasonLabel(t, receipt.receipt.reason)}</p>
           )}
           <p className="field-hint">{receipt.receipt.status === 'VERIFIED' ? t('repair.verifiedHint') : t('repair.notVerifiedHint')}</p>
 
@@ -394,7 +394,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
               {receipt.receipt.candidate ? (
                 <SourceLines title={t('repair.candidate')} lines={candidateLines} changed={new Set<number>()} />
               ) : (
-                <p className="notice-line notice-line--neutral">{t('common.noData')}</p>
+                <p className="banner banner--neutral">{t('common.noData')}</p>
               )}
               <p className="field-hint">{t('repair.applyNone')}</p>
             </div>
@@ -417,7 +417,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
                   })}
                 </ul>
               ) : (
-                <p className="notice-line notice-line--neutral">{t('repair.comparisonMissing')}</p>
+                <p className="banner banner--neutral">{t('repair.comparisonMissing')}</p>
               )}
             </div>
 
@@ -457,7 +457,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
                 {receipt.receipt.policy_sha256 && <HashLine label={t('repair.policyHash')} value={receipt.receipt.policy_sha256} />}
               </>
             ) : (
-              <p className="notice-line notice-line--warn">{t('repair.reason.policy_missing')}</p>
+              <p className="banner banner--warn">{t('repair.reason.policy_missing')}</p>
             )}
           </div>
 
@@ -473,7 +473,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
             ) : (
               <p className="field-hint">{t('report.noReplay')}</p>
             )}
-            {review.canceled === 'replayRepair' && <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>}
+            {review.canceled === 'replayRepair' && <p className="banner banner--neutral">{t('common.canceled')}</p>}
             {review.busy === 'replayRepair' ? (
               <BusyPanel label={t('repair.replayBusy')} onCancel={review.cancel} />
             ) : (
@@ -520,10 +520,10 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
           <h2>{t('decision.title')}</h2>
           <p>{t('decision.help')}</p>
           <p className="field-hint">{t('decision.afterReceipt')}</p>
-          {review.disputed && <p className="notice-line notice-line--warn" role="alert">{t('decision.disputed')}</p>}
+          {review.disputed && <p className="banner banner--warn" role="alert">{t('decision.disputed')}</p>}
           {review.decision
             ? <p role="status">{t(`decision.${review.decision.choice}`)}</p>
-            : !review.canReceive && !review.disputed && <p className="notice-line notice-line--neutral">{t('decision.blocked')}</p>}
+            : !review.canReceive && !review.disputed && <p className="banner banner--neutral">{t('decision.blocked')}</p>}
           <div className="raw-actions">
             <button type="button" className="button button--primary" disabled={busy || !review.canReceive} onClick={() => review.decideRepair('received')}>{t('decision.receive')}</button>
             <button type="button" className="button button--secondary" disabled={busy} onClick={() => review.decideRepair('held')}>{t('decision.hold')}</button>

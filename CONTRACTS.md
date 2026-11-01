@@ -158,7 +158,7 @@ không cho newline, header, remark hoặc command ngoài grammar trong edit payl
 Renderer giữ các dòng không sửa/remark, cấp lại sequence tăng cho mọi entry có
 sequence (kể cả remark), rồi parse lại toàn candidate. `move` chưa có primitive
 riêng; reorder phải qua proposal remove+add được kiểm lại.
-Apply atomically trong memory, parse/verify lại, tối đa hai repair rounds. Mỗi candidate phải kiểm
+Apply atomically trong memory, parse/verify lại; số proposal sửa chữa model được nộp trong một AI session bị chặn bởi ngân sách proposal của session (mặc định 6, trần cấu hình 16). Mỗi candidate phải kiểm
 obligations và collateral original-before→candidate ngoài allowed-change region
 đã khai báo. Partial check không được mang nhãn repair verified.
 
@@ -216,6 +216,12 @@ invalid input/error HTTP400. POST `/api/agent/session` nhận
 true mới đọc key/config từ server env, yêu cầu Host/Origin local, không nhận key từ browser.
 Session `plenilune.session/v1` gồm comparison, ai (`plenilune.ai/v1`) và repairs[];
 AI/provenance là sidecar. Missing key -> not_configured cùng comparison thật.
+Ngân sách AI session (P1-7, chỉ tầng đề xuất — verdict/acceptance không có knob ngân sách): mặc định tối đa
+16 model requests (gồm retry), 24 local tool invocations, 6 repair proposals, 2 output corrections và deadline 120s;
+trần validation tương ứng 32/64/16/8. Mọi cap là giới hạn cứng: hết proposal thì `verify_patch` trả
+`repair_budget_exhausted` và engine không được gọi thêm. Provenance (`plenilune.ai/v1`) ghi `budgets` — các cap hiệu lực —
+cạnh lượng đã dùng (`requests`, `tool_calls`, `repair_proposals`), nên record của session tự cho thấy giới hạn nó chạy dưới;
+budgets là configuration, không vào hash của verdict/receipt nào. Model vẫn khóa `muse-spark-1.3-contributor`, không fallback.
 PolicyAuthority đối chiếu input+definition hash với immutable caller-supplied
 accepted policy trước provider call; không tự tạo authenticated approval record.
 Full witness IDs được map thành bounded evidence IDs <=64 ký tự ở agent port.

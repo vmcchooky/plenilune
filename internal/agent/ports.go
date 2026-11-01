@@ -14,11 +14,18 @@ const (
 	PromptVersion = "meta-orchestrator/v3"
 	ResultSchema  = "plenilune.ai/v1"
 
-	DefaultMaxModelRequests     = 8
-	DefaultMaxToolCalls         = 12
-	DefaultMaxRepairProposals   = 2
+	// Session budget defaults. P1-7 raised the proposal-layer budgets
+	// (model requests, tool calls, repair proposals, session deadline)
+	// because every repair proposal still passes the deterministic
+	// verifier before it can be recorded; the adjudication layer
+	// (verdicts, obligation evaluation, patch acceptance) has no budget
+	// knob here and is unchanged. MaxOutputCorrections is an
+	// output-shape budget, not proposal volume, and was not raised.
+	DefaultMaxModelRequests     = 16
+	DefaultMaxToolCalls         = 24
+	DefaultMaxRepairProposals   = 6
 	DefaultMaxOutputCorrections = 2
-	DefaultSessionDeadline      = 60 * time.Second
+	DefaultSessionDeadline      = 120 * time.Second
 	DefaultRetryBackoff         = 250 * time.Millisecond
 )
 
@@ -199,18 +206,33 @@ type Claim struct {
 	AIGenerated   bool     `json:"ai_generated"`
 }
 
+// SessionBudgets records the effective session budget caps in the
+// session record, next to the consumed amounts in Provenance, so a
+// recorded session shows the limits it ran under — in particular a
+// RepairProposals count equal to MaxRepairProposals is budget
+// exhaustion, not a model choice. Budgets are configuration, not
+// evidence: nothing here is hashed into any verdict or receipt.
+type SessionBudgets struct {
+	MaxModelRequests     int   `json:"max_model_requests"`
+	MaxToolCalls         int   `json:"max_tool_calls"`
+	MaxRepairProposals   int   `json:"max_repair_proposals"`
+	MaxOutputCorrections int   `json:"max_output_corrections"`
+	SessionDeadlineMS    int64 `json:"session_deadline_ms"`
+}
+
 type Provenance struct {
-	Provider        string   `json:"provider"`
-	Model           string   `json:"model"`
-	PromptVersion   string   `json:"prompt_version"`
-	Requests        int      `json:"requests"`
-	Retries         int      `json:"retries"`
-	ToolCalls       int      `json:"tool_calls"`
-	RepairProposals int      `json:"repair_proposals"`
-	Usage           ai.Usage `json:"usage"`
-	RequestSHA256   []string `json:"request_sha256"`
-	ResponseSHA256  []string `json:"response_sha256"`
-	ElapsedMS       int64    `json:"elapsed_ms"`
+	Provider        string         `json:"provider"`
+	Model           string         `json:"model"`
+	PromptVersion   string         `json:"prompt_version"`
+	Budgets         SessionBudgets `json:"budgets"`
+	Requests        int            `json:"requests"`
+	Retries         int            `json:"retries"`
+	ToolCalls       int            `json:"tool_calls"`
+	RepairProposals int            `json:"repair_proposals"`
+	Usage           ai.Usage       `json:"usage"`
+	RequestSHA256   []string       `json:"request_sha256"`
+	ResponseSHA256  []string       `json:"response_sha256"`
+	ElapsedMS       int64          `json:"elapsed_ms"`
 }
 
 type Result struct {

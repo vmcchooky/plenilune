@@ -46,7 +46,7 @@ const request = {
 const analyzed = await invoke(['analyze', '--request', '-'], JSON.stringify(request));
 let result = null;
 try { result = JSON.parse(analyzed.stdout); } catch { /* reported below */ }
-check('analyze exits 0 with a plenilune.analysis/v2 artifact', analyzed.code === 0 && result?.schema === 'plenilune.analysis/v2' && /^[0-9a-f]{64}$/.test(result?.sha256 ?? ''), `exit ${analyzed.code}`);
+check('analyze exits 0 with a plenilune.analysis/v3 artifact', analyzed.code === 0 && result?.schema === 'plenilune.analysis/v3' && /^[0-9a-f]{64}$/.test(result?.sha256 ?? '') && /^[0-9a-f]{64}$/.test(result?.content_sha256 ?? ''), `exit ${analyzed.code}`);
 check('engine and parser versions are pinned in the artifact', Boolean(result?.versions?.acl_engine && result?.versions?.prefix_list_engine && result?.versions?.intake));
 check('caller refs are echoed for correlation only', result?.sources?.before?.ref === request.before.ref && result?.sources?.after?.ref === request.after.ref);
 const mgmt = result?.objects?.find((o) => o.domain === 'acl' && o.name === 'MGMT');

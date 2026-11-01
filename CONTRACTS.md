@@ -26,7 +26,7 @@ Go DTO hiện tại ở `internal/ciscoacl`, `internal/intent`, `internal/eviden
 
 Exit 0: operation thành công, kể cả packet bị deny. Exit 2: usage/input,
 unsupported, cancellation, I/O hoặc replay mismatch. JSON result ở stdout;
-JSON error có `code`, `message`, source `line` khi biết ở stderr. Không có output
+JSON error theo taxonomy P2-3 (mục 4): `code`, `stage`, `message`, `retryable`, `field` khi áp dụng, source `line`/`side` khi biết ở stderr. Không có output
 result khi input/replay thất bại; lỗi ghi stdout có thể để lại stream JSON dở.
 Không tự lưu/overwrite file; caller quyết định output path.
 
@@ -86,10 +86,333 @@ trailing JSON, sai type, nesting >64. Null không thay required schema/scope,
 identity, IP, packet numeric field, decision action/implicit hoặc interval bound. Parser và scope version
 không được tự đoán khi replay. Wire change cần version/fixture/test cùng thay đổi.
 
+### Capabilities — implemented (P2-2)
+
+Schema `plenilune.capabilities/v1`. Một builder duy nhất
+(`internal/capabilities.Build`) sinh document; cả CLI
+(`plenilune capabilities [--json]`, JSON là dạng duy nhất như `version`) và
+`GET /api/capabilities` đều phục vụ đúng document đó — caller subprocess và
+caller HTTP gate trên cùng một sự thật. Document gồm: `tool` (name, version,
+commit theo VCS stamp của build, `unversioned` khi không có), `schemas`
+(id, current, supported — gồm cả version đã đóng băng còn replay được),
+`domains` (id, parser version, engine version), `limits` (mặc định + trần
+lấy từ constants/defaults của package sở hữu: packetset, parser, analysis,
+AI session), `options` (bề mặt options của analysis/compare kèm default),
+`features`, `error_codes` (các typed code caller có thể nhận; status/outcome
+không phải error code và không nằm trong danh sách).
+
+Quy tắc ổn định trong v1: chỉ cộng thêm — field, phần tử list và version hỗ
+trợ có thể thêm; không xóa, không đổi tên, không đổi nghĩa. Đổi phá vỡ phải
+bump schema capabilities. Mọi giá trị suy từ constants/defaults của code tại
+thời điểm build; hai list curated duy nhất là `features` và `error_codes`,
+được contract test đối chiếu với code (mỗi error code phải thật sự được phát
+ra ở non-test source; snapshot test ghim toàn bộ JSON). Caller kiểm
+capabilities TRƯỚC khi gửi cấu hình và từ chối sớm kèm lý do khi version/
+feature không khớp — client mẫu `examples/moonstorm-client/` (Go, stdlib)
+làm đúng việc này và là điểm mở rộng cho vòng analyze của P2-7.
+
+### Error taxonomy — implemented (P2-3)
+
+Mọi lỗi qua CLI/HTTP mang cùng một envelope: `code`, `stage`, `message`,
+`retryable`, cộng `field` khi biết field gây lỗi và `line`/`side` khi biết
+vị trí nguồn. CLI ghi envelope phẳng ở stderr; HTTP bọc trong
+`{"error": ...}`; riêng `diff --brief` giữ định dạng lỗi một dòng
+`error: CODE message` đã ghim từ P1-9 (không phải JSON). Caller map theo
+code/stage — không parse message text. Exit code và HTTP status không đổi
+so với trước P2-3; thay đổi này thuần cộng thêm field.
+
+`stage` ∈ `request | parse | validate | engine | budget | replay |
+provider`. `retryable=true` nghĩa là gửi lại đúng request đó có thể thành
+công — chỉ dành cho điều kiện thoáng qua (quá tải, hủy, deadline theo
+wall-clock, lỗi đọc/ghi I/O, replay phụ thuộc timing); mọi lỗi còn lại là
+`false` vì gửi lại nguyên trạng sẽ fail y hệt. Registry duy nhất nằm ở
+`internal/errtax` và bằng đúng `error_codes` của capabilities (test khóa
+cả hai chiều); bảng dưới đây là bản in của registry đó. Code không bao giờ
+đổi tên trong v1 — thêm code mới phải đăng ký ở errtax VÀ capabilities
+trong cùng một thay đổi.
+
+| Code | Stage | Retryable | Field/line |
+|---|---|---|---|
+| CANCELED | request | true | |
+| CONTENT_TYPE | request | false | |
+| INPUT_FAILED | request | false | |
+| INPUT_READ | request | true | |
+| INPUT_TOO_LARGE | request | false | |
+| INVALID_JSON | request | false | |
+| JSON_INVALID | request | false | |
+| LOCAL_ORIGIN_REQUIRED | request | false | |
+| OUTPUT_FAILED | request | true | |
+| SERVER_BUSY | request | true | |
+| UI_NOT_BUILT | request | false | |
+| USAGE | request | false | |
+| ACL_INVALID | parse | false | line |
+| DUPLICATE_DEFINITION | parse | false | line |
+| INPUT_INVALID | parse | false | side, line khi có |
+| PARSE_DOCUMENT | parse | false | line |
+| PARSE_EMPTY_ACL | parse | false | line |
+| PARSE_ENCODING | parse | false | line |
+| PARSE_FAILED | parse | false | side, line khi có |
+| PARSE_HEADER | parse | false | line |
+| PARSE_INVALID_IP | parse | false | line |
+| PARSE_INVALID_PORT | parse | false | line |
+| PARSE_INVALID_TOKEN | parse | false | line |
+| PARSE_LIMIT | parse | false | line |
+| PARSE_MULTIPLE_ACLS | parse | false | line |
+| PARSE_NOT_FOUND | parse | false | line |
+| PARSE_SEQUENCE_ORDER | parse | false | line |
+| ROUTE_INVALID | parse | false | line |
+| AUDIT_INPUT_INVALID | validate | false | |
+| BUNDLE_FILE_MISSING | validate | false | field: role |
+| BUNDLE_INVALID | validate | false | field: role khi có |
+| CHAT_INVALID | validate | false | |
+| CHAT_LOCALE_UNSUPPORTED | validate | false | field: locale |
+| CHAT_NO_ARTIFACT | validate | false | |
+| CHAT_QUESTION_EMPTY | validate | false | field: question |
+| CHAT_QUESTION_TOO_LONG | validate | false | field: question |
+| COMPARISON_INVALID | validate | false | |
+| INBOX_INVALID | validate | false | field: id |
+| INPUT_ENCODING | validate | false | |
+| INVALID_OBLIGATION | validate | false | |
+| INVALID_PACKET | validate | false | |
+| INVALID_PATCH | validate | false | |
+| INVALID_POLICY | validate | false | |
+| INVALID_PROPOSALS | validate | false | |
+| OBLIGATIONS_INVALID | validate | false | |
+| OPTIONS_INVALID | validate | false | field: options |
+| PACKET_INVALID | validate | false | |
+| POLICY_INPUT_INVALID | validate | false | |
+| POLICY_INVALID | validate | false | field: policies |
+| POLICY_NOT_ACCEPTED | validate | false | field: policies |
+| REPAIR_INPUT_INVALID | validate | false | |
+| REQUEST_LIMIT | validate | false | |
+| REQUEST_SCHEMA | validate | false | field: schema |
+| RESULT_TOO_LARGE | validate | false | |
+| SELECT_INVALID | validate | false | field: select |
+| SESSION_INPUT_INVALID | validate | false | |
+| SIGNATURE_INVALID | validate | false | |
+| SIGN_ARTIFACT_UNSUPPORTED | validate | false | |
+| SIGN_KEY_INVALID | validate | false | |
+| SOURCE_REF_INVALID | validate | false | field: ref |
+| UNSUPPORTED_KIND | validate | false | |
+| WATCHES_INVALID | validate | false | field: watches |
+| ANALYSIS_FAILED | engine | false | |
+| COMPARISON_FAILED | engine | false | |
+| EVIDENCE_FAILED | engine | false | |
+| TRACE_INVALID | engine | false | |
+| DEADLINE_EXCEEDED | budget | true | |
+| BUNDLE_DIGEST_MISMATCH | replay | false | field: role |
+| CHAT_ARTIFACT_INVALID | replay | false | |
+| EVIDENCE_MISMATCH | replay | false | |
+| SIGNATURE_DIGEST_MISMATCH | replay | false | |
+| SIGNATURE_MISMATCH | replay | false | |
+| TIMING_SENSITIVE | replay | true | (xem ghi chú) |
+| AI_CONFIG_INVALID | provider | false | |
+| AI_MODEL_UNSUPPORTED | provider | false | |
+
+Ghi chú phân tầng:
+
+- Code chi tiết của parser ACL (`PARSE_*`, `ACL_INVALID`, `ROUTE_INVALID`,
+  `PACKET_INVALID`) được bề mặt parse/trace phát nguyên trạng (kèm line)
+  vì các bề mặt đó trả chính lỗi parser. Trên đường compare/analysis, cùng
+  lỗi đó được gói thành `PARSE_FAILED` (workflow) hoặc nằm trong artifact
+  dưới dạng lỗi theo object (analysis intake) — chi tiết parser prefix-list
+  cũng vậy, không phát thành error code ở biên.
+- Code chi tiết của package trong (patch `PATCH_*`, agent `invalid_input`)
+  không bao giờ ra biên nguyên trạng: bề mặt gói thành `INVALID_PATCH` /
+  `REPAIR_INPUT_INVALID` / `SESSION_INPUT_INVALID`. Registry chỉ chứa code
+  thật sự ra biên; `errtax.FromError` từ chối adapt code chưa đăng ký để
+  việc gói đó không bị rò.
+- `TIMING_SENSITIVE` là *status* của replay (không phải error): nằm trong
+  `error_codes` và registry để caller có một bảng tra duy nhất; retryable
+  vì replay lại dưới tải khác có thể kết luận trọn vẹn.
+- Ngân sách/hủy không bao giờ là thành công một phần không đánh dấu:
+  budget dừng → verdict INCONCLUSIVE kèm `search_complete=false` (hoặc
+  `partial` đã seal); deadline rơi giữa analysis → object `not_analyzed`
+  trong artifact đã seal; deadline đã qua trước khi bắt đầu / hủy →
+  error typed `DEADLINE_EXCEEDED` / `CANCELED`, không có artifact.
+
+### Review bundle — implemented (P2-4)
+
+Schema `plenilune.bundle/v1`: một review case được xuất thành một thư
+mục thường (không ZIP/archive) gồm các tệp của case và một tệp chỉ mục
+`bundle-manifest.json`. Manifest là *integrity index* thuần túy: mỗi
+entry ghi `role`, `path` (đường dẫn tương đối trong thư mục bundle) và
+`sha256` của đúng byte của tệp đó. Manifest không mang verdict, không
+thay receipt (receipt trong các tệp mới là bằng chứng — digest của
+chúng, gồm cặp `content_sha256`/`artifact_sha256` của P2-1, là thứ neo
+kết quả replay), và report trong bundle vẫn chỉ là view cho người đọc.
+
+Role và tên tệp canonical khi export: `before` → `before.acl`,
+`after` → `after.acl`, `comparison` → `comparison.json` (bắt buộc cả
+ba); `repair` → `repair.json`, `report` → `report.md`,
+`instructions` → `instructions.md` (tùy chọn khi export). Quy tắc toàn
+vẹn khi load: tệp đã được liệt kê trong manifest — kể cả role tùy
+chọn — là bắt buộc phải có mặt và khớp digest; thiếu tệp →
+`BUNDLE_FILE_MISSING`, lệch một byte → `BUNDLE_DIGEST_MISMATCH`, cả
+hai đều mang tên role trong `field`. Manifest bị từ chối bằng
+`BUNDLE_INVALID` nếu: sai schema, role lạ, trùng role hoặc trùng
+path, thiếu entry bắt buộc, entry không theo thứ tự role canonical,
+digest không đúng định dạng hex, hoặc path không phải đường dẫn tương
+đối sạch nằm trong thư mục bundle (chặn tuyệt đối, `..`, `\`, tiền tố
+ổ đĩa và chính tệp manifest). Manifest **không tự hash**: hash của chỉ
+mục không neo được gì (ai sửa tệp cũng sửa được chỉ mục); neo thật là
+các digest đã seal bên trong artifact, được chính replay kiểm lại.
+
+Builder duy nhất nằm ở `internal/bundle` (thuần, không I/O); CLI và
+demo server dùng chung nên manifest của hai đường xuất là byte-identical
+cho cùng một case. Đường CLI: `plenilune bundle-export --out DIR
+--before FILE --after FILE --comparison FILE [--repair FILE]
+[--report FILE] [--instructions FILE]` ghi các tệp (manifest ghi sau
+cùng) và in manifest; `plenilune bundle-replay --dir DIR` xác minh
+toàn vẹn trước, rồi chuyển artifact đã xác minh cho replay hiện hữu —
+role `comparison` chứa evidence `plenilune.evidence/v1|v2` →
+`workflow.Replay`, chứa analysis `plenilune.analysis/v1|v2|v3` →
+`analysis.Replay`, và `repair.json` nếu có → `repair.Replay`; exit 0
+chỉ khi mọi artifact có mặt đều replay khớp, 2 khi lỗi toàn vẹn hoặc
+replay timing-sensitive. Đường web: `POST /api/bundle/export` nhận các
+text artifact của case và trả về đúng byte manifest canonical; nút
+xuất ở màn hình evidence tải `bundle-manifest.json` cùng các tệp case
+vốn đã tải riêng lẻ.
+
+### Trigger & hộp thư verdict — implemented (P2-8)
+
+Tầng 0 của luồng nhanh. Người dùng ghim (watch) các đối tượng cần
+canh theo `(domain, name)` — `domain` là `acl` hoặc `prefix-list`,
+vắng mặt mặc định `acl` — kèm tập điều kiện kích hoạt:
+`verdict_changed`, `any_different`, `obligation_failed`. Mỗi khi một
+lượt phân tích (`POST /api/analyze`) hoặc so sánh (`POST /api/compare`)
+hoàn tất trong server, kết quả của từng đối tượng có verdict engine
+được đối chiếu với kết quả đã ghi gần nhất của chính đối tượng đó;
+mỗi điều kiện khớp sinh một mục hộp thư verdict (inbox entry).
+Đánh giá là đồng bộ tại thời điểm hoàn tất, trong tiến trình server:
+không daemon, không scheduler, không watcher file.
+
+Ngữ nghĩa từng điều kiện:
+
+- `verdict_changed`: chỉ bắn khi cả kết quả trước và kết quả hiện tại
+  đều là verdict đã quyết định (EQUIVALENT/DIFFERENT) và khác nhau;
+  entry mang `previous_verdict` và `verdict`. INCONCLUSIVE — kể cả
+  kết quả một phần dừng vì ngân sách, mà verdict của nó vẫn là
+  INCONCLUSIVE — được ghi thành trạng thái của đối tượng nhưng không
+  bao giờ là một phía của "verdict changed": cạn ngân sách là sự kiện
+  của lượt tìm kiếm, không phải của cấu hình, và không được nâng
+  thành thay đổi hành vi.
+- `any_different`: bắn khi kết quả hiện tại là DIFFERENT đã quyết
+  định và artifact sinh ra nó (theo `content_sha256`) chưa từng được
+  báo cho đối tượng này; cùng một artifact gặp lại (compare cache
+  hit, chạy lại cùng input) không bắn hai lần.
+- `obligation_failed`: chỉ đường compare mới đánh giá obligation.
+  Bắn khi tập obligation VIOLATED xuất hiện ID chưa vi phạm trong
+  kết quả đã ghi gần nhất; entry mang đúng các ID mới vi phạm.
+  Vi phạm cũ còn nguyên không bắn lại, và một lượt phân tích (không
+  đánh giá obligation) không xóa tập vi phạm đã ghi.
+
+Entry mang: đối tượng (domain + name), điều kiện đã bắn, verdict
+hiện tại, `violated_obligations` khi áp dụng, `artifact_kind`
+(`analysis` hoặc `comparison`), cặp digest (`content_sha256`,
+`sha256`) của artifact sinh ra nó, thời điểm server ghi và cờ đã
+đọc. `stale` được tính lúc đọc: true khi đối tượng đã có kết quả
+mới hơn kể từ entry đó — đây là đánh dấu hiển thị, không phải cơ
+chế vô hiệu hóa quyết định (việc đó thuộc P3-4). Hộp thư không chứa
+verdict nào ngoài verdict engine đã ghi trong artifact mà entry
+trỏ tới; mở entry là mở artifact đó.
+
+Bề mặt API (mọi route sau guard `localOnly` như mọi `/api/*`):
+`GET /api/watches`; `PUT /api/watches` thay toàn bộ danh sách (lỗi
+định dạng → `WATCHES_INVALID`, stage validate, field `watches`);
+`GET /api/inbox` trả entries mới nhất trước kèm số chưa đọc;
+`POST /api/inbox/read` nhận `{id}` hoặc `{all: true}` (id lạ →
+`INBOX_INVALID`, field `id`). Toàn bộ trạng thái — watches, kết quả
+đã ghi theo đối tượng, entries — sống trong bộ nhớ tiến trình
+server như compare cache (P1-5), giới hạn 64 watches, 256 entries
+(rớt cũ nhất) và 512 đối tượng có trạng thái; khởi động lại server
+là bắt đầu trống. Không ghi đĩa; không thông báo ra ngoài app
+(phía MoonStorm của trigger là đặc tả ở P2-7). Engine nằm ở
+`internal/inbox`; capabilities công bố feature `verdict_inbox`.
+
+### Ký bằng chứng — implemented (P2-5)
+
+Schema `plenilune.signature/v1`: một envelope chữ ký Ed25519 tách rời
+(detached) neo vào MỘT artifact đã seal qua cặp digest của P2-1 —
+`content_sha256` VÀ `artifact_sha256` (trường `sha256` của artifact) —
+kèm `artifact_schema`, khóa công khai của người ký (base64) và
+`fingerprint` của khóa đó (SHA-256 trên byte thô của khóa công khai,
+dạng hex). Cả hai digest luôn được ký cùng nhau: chỉ ký content digest
+thì chữ ký đi theo được sang một bản in khác của cùng kết quả; chỉ ký
+envelope digest thì chữ ký neo vào provenance của build thay vì kết
+quả. Chuỗi byte được ký là canonical và mang tính contractual (đổi
+layout là vô hiệu mọi chữ ký đã phát hành):
+`plenilune.signature/v1\n<artifact_schema>\n<content_sha256>\n<artifact_sha256>\n`.
+Không canonicalize lại JSON (không JCS ở phase này): chữ ký ký trên
+digest đã pin, không ký trên byte thô của file artifact.
+
+Chỉ artifact mang cặp digest mới ký được: evidence
+`plenilune.evidence/v2` và analysis `plenilune.analysis/v3`. Artifact
+đóng băng (evidence v1, analysis v1/v2) không có content digest nên
+bị từ chối bằng `SIGN_ARTIFACT_UNSUPPORTED` thay vì hạ cấp xuống ký
+một digest; chúng vẫn replay unsigned theo quy tắc cũ. Sign đòi hỏi
+artifact tự kiểm chứng được: digest ghi trong artifact phải bằng
+digest tính lại bằng chính seal machinery của package sở hữu, lệch
+thì `EVIDENCE_MISMATCH` — không ký artifact chưa seal.
+
+Đường CLI: `sign-keygen --out FILE` sinh khóa Ed25519 (stdlib), ghi
+private key vào FILE (0600, từ chối ghi đè file đã tồn tại) và chỉ in
+fingerprint + khóa công khai; `sign --key FILE --evidence FILE
+[--out FILE]` phát envelope; `verify-signature --evidence FILE
+--signature FILE [--fingerprint HEX] [--pubkey FILE]` kiểm tra.
+Format tệp khóa: một dòng base64 (private key 64 byte hoặc seed 32
+byte; khóa công khai 32 byte). Verify tính lại cả hai digest từ
+payload — digest in trong envelope chỉ là claim bị kiểm chứng, không
+bao giờ được tin: envelope lệch digest đã tính lại →
+`SIGNATURE_DIGEST_MISMATCH` (artifact bị sửa, hoặc envelope của
+artifact khác); artifact lệch digest của chính nó →
+`EVIDENCE_MISMATCH`; chữ ký không khớp khóa trong envelope, hoặc
+fingerprint ghim / khóa của `--pubkey` không khớp →
+`SIGNATURE_MISMATCH`; envelope hỏng cấu trúc (sai schema, digest,
+khóa hay chữ ký sai định dạng, fingerprint không khớp khóa công khai
+đi kèm) → `SIGNATURE_INVALID`; tệp khóa hỏng → `SIGN_KEY_INVALID`.
+Private key không bao giờ xuất hiện trong envelope, artifact, log
+hay output: envelope chỉ mang khóa công khai và chữ ký.
+
+Chữ ký chứng minh đúng một điều: người giữ private key đã ký lên cặp
+digest này — tức *ai đã ký lên nội dung này* theo nghĩa sở hữu khóa.
+Nó KHÔNG chứng minh danh tính người ký, không phải quyết định duyệt
+(approval), không chứng minh phân tích đúng, và không chứng minh
+thời điểm ký (envelope cố ý không mang timestamp). Vì vậy verify
+không bao giờ là cổng của verdict, seal hay replay: artifact có chữ
+ký sai — hoặc không có chữ ký — vẫn replay y hệt artifact có chữ ký
+đúng; trạng thái chữ ký được báo riêng bên cạnh kết quả replay,
+không bao giờ thay nó và không bao giờ chặn nó. Mô hình khóa khi
+tích hợp: phía MoonStorm ký bằng khóa của mình và giữ private key ở
+phía MoonStorm; Plenilune chỉ cần đường verify bằng khóa công khai
+hoặc fingerprint. Không PKI, không phân phối khóa trong phạm vi
+này. Engine nằm ở `internal/signature`; capabilities công bố
+feature `evidence_signing` và schema `plenilune.signature`.
+
+### Tích hợp MoonStorm — đặc tả (P2-7)
+
+Đặc tả tích hợp đầy đủ cho MoonStorm nằm ở
+[docs/integration/moonstorm.md](docs/integration/moonstorm.md): mô hình
+subprocess (không bao giờ import thư viện Go — ranh giới GPL, trạng thái
+cổng pháp lý P2-6 ghi ở STATUS), cổng capabilities trước mọi job, pin
+schema + engine version + budget profile cho mỗi job với khóa
+idempotency là khóa cache của P2-1/P1-5, hai hàng đợi tách biệt với
+collection ưu tiên tuyệt đối, sự kiện kích hoạt (capture mới và
+obligation-set changed chạy lại trên capture cũ), lưu trữ mã hóa
+at-rest phía MoonStorm, và chính sách thử lại theo stage của taxonomy
+mục này. Bề mặt ổn định cho integrator: document capabilities, vòng
+analysis (request/artifact/replay), evidence, bundle, chữ ký, audit,
+repair/enumeration, error taxonomy và mã thoát — mọi bề mặt còn lại
+(route HTTP của demo server ngoài `GET /api/capabilities`, package Go,
+internals của web UI, phiên AI) là nội bộ, không phải hợp đồng. Client
+tham chiếu: `examples/moonstorm-client/` (Go, stdlib) chạy vòng
+capabilities → analyze → cache hit theo content digest → replay.
+
 ## 5. Full comparison và API — implemented
 
-Schema `plenilune.evidence/v1`, không đổi nghĩa trace v1. DTO `evidence.Comparison`
-gồm schema/tool/parser_version/engine_version/scope/before/after/conditions/report/sha256.
+Schema `plenilune.evidence/v2` (P2-1; v1 đóng băng, xem đoạn dual digest dưới đây),
+không đổi nghĩa trace v1. DTO `evidence.Comparison`
+gồm schema/tool/parser_version/engine_version/scope/before/after/conditions/report/content_sha256/sha256.
 Before/after pin raw bytes digest + ACL name/kind; conditions là normalized Set hoặc null.
 Report gồm verdict, search_complete, reason, witnesses, witnesses_truncated,
 obligations, budget, options và partial (chỉ xuất hiện khi engine v0.4+ bị
@@ -116,6 +439,24 @@ Hash bind definitions/scope/results/budgets/options; chưa có elapsed/AI metada
 Replay kiểm schema/hash/input bytes, recheck witnesses rồi chạy lại engine cùng options.
 Logical budget outcomes replay được; timing-limited original/rerun trả TIMING_SENSITIVE,
 không full replay PASS. Điều này không phải chứng nhận ý định ngôn ngữ tự nhiên.
+
+Dual digest (P2-1, từ evidence v2): artifact mang hai digest. `content_sha256` =
+SHA-256 compact JSON của projection ngữ nghĩa cố định gồm schema, parser_version,
+engine_version, scope, before, after, conditions và report (options nằm trong report) —
+tức inputs, definitions, scope, versions của parser/engine, options và results.
+KHÔNG gồm build provenance: tool (version/commit), và không gồm chính hai digest.
+`sha256` giữ nguyên vai trò cũ và chính là artifact digest: SHA-256 compact JSON của
+toàn envelope trừ trường sha256 — gồm cả provenance và cả content_sha256 — nên nó định
+danh đúng artifact đó. Hệ quả: cùng input/options, hai build khác commit cho
+content_sha256 bằng nhau, sha256 khác nhau; caller dedup/cache/idempotency theo
+content_sha256, kiểm integrity của một artifact cụ thể theo sha256. Kiểm chứng
+(`CheckComparison`) tính lại CẢ HAI digest từ payload: sửa payload rồi tính lại envelope
+trên một content claim giả vẫn bị từ chối vì content được tính lại chứ không được tin.
+Artifact v1 đóng băng: chỉ có sha256, kiểm theo đúng quy tắc cũ (envelope digest, không
+được mang content_sha256); replay dispatch theo schema của chính artifact. Repair receipt
+nhúng comparison: khi replay, comparison được tính lại theo schema evidence đã ghi trong
+receipt (`SealComparisonAs`/`CompareEngineSchema`) để receipt thời v1 giữ nguyên byte.
+Kết quả replay (`workflow.ReplayResult`) mang thêm `content_sha256` khi artifact là v2.
 
 Partial results (P1-2, engine `acl-exact/v0.4`): field cộng thêm, không bump
 schema — evidence v1 và analysis v2 giữ nguyên, artifact cũ replay nguyên bytes.
@@ -289,7 +630,7 @@ late preview/acceptance guards. Browser QA luồng mới cần chạy riêng.
 Domain-neutral review layer around the domain engines. It does not replace ACL
 comparison evidence; existing v1 evidence/replay is unchanged.
 
-Schemas: `plenilune.analysis-request/v1` → `plenilune.analysis/v2`;
+Schemas: `plenilune.analysis-request/v1` → `plenilune.analysis/v3` (P2-1 dual digest; v2 đóng băng, xem dưới);
 `plenilune.analysis-replay-request/v1` for one-document replay. The v2 bump
 (P0-1, owner decision P0-D1) removes raw configuration text from the
 artifact: `unanalyzed_changes` entries carry `header_kind` (at most the first
@@ -307,9 +648,25 @@ and ≤200000 lines each; unknown fields and wrong types are rejected by the
 strict decoder.
 
 Result `{schema,tool,versions,request,sources,objects,coverage,unanalyzed_changes,
-summary,limitations,sha256}`. `sha256` is SHA-256 of compact JSON of the whole
+summary,limitations,content_sha256,sha256}`. `sha256` is SHA-256 of compact JSON of the whole
 artifact except `sha256`. Sources pin exact byte digests; no browser/UI state is
 required to replay.
+
+Dual digest (P2-1, from analysis v3): `content_sha256` is SHA-256 of compact JSON
+of the semantic projection — schema, versions, the request echo (selection,
+policy definitions, options), the sources by content (byte digest, byte and line
+counts — NOT the caller `ref` labels, which are correlation metadata), objects,
+coverage, unanalyzed changes (+truncated flag), summary, the global-budget record
+and limitations. Tool provenance is excluded, so the same result from a different
+build — or with different `ref` labels — keeps one content identity; `sha256`
+remains the whole-envelope (artifact) digest over every field, provenance and the
+content digest included. Replay verifies BOTH digests against the payload before
+recomputing (a forged content claim under a consistently recomputed envelope is
+rejected), and the replay result surfaces both. Frozen v1/v2 artifacts carry only
+the envelope digest and replay in their own shape under the original rules; a
+frozen shape carrying a content digest is rejected. In the TIMING_SENSITIVE
+projection both digests are excluded, like-for-like with the envelope digest,
+because the content payload contains the same timing-dependent budget outcomes.
 
 Objects are paired by `(domain,kind,name)` and carry `status`:
 `changed|equivalent|unchanged|added|removed|unsupported|inconclusive|not_analyzed`.
@@ -375,9 +732,16 @@ the completed objects' point evidence is still rechecked exactly — never
 as a full replay and never silently upgraded.
 
 The demo server memoizes sealed comparisons (`internal/workflow`
-`CompareCache`, process scope, FIFO-bounded) keyed by the digests of both
-inputs plus the conditions as supplied, the full options, the engine
-version and the tool identity, so reopening an already-compared object
+`CompareCache`, process scope, FIFO-bounded) keyed by the input-side
+content projection (P2-1): the digests of both inputs plus the conditions
+as supplied, the full options, and the parser and engine versions — exactly
+the inputs that determine the comparison's `content_sha256`. Build
+provenance is not keyed: neither the tool commit (excluded from content
+identity by P2-1) nor the tool version (a release label; semantics are
+pinned by the parser/engine versions and the version is validated against
+the producing build at seal time). A hit returns the artifact exactly as
+the producing computation sealed it, provenance included; callers identify
+it by its content digest. Reopening an already-compared object
 does not recompute it. A hit is the exact artifact a fresh computation
 produced for those inputs; timing-limited results are never stored; the
 cache is an internal optimization only and evidence replays independently

@@ -341,9 +341,24 @@ func TestInvalidSourceBindingsAreRejectedBeforeDecision(t *testing.T) {
 }
 
 func FuzzParse(f *testing.F) {
-	for _, text := range []string{"ip access-list extended X\n permit tcp any any eq 22\n", "ip access-list extended X\n 10 deny ip any any\n", "banner motd ^C\n"} {
+	// Seeds mined from the project's synthetic testdata and unit tests
+	// (documentation address space only), extended for plan P1-6.
+	for _, text := range []string{
+		"ip access-list extended X\n permit tcp any any eq 22\n",
+		"ip access-list extended X\n 10 deny ip any any\n",
+		"banner motd ^C\n",
+		"ip access-list extended MGMT\n 10 permit tcp 192.0.2.0 0.0.0.255 host 198.51.100.10 eq 22\n 20 deny ip any any\n",
+		"ip access-list extended MGMT\n 10 remark synthetic documentation addresses only\n 20 deny tcp host 192.0.2.10 any eq 22 log\n 30 permit tcp 192.0.2.0 0.0.0.255 host 198.51.100.10 eq 22\n 40 deny ip any any\n!\n",
+		"ip access-list extended X\n permit tcp any any neq 23\n permit udp any any lt 1024\n permit tcp any gt 1023 any range 8000 8099 log\n deny ip any any\n",
+		"ip access-list extended X\n permit 6 any eq 1024 any range 80 90\n permit udp any any eq 53\n permit 0 host 192.0.2.1 host 198.51.100.1\n",
+		"ip access-list extended X\n 30 permit ip any any\n 20 deny ip any any\n",
+		"",
+		"ip access-list extended X\n",
+		"hostname router\nip access-list extended X\n permit ip any any\n",
+	} {
 		f.Add([]byte(text))
 	}
+	f.Add([]byte{0xff, 0xfe, 0x00, 0x41})
 	f.Fuzz(func(t *testing.T, data []byte) {
 		a, err := Parse(data)
 		if err != nil {
@@ -352,8 +367,22 @@ func FuzzParse(f *testing.F) {
 			}
 			return
 		}
+		again, err := Parse(data)
+		if err != nil || !reflect.DeepEqual(a, again) {
+			t.Fatalf("Parse is not deterministic: %v", err)
+		}
 		if _, err := a.Evaluate(packet("192.0.2.1", "198.51.100.1", 40000, 22)); err != nil {
 			t.Fatalf("parser emitted invalid IR: %v", err)
+		}
+		for i := 0; i < 4; i++ {
+			p := fuzzPacket(data, i*16)
+			d, err := a.Evaluate(p)
+			if err != nil {
+				t.Fatalf("Evaluate(%v) on parsed ACL failed: %v", p, err)
+			}
+			if d.Action != "permit" && d.Action != "deny" {
+				t.Fatalf("Evaluate returned action %q", d.Action)
+			}
 		}
 	})
 }

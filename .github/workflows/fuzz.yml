@@ -1,0 +1,62 @@
+# Fuzzing CI for plan item P1-6: a short fuzz pass on every change and a
+# long pass nightly. Both jobs only call scripts/fuzz.sh, the same entry
+# point used locally; see that script's header for the merge-gate story.
+#
+# Owner note: AGENTS.md states no hosted workflow is needed for local
+# development. These workflows exist because P1-6 explicitly requires CI
+# runs; the tension is recorded in docs/plan/STATUS.md for the owner.
+name: fuzz
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Nightly long pass (UTC).
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz-short:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Seed corpora as tests
+        run: scripts/fuzz.sh seeds
+      - name: Short fuzz pass
+        run: scripts/fuzz.sh short
+      - name: Keep crashers as artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-crashers-short
+          path: "**/testdata/fuzz/**"
+          if-no-files-found: ignore
+
+  fuzz-nightly:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Seed corpora as tests
+        run: scripts/fuzz.sh seeds
+      - name: Long fuzz pass
+        run: scripts/fuzz.sh long
+      - name: Keep crashers as artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-crashers-nightly
+          path: "**/testdata/fuzz/**"
+          if-no-files-found: ignore

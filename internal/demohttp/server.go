@@ -8,7 +8,9 @@ import (
 	"log"
 	"mime"
 	"net/http"
+	"plenilune/internal/capabilities"
 	"plenilune/internal/ciscoacl"
+	"plenilune/internal/errtax"
 	"plenilune/internal/evidence"
 	"plenilune/internal/intent"
 	"plenilune/internal/jsonio"
@@ -46,9 +48,14 @@ type normalizeResponse struct {
 
 type apiError struct {
 	Code    string `json:"code"`
+	Stage   string `json:"stage"`
 	Message string `json:"message"`
-	Line    int    `json:"line,omitempty"`
-	Side    string `json:"side,omitempty"`
+	Field   string `json:"field,omitempty"`
+	// Retryable is the taxonomy classification of the code (P2-3):
+	// true only for transient conditions a caller may retry unchanged.
+	Retryable bool   `json:"retryable"`
+	Line      int    `json:"line,omitempty"`
+	Side      string `json:"side,omitempty"`
 }
 
 type errorEnvelope struct {
@@ -74,6 +81,7 @@ func newHandler(webDir, expectedPort string) http.Handler {
 	sem := make(chan struct{}, maxConcurrentAnalyses)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/health", handleHealth)
+	mux.HandleFunc("GET /api/capabilities", handleCapabilities)
 	mux.HandleFunc("POST /api/parse", handleParse)
 	mux.HandleFunc("POST /api/analyze", limitConcurrent(sem, handleAnalyze))
 	mux.HandleFunc("POST /api/analyze/replay", limitConcurrent(sem, handleAnalyzeReplay))
@@ -86,6 +94,11 @@ func newHandler(webDir, expectedPort string) http.Handler {
 	mux.HandleFunc("POST /api/repair/replay", limitConcurrent(sem, handleRepairReplay))
 	mux.HandleFunc("POST /api/agent/session", limitConcurrent(sem, handleAgentSession))
 	mux.HandleFunc("POST /api/chat/ask", limitConcurrent(sem, handleChatAsk))
+	mux.HandleFunc("POST /api/bundle/export", handleBundleExport)
+	mux.HandleFunc("GET /api/watches", handleListWatches)
+	mux.HandleFunc("PUT /api/watches", handleReplaceWatches)
+	mux.HandleFunc("GET /api/inbox", handleListInbox)
+	mux.HandleFunc("POST /api/inbox/read", handleInboxRead)
 	mux.Handle("GET /", staticHandler(webDir))
 	return securityHeaders(localOnly(expectedPort, mux))
 }
@@ -104,6 +117,13 @@ func handleHealth(w http.ResponseWriter, _ *http.Request) {
 			"analysis":    "available",
 		},
 	})
+}
+
+// handleCapabilities serves the shared capabilities document (P2-2):
+// the same value capabilities.Build() gives the CLI, so an HTTP
+// caller and a subprocess caller gate on identical facts.
+func handleCapabilities(w http.ResponseWriter, _ *http.Request) {
+	writeJSON(w, http.StatusOK, capabilities.Build())
 }
 
 func handleParse(w http.ResponseWriter, r *http.Request) {
@@ -201,6 +221,16 @@ func writeDomainError(w http.ResponseWriter, side string, err error) {
 }
 
 func writeError(w http.ResponseWriter, status int, err apiError) {
+	// Every HTTP error carries the unified taxonomy fields (P2-3):
+	// stage/retryable (and the request field, when the code implies
+	// one) come from the errtax registry, filled centrally here so no
+	// handler can forget them. An explicitly set field wins.
+	if stage, retryable, field, ok := errtax.Lookup(err.Code); ok {
+		err.Stage, err.Retryable = stage, retryable
+		if err.Field == "" {
+			err.Field = field
+		}
+	}
 	writeJSON(w, status, errorEnvelope{Error: err})
 }
 

@@ -85,6 +85,7 @@ func newHandler(webDir, expectedPort string) http.Handler {
 	mux.HandleFunc("POST /api/repair/verify", limitConcurrent(sem, handleRepair))
 	mux.HandleFunc("POST /api/repair/replay", limitConcurrent(sem, handleRepairReplay))
 	mux.HandleFunc("POST /api/agent/session", limitConcurrent(sem, handleAgentSession))
+	mux.HandleFunc("POST /api/chat/ask", limitConcurrent(sem, handleChatAsk))
 	mux.Handle("GET /", staticHandler(webDir))
 	return securityHeaders(localOnly(expectedPort, mux))
 }
@@ -97,6 +98,7 @@ func handleHealth(w http.ResponseWriter, _ *http.Request) {
 			"trace":       "available",
 			"obligations": "available",
 			"comparison":  "available",
+			"chat":        "available",
 			"ai":          "available_opt_in",
 			"repair":      "available",
 			"analysis":    "available",

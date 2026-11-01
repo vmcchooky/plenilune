@@ -548,3 +548,27 @@ export interface TraceResult {
   decision: Decision;
   sha256: string;
 }
+
+// P1-10 interrogation chat: every answer is rendered from these facts;
+// the optional AI phrasing is presentation only and never replaces them.
+export interface ChatFact {
+  label: string;
+  value: string;
+  source: string;
+}
+
+export interface ChatPhrasing {
+  status: 'off' | 'ok' | 'not_configured' | 'model_unsupported' | 'unavailable' | 'error';
+  model?: string;
+  text?: string;
+}
+
+export interface ChatAnswer {
+  schema: string;
+  class: string;
+  text: string;
+  facts: ChatFact[];
+  artifact_sha256: string;
+  locale: string;
+  ai: ChatPhrasing;
+}

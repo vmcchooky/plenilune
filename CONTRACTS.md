@@ -140,6 +140,24 @@ cap defaults 2M/50k/2s, max_witnesses 1–64 (default 8). UI gọi trực tiếp
 này; sample input được dán nhãn, còn comparison hiển thị là kết quả runtime. Màn
 hình có thể hạ budget cho một sample minh hoạ; retry mặc định gửi options omitted.
 
+Chat thẩm vấn (P1-10): POST `/api/chat/ask` nhận `{comparison?, analysis?, question, locale?, ai?}`
+— ít nhất một artifact; body cap 4 MiB (comparison) + 16 MiB (analysis) + 1 MiB. Request không có
+trường nào chứa configuration text nên endpoint không thể chạy comparison/analysis/repair hay
+accept obligation; decode strict từ chối field lạ (HTTP 400 `JSON_INVALID`). Artifact được kiểm seal
+trước khi trả lời (comparison qua `evidence.CheckComparison`; analysis qua re-seal và schema v1/v2);
+lệch digest trả `CHAT_ARTIFACT_INVALID`, thiếu artifact trả `CHAT_NO_ARTIFACT`. Question tối đa 1000 rune
+(`CHAT_QUESTION_TOO_LONG`); locale `en|vi`, mặc định `en`. Response `plenilune.chat/v1` gồm `class`,
+`text` (tất định, dựng hoàn toàn từ dữ liệu artifact), `facts[]` — mỗi fact có `label`/`value`/`source`
+là đường dẫn field trong artifact — và `artifact_sha256` neo vào digest của artifact được hỏi
+(comparison khi có cả hai). Endpoint đi qua localOnly guard và concurrency cap như các route nặng
+khác (P0-2); chat không ghi vào artifact store và không có đường nào đổi verdict.
+AI phrasing (opt-in bằng `ai: true`): đúng một provider request, không tool, model khóa
+`muse-spark-1.3-contributor`; model chỉ diễn đạt lại answer + facts của core tất định, không tự truy
+xuất artifact. Response mang `ai.status` (`off|ok|not_configured|model_unsupported|unavailable|error`);
+mọi status khác `ok` vẫn trả answer tất định đầy đủ với HTTP 200 — AI chưa cấu hình không làm hỏng màn
+verdict. UI luôn hiển thị facts (và answer tất định khi có phrasing) cạnh bản diễn đạt: artifact thắng
+khi hai bên mâu thuẫn.
+
 ## 6. Repair và Meta session — implemented
 
 AI tools khởi đầu: `list_changes`, `check_obligations`, `get_evidence`. `verify_patch`

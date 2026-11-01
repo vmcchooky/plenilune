@@ -118,3 +118,30 @@ quyết định của Chooky) gồm:
 **Nghiệm thu của đặc tả:** client mẫu mở rộng chạy được vòng
 capabilities → analyze → cache hit theo content digest → replay, trên dữ liệu
 synthetic.
+
+## P2-8 — Trigger & hộp thư verdict (event-driven entry)
+
+**Ý tưởng:** luồng nhanh nhất là không có luồng: phân tích chạy theo sự
+kiện, verdict đến tay người dùng ở dạng đã tính sẵn. Đây là tầng 0 của
+luồng nhanh mà Chooky đã duyệt 01/11/2026 (xem STATUS): người dùng chỉ mở
+UI khi verdict nói có việc cần chú ý.
+
+**Làm:**
+1. **Watch mode (standalone):** công cụ canh một cặp file before/after
+   (hoặc một thư mục thả file); file đổi là phân tích lại và hiển thị
+   verdict mới nhất — không cần chạy tay từng lượt.
+2. **Hộp thư verdict:** danh sách các phân tích gần đây kèm chip verdict
+   đã tính sẵn, tái dùng artifact và replay hiện có; chỉ các mục
+   changed/violated đòi hỏi chú ý, phần còn lại liếc qua là xong.
+3. **Phía MoonStorm chỉ là đặc tả**, thẳng hàng với P2-7: sự kiện vào,
+   verdict dạng check/webhook có ký đi ra. Không triển khai phía MoonStorm
+   trong hạng mục này.
+
+**Không làm:** không hardening daemon/service vượt mô hình local
+single-user hiện tại; không ngữ nghĩa verdict mới; thông báo ra ngoài app
+chỉ ở mức đặc tả.
+
+**Nghiệm thu:** watch mode phản ứng với một thay đổi file bằng artifact
+mới (integration test với file tạm); hộp thư liệt kê các artifact trước đó
+với chip đúng, kể cả ca INCONCLUSIVE; artifact stale được đánh dấu rõ
+(liên kết P3-4).

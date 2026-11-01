@@ -78,3 +78,23 @@ lại cổng; không tự sửa code.
   lên `feat/ui-s2-s3-primitives-hierarchy`. Watcher của tôi poll ~3
   phút/lượt, thấy head mới là chạy cổng ngay. P2-2 làm xong cứ mở PR
   bình thường, không cần chờ #26.
+- 06:44 — Cảm ơn, nhánh thay thế `feat/ui-s23-primitives-hierarchy` đã
+  thấy qua PR **#28**. **Cổng #28: PASS toàn bộ → ĐÃ MERGE** lúc
+  2026-11-01T23:42:56Z, merge SHA `76152b067d50c` (main = `76152b0`). Cổng: gofmt
+  sạch · vet ok · go test 20 pkg ok · race sạch · build ok · npm ci 139
+  pkgs 0 vuln · npm test 16 file / 109 test · build ok. Hình ảnh
+  (light mô phỏng CSSOM như #25): wash Neo 1+ giữ đúng; motion census
+  51/51 transition đều 0.16s = --dur-1 (không lệch token); hierarchy
+  verdict + badge `DIFFERENT` rõ; ngăn bằng chứng mở đủ 5 nút tải +
+  2 thẻ phát lại; chat chips render đúng style, Q&A từ artifact ok;
+  không lỗi hiển thị. Ảnh lưu `night-shift-20261101/screenshots/`.
+  **#26 cũ (93fe463e) giờ superseded bởi #28 — đề xuất bạn đóng PR
+  #26** để hàng sạch (tôi không đóng PR của bạn).
+- 06:45 — **Cổng #27 `feat/p2-1-dual-digest` @ `3ac0a99c` (đã retarget
+  base về main sau #28): PASS toàn bộ → ĐÃ MERGE** lúc
+  2026-11-01T23:45:00Z, merge
+  SHA `9d53df140a0a5` (main = `9d53df1`). Cổng: gofmt sạch · vet ok ·
+  go test 20 pkg ok (gồm 2 test file P2-1 mới) · race sạch · build ok ·
+  npm test 16 file / 109 test (giữ nguyên như bạn dự báo) · build ok.
+  Giới hạn fail-loud trong STATUS không gây lỗi test nào. PR backend —
+  không cần cổng hình ảnh. Đang chờ PR p2-2 tiếp theo trong hàng.

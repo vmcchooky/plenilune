@@ -64,7 +64,9 @@ func DefaultChangeOptions() ChangeOptions {
 }
 
 // ChangeReport explains the exact difference. Complete=false never means
-// "no change": classes are withheld rather than partially reported.
+// "no change". Engines before acl-exact/v0.4 withhold classes entirely on
+// a budget stop; v0.4+ reports the decided part (Partial) and lists only
+// classes that were fully decided and witness-checked before the stop.
 type ChangeReport struct {
 	Schema           string          `json:"schema"`
 	Engine           string          `json:"engine"`
@@ -76,6 +78,9 @@ type ChangeReport struct {
 	TotalClasses     int             `json:"total_classes"`
 	Budget           packetset.Stats `json:"budget"`
 	Options          ChangeOptions   `json:"options"`
+	// Partial is present only when a v0.4+ engine stopped on budget; it
+	// separates the decided rule pairs from the undecided remainder.
+	Partial *PartialResult `json:"partial,omitempty"`
 }
 
 // Changes partitions the exact behavior difference by deciding rules. allowed
@@ -113,6 +118,9 @@ func ChangesEngine(ctx context.Context, before, after ciscoacl.ACL, allowed []in
 		return ChangeReport{}, err
 	}
 	defer b.Close()
+	if eng.partial {
+		return changesPartial(ctx, before, after, allowed, opts, version, b)
+	}
 	r := ChangeReport{Schema: ChangeSchema, Engine: version, ScopeDeclared: allowed != nil, Classes: []ChangeClass{}, Options: opts}
 	finish := func(cause error) (ChangeReport, error) {
 		r.Budget = b.Stats()

@@ -17,6 +17,7 @@ import { ConditionEditorList, ScopeEditor, draftCanAccept } from './ConditionEdi
 import { ConfigOverview } from './ConfigOverview';
 import { Icon } from './Icon';
 import { ObjectDetail } from './PrefixListDetail';
+import { PartialNotice } from './PartialNotice';
 import { QuickEvidence } from './QuickEvidence';
 import { RepairStep } from './RepairStep';
 import { SampleBand, SourceEditor } from './SourceInputs';
@@ -56,12 +57,14 @@ function QuickVerdictBanner({ review }: { review: Review }) {
     ? collectWitnesses(t, report).length
     : fromAnalysis?.witnesses.length ?? 0;
   const searchComplete = report ? report.search_complete : fromAnalysis?.search_complete;
+  const partial = report?.partial ?? fromAnalysis?.partial ?? null;
   return (
     <>
       <section className={`verdict-plate verdict-plate--${verdict.toLowerCase()}`} aria-labelledby="quick-verdict-title">
         <div className="verdict-plate__head">
           <ProvenanceTag tone={tone === 'bad' ? 'info' : tone} icon="shield">{t('result.runtime')}</ProvenanceTag>
           <code className="verdict-plate__code">{verdict}</code>
+          {partial && <span className="field-label">{t('partial.badge')}</span>}
           {report?.witnesses_truncated && <span className="field-label">{t('result.truncated')}</span>}
         </div>
         <h2 id="quick-verdict-title">{verdictTitle(t, verdict)}</h2>
@@ -79,6 +82,7 @@ function QuickVerdictBanner({ review }: { review: Review }) {
         </div>
         <p className="verdict-plate__limits">{t('quick.scopeNote')}</p>
       </section>
+      {partial && <PartialNotice partial={partial} />}
       {verdict === 'INCONCLUSIVE' && <TermNote>{t('result.noWitness.inconclusive')}</TermNote>}
     </>
   );

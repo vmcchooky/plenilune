@@ -54,19 +54,29 @@ func briefFail(stderr io.Writer, code, message string) int {
 // modeled-scope limitations line and the artifact path. An INCONCLUSIVE
 // verdict always carries its stop reason; when no conditions were supplied
 // the obligations line says none were evaluated rather than implying a pass.
+// A partial result (P1-2: the budget stopped the search) is marked on the
+// verdict line itself — partial=true, the stop reason, and how much was
+// decided (prefix pairs decided identically, rule pairs proven different) —
+// so the line never reads as a plain complete verdict.
 func briefLines(c evidence.Comparison, artifactPath string) string {
 	r := c.Report
 	var b strings.Builder
-	switch r.Verdict {
-	case "INCONCLUSIVE":
-		reason := r.Reason
-		if reason == "" {
-			reason = r.Budget.StopReason
+	reason := r.Reason
+	if reason == "" {
+		reason = r.Budget.StopReason
+	}
+	if reason == "" {
+		reason = "unspecified"
+	}
+	switch {
+	case r.Verdict == "INCONCLUSIVE":
+		fmt.Fprintf(&b, "verdict: INCONCLUSIVE reason=%s", reason)
+		if r.Partial != nil {
+			fmt.Fprintf(&b, " partial=true stage=%s prefix_pairs=%d decided_pairs=%d", r.Partial.Stage, r.Partial.PrefixPairs, len(r.Partial.DecidedPairs))
 		}
-		if reason == "" {
-			reason = "unspecified"
-		}
-		fmt.Fprintf(&b, "verdict: INCONCLUSIVE reason=%s\n", reason)
+		b.WriteString("\n")
+	case r.Verdict == "DIFFERENT" && r.Partial != nil:
+		fmt.Fprintf(&b, "verdict: DIFFERENT partial=true reason=%s prefix_pairs=%d decided_pairs=%d\n", reason, r.Partial.PrefixPairs, len(r.Partial.DecidedPairs))
 	default:
 		fmt.Fprintf(&b, "verdict: %s\n", r.Verdict)
 	}

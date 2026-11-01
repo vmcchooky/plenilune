@@ -87,6 +87,15 @@ are explicit and never become behavior verdicts. ACL v0.3 evidence and
 `acl-repair/v0.3` are new; v0.2 and v0.1 remain replayable with their
 original accounting.
 
+Runtime update — 01/11/2026
+
+ACL evidence is now `acl-exact/v0.4` and repair receipts `acl-repair/v0.4`:
+the v0.3 engine plus partial results (P1-2). A budget stop no longer
+discards the search — `internal/verify` records the proven/undecided split
+(prefix pairs, decided rule pairs, bounded undecided ranges) additively on
+the comparison, changes and analysis shapes, with no schema bump; v0.3,
+v0.2 and v0.1 remain replayable with their original accounting.
+
 Runtime update — 30/10/2026
 
 Policy preview uses `/api/policy/normalize`; the UI freezes canonical definitions

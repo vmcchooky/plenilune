@@ -658,6 +658,34 @@ button { color: inherit; }
 .notice-line--info { border-left-color: var(--accent); background: var(--accent-soft); }
 .notice-line--neutral { border-left-color: var(--line-strong); }
 
+.partial-result {
+  padding: 11px 14px;
+  color: var(--ink-2);
+  background: var(--warn-soft);
+  border-left: 2px solid var(--warn);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.partial-result p { margin: 0 0 6px; }
+.partial-result p:last-child { margin-bottom: 0; }
+
+.partial-result__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: baseline;
+}
+
+.partial-result__facts,
+.partial-result__pairs,
+.partial-result__undecided {
+  margin: 0 0 6px;
+  padding-left: 18px;
+}
+
+.partial-result__undecided-title { font-weight: 600; }
+
 .busy-panel {
   display: flex;
   flex-wrap: wrap;

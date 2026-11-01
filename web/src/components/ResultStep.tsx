@@ -10,6 +10,7 @@ import type { ObligationResult, Packet } from '../lib/types';
 import { collectWitnesses } from '../lib/witnesses';
 import { ChangeClasses } from './ChangeClasses';
 import { ConfigOverview } from './ConfigOverview';
+import { PartialNotice } from './PartialNotice';
 import { Icon } from './Icon';
 import { ObjectDetail } from './PrefixListDetail';
 import { WitnessDetail } from './WitnessDetail';
@@ -130,6 +131,7 @@ export function ResultStep({ review }: { review: Review }) {
         <div className="verdict-plate__head">
           <ProvenanceTag tone={verdictTone === 'bad' ? 'info' : verdictTone} icon="shield">{t('result.runtime')}</ProvenanceTag>
           <code className="verdict-plate__code">{report.verdict}</code>
+          {report.partial && <span className="field-label">{t('partial.badge')}</span>}
           {report.witnesses_truncated && <span className="field-label">{t('result.truncated')}</span>}
         </div>
         <h2 id="verdict-title">{changedPacket ? t('result.behaviorHeadline', { packet: packetSummary(changedPacket.packet), before: actionLabel(t, changedPacket.before.action), after: actionLabel(t, changedPacket.after.action) }) : verdictTitle(t, report.verdict)}</h2>
@@ -142,6 +144,8 @@ export function ResultStep({ review }: { review: Review }) {
         {why && <p className="verdict-plate__why">{why}</p>}
         <p className="verdict-plate__next">{t(nextKey)}</p>
       </section>
+
+      {report.partial && <PartialNotice partial={report.partial} />}
 
       {inconclusive && <TermNote>{t('result.noWitness.inconclusive')}</TermNote>}
 

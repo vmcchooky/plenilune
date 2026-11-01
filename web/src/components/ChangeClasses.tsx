@@ -4,6 +4,7 @@ import type { Review } from '../hooks/useReview';
 import { actionLabel, sourceLine } from '../lib/conditions';
 import { stopReasonLabel } from '../lib/labels';
 import type { BoxText, ChangeClass, DecidingRule, Packet } from '../lib/types';
+import { PartialNotice } from './PartialNotice';
 import { BusyPanel, SectionHeading, StatusMark, TechnicalDetails } from './Ui';
 
 function protoName(n: number): string {
@@ -73,19 +74,36 @@ export function ChangeClasses({ review }: { review: Review }) {
   if (!report) return null;
   const denied = report.classes.filter((c) => c.effect === 'newly_denied').length;
   const permitted = report.classes.length - denied;
+  const classList = (
+    <ol className="change-class-list">
+      {report.classes.map((c, i) => <ClassRow key={i} c={c} review={review} onProbe={(p) => { setProbeSeed(p); setProbeRequested((n) => n + 1); }} />)}
+    </ol>
+  );
   return (
     <section className="change-classes" aria-labelledby="changes-title">
       <SectionHeading id="changes-title" title={t('changes.title')} note={t('changes.help')} />
-      {!report.complete ? (
+      {!report.complete && report.partial ? (
+        // P1-2: the decided classes are real and stay listed; the partial
+        // notice bounds what was never decided. Pre-v0.4 artifacts carry
+        // no partial and keep the notice-only rendering below.
+        <>
+          <p className="notice-line notice-line--warn">{t('changes.incomplete', { reason: stopReasonLabel(t, report.reason ?? '') })}</p>
+          {report.classes.length > 0 && (
+            <>
+              <p className="field-hint">{t('partial.classesNote')}</p>
+              {classList}
+            </>
+          )}
+          <PartialNotice partial={report.partial} showDecidedPairs={false} showUndecidedPairs />
+        </>
+      ) : !report.complete ? (
         <p className="notice-line notice-line--warn">{t('changes.incomplete', { reason: stopReasonLabel(t, report.reason ?? '') })}</p>
       ) : report.classes.length === 0 ? (
         <p className="notice-line notice-line--neutral">{t('changes.none')}</p>
       ) : (
         <>
           <p className="change-classes__summary">{t('changes.summary', { denied, permitted })}</p>
-          <ol className="change-class-list">
-            {report.classes.map((c, i) => <ClassRow key={i} c={c} review={review} onProbe={(p) => { setProbeSeed(p); setProbeRequested((n) => n + 1); }} />)}
-          </ol>
+          {classList}
           {report.classes_truncated && <p className="field-hint">{t('changes.truncated', { shown: report.classes.length, total: report.total_classes })}</p>}
         </>
       )}

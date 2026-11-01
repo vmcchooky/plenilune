@@ -79,6 +79,81 @@ func CheckComparison(c Comparison) error {
 	return nil
 }
 
+// validatePartial checks the structural invariants of a partial result
+// (P1-2): it may only ride on a budget-stopped, incomplete search whose
+// stop reason it matches; its decided pairs are sorted, unique and carry
+// at least one proven fragment each; its undecided parts only bound
+// regions without characterizing them. Soundness of the decided content
+// itself is enforced by replay, which recomputes the report.
+func validatePartial(r verify.Report) error {
+	p := r.Partial
+	if r.SearchComplete || r.Reason == "" || r.Reason != r.Budget.StopReason {
+		return errors.New("partial result requires a stopped incomplete search")
+	}
+	switch p.Stage {
+	case verify.PartialStagePrefix, verify.PartialStagePermitBefore, verify.PartialStagePermitAfter,
+		verify.PartialStageDecideLost, verify.PartialStageDecideGained, verify.PartialStageWitnesses,
+		verify.PartialStageScopeIndex, verify.PartialStageClasses:
+	default:
+		return errors.New("unknown partial stage")
+	}
+	if p.PrefixPairs < 0 || (p.BeforeRule != nil && *p.BeforeRule < 0) || (p.AfterRule != nil && *p.AfterRule < 0) {
+		return errors.New("invalid partial progress cursor")
+	}
+	if len(p.DecidedPairs) > verify.MaxPartialDecidedPairs || len(p.UndecidedPairs) > verify.MaxPartialUndecidedPairs {
+		return errors.New("partial pair listing exceeds its cap")
+	}
+	// The engine raises a truncated flag only when the listing actually
+	// hit its cap, and a stopped delta always leaves an undecided
+	// remainder; only the witnesses stage (delta fully decided) may have
+	// an empty remainder.
+	if (p.DecidedPairsTruncated && len(p.DecidedPairs) != verify.MaxPartialDecidedPairs) ||
+		(p.UndecidedPairsTruncated && len(p.UndecidedPairs) != verify.MaxPartialUndecidedPairs) {
+		return errors.New("partial pair truncated flag contradicts its listing")
+	}
+	if len(p.Undecided) == 0 && p.Stage != verify.PartialStageWitnesses {
+		return errors.New("partial result names no undecided remainder")
+	}
+	for _, pairs := range [][]verify.RulePair{p.DecidedPairs, p.UndecidedPairs} {
+		for i, pair := range pairs {
+			if pair.Before < -1 || pair.After < -1 || pair.Pieces < 1 {
+				return errors.New("invalid partial rule pair")
+			}
+			if i > 0 {
+				prev := pairs[i-1]
+				if pairOrder(prev.Before) > pairOrder(pair.Before) || pairOrder(prev.Before) == pairOrder(pair.Before) && pairOrder(prev.After) >= pairOrder(pair.After) {
+					return errors.New("partial rule pairs must be sorted and unique")
+				}
+			}
+		}
+	}
+	for _, part := range p.Undecided {
+		switch part.Direction {
+		case "lost", "gained", "delta", "classes":
+		default:
+			return errors.New("unknown partial undecided direction")
+		}
+		for _, rg := range []*[2]int{part.BeforeRules, part.AfterRules} {
+			if rg != nil && (rg[0] < 0 || rg[1] < rg[0]) {
+				return errors.New("invalid partial undecided rule range")
+			}
+		}
+		if part.WorkBoxes < 0 {
+			return errors.New("invalid partial undecided work count")
+		}
+	}
+	return nil
+}
+
+// pairOrder sorts the implicit deny (-1) after every explicit ordinal,
+// matching the change-class pair order.
+func pairOrder(n int) int {
+	if n < 0 {
+		return 1 << 30
+	}
+	return n
+}
+
 func comparisonDigest(c Comparison) (string, error) {
 	c.SHA256 = ""
 	b, err := json.Marshal(c)
@@ -142,6 +217,11 @@ func validateComparison(c Comparison) error {
 		}
 	default:
 		return errors.New("invalid comparison verdict")
+	}
+	if r.Partial != nil {
+		if err := validatePartial(r); err != nil {
+			return err
+		}
 	}
 	var conditions []intent.Obligation
 	if c.Conditions != nil {

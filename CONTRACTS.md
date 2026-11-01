@@ -89,13 +89,16 @@ Schema `plenilune.evidence/v1`, không đổi nghĩa trace v1. DTO `evidence.Com
 gồm schema/tool/parser_version/engine_version/scope/before/after/conditions/report/sha256.
 Before/after pin raw bytes digest + ACL name/kind; conditions là normalized Set hoặc null.
 Report gồm verdict, search_complete, reason, witnesses, witnesses_truncated,
-obligations, budget và options. Mỗi witness có ID, packet, before/after decision+source.
+obligations, budget, options và partial (chỉ xuất hiện khi engine v0.4+ bị
+budget dừng — xem đoạn partial dưới đây). Mỗi witness có ID, packet, before/after decision+source.
 Global verdict và từng obligation có outcome riêng.
 Obligation VIOLATED có witness riêng, không buộc phải trỏ global difference.
 Lệnh `diff`: 0=EQUIVALENT, 1=DIFFERENT, 2=INCONCLUSIVE/error; unsupported input trả typed error exit 2.
 Chế độ `diff --brief` (bắt buộc kèm `--out FILE`; `--out` không có `--brief` bị từ chối): artifact
 không đổi — cùng bytes như output JSON mặc định — nhưng ghi vào FILE do caller đặt tên, còn stdout
-chỉ gồm 5 dòng ổn định để grep: `verdict:` (INCONCLUSIVE luôn kèm `reason=` stop reason),
+chỉ gồm 5 dòng ổn định để grep: `verdict:` (INCONCLUSIVE luôn kèm `reason=` stop reason;
+kết quả partial của v0.4 kèm `partial=true stage=<stage> prefix_pairs=<k>
+decided_pairs=<n>` ngay trên dòng verdict, kể cả khi verdict là DIFFERENT),
 `object:` (status của ACL đã so + số witness khi DIFFERENT), `obligations:` (liệt kê từng
 obligation + status; không có conditions thì ghi `none evaluated`, không ngụ ý đã kiểm),
 `limitations: scope=...`, `artifact: <path>`. Mã thoát brief: 0=EQUIVALENT, 1=DIFFERENT,
@@ -110,6 +113,20 @@ Hash bind definitions/scope/results/budgets/options; chưa có elapsed/AI metada
 Replay kiểm schema/hash/input bytes, recheck witnesses rồi chạy lại engine cùng options.
 Logical budget outcomes replay được; timing-limited original/rerun trả TIMING_SENSITIVE,
 không full replay PASS. Điều này không phải chứng nhận ý định ngôn ngữ tự nhiên.
+
+Partial results (P1-2, engine `acl-exact/v0.4`): field cộng thêm, không bump
+schema — evidence v1 và analysis v2 giữ nguyên, artifact cũ replay nguyên bytes.
+Khi budget dừng search, `partial` ghi lại stage đã dừng (`prefix|permit_before|
+permit_after|decide_lost|decide_gained|witnesses|scope_index|classes`), vị trí
+rule đang xử lý, `prefix_pairs` (số cặp rule đầu đã chứng minh identical từng cặp),
+`decided_pairs` (các cặp rule đã quyết định khác nhau kèm số mảnh; witness tương
+ứng vẫn là witness evaluator-checked như thường) và `undecided` (phần chưa quyết
+định, bị chặn bằng khoảng ordinal rule theo hướng `delta|lost|gained|classes`,
+không suy diễn tương đương hay khác biệt trong vùng đó). Verdict vẫn có thể là
+DIFFERENT nếu đã có witness chứng minh, nhưng `search_complete=false` và
+`partial` luôn đi kèm nên không thể đọc như verdict đầy đủ. Delta đã dừng thì
+mọi obligation đều INCONCLUSIVE với stop reason của comparison. Dừng ở stage
+obligation (delta đã xong) giữ nguyên hành vi cũ, không có `partial`.
 
 Localhost API: POST `/api/compare` nhận `{before,after,conditions,options?}`;
 options omitted dùng defaults. POST `/api/compare/replay` nhận `{before,after,evidence}`.
@@ -270,8 +287,15 @@ unanalyzed change becomes a behavior verdict.
 v1). It groups every exact difference by the deciding before/after rule pair
 (`ordinal|implicit`), with effect `newly_denied|newly_permitted`, one
 independently re-evaluated witness packet, exact disjoint box examples (capped),
-class count/truncation, and its own budget. If the class budget stops, `classes`
-is empty and `complete=false`; partial explanations are never presented as full.
+class count/truncation, and its own budget. If the class budget stops,
+`complete=false`; engines before v0.4 then withhold classes entirely. From
+v0.4 the report may keep the classes decided before the stop and adds a
+`partial` explanation (stage, decided/undecided rule pairs with fragment
+counts, bounded undecided rule ranges): the emitted classes are exact, and
+the partial block — never the class list alone — bounds the claim. The ACL
+object likewise carries the comparison's split as `acl.partial` next to its
+verdict; the object status vocabulary is unchanged (a stopped ACL object is
+still `inconclusive`, a proven-different one still `changed`).
 An operator-accepted policy (normalized, `operator_accepted=true`, bound by
 `policy_sha256`) adds `scope: inside_allowed|outside_allowed|mixed` and an
 outside witness verified against the policy predicate. No policy → `undeclared`.
@@ -327,7 +351,12 @@ region matching and never upgrades the original verdict or authenticates produce
 
 ### Engine versions
 
-New ACL evidence is `acl-exact/v0.3`; new repair receipts `acl-repair/v0.3`.
+New ACL evidence is `acl-exact/v0.4`; new repair receipts `acl-repair/v0.4`.
+v0.4 is the v0.3 construction plus partial results (P1-2, see §5): identical
+verdicts, change classes, obligation outcomes and logical budget accounting
+on every completing run (`TestP12DifferentialV04AgainstV03`); only a budget
+stop changes shape, returning the proven/undecided split instead of
+discarding the search.
 v0.3 aligns the longest common prefix of semantically identical rules and
 computes the exact delta only over the residual rules, on the complement of
 the prefix's covered region; obligations are evaluated against a permit
@@ -337,6 +366,7 @@ the same verdicts, change classes and obligation outcomes as v0.2
 logical operation/box accounting, so version is part of evidence.
 v0.2 indexes candidate cuts and decides fragments against raw rules in first-match
 order, producing the same boxes/verdicts as v0.1 with its own accounting.
-`acl-exact/v0.2`/`acl-exact/v0.1` and `acl-repair/v0.2`/`acl-repair/v0.1`
+`acl-exact/v0.3`/`acl-exact/v0.2`/`acl-exact/v0.1` and
+`acl-repair/v0.3`/`acl-repair/v0.2`/`acl-repair/v0.1`
 remain supported for replay with their original accounting; SealComparison
 preserves a caller-supplied supported version.

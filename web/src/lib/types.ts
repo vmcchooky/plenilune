@@ -108,10 +108,39 @@ export interface CompareOptions {
 
 export type Verdict = 'EQUIVALENT' | 'DIFFERENT' | 'INCONCLUSIVE';
 
+// P1-2 partial result: what a budget-stopped search had already proven
+// (identical prefix pairs, decided rule pairs) and the bounded remainder
+// it never decided. Present only on incomplete v0.4+ results.
+export interface RulePair {
+  before: number;
+  after: number;
+  pieces: number;
+}
+
+export interface UndecidedPart {
+  direction: 'lost' | 'gained' | 'delta' | 'classes';
+  before_rules?: [number, number];
+  after_rules?: [number, number];
+  work_boxes?: number;
+}
+
+export interface PartialResult {
+  stage: string;
+  before_rule?: number;
+  after_rule?: number;
+  prefix_pairs: number;
+  decided_pairs: RulePair[];
+  decided_pairs_truncated?: boolean;
+  undecided_pairs?: RulePair[];
+  undecided_pairs_truncated?: boolean;
+  undecided: UndecidedPart[];
+}
+
 export interface ComparisonReport {
   verdict: Verdict;
   search_complete: boolean;
   reason?: string;
+  partial?: PartialResult;
   witnesses: Witness[];
   witnesses_truncated: boolean;
   obligations: ObligationResult[];
@@ -383,6 +412,7 @@ export interface ChangeReport {
   engine: string;
   complete: boolean;
   reason?: string;
+  partial?: PartialResult;
   scope_declared: boolean;
   classes: ChangeClass[];
   classes_truncated: boolean;
@@ -395,6 +425,7 @@ export interface ACLAnalysis {
   verdict: Verdict;
   search_complete: boolean;
   reason?: string;
+  partial?: PartialResult;
   witnesses: Witness[];
   witnesses_truncated: boolean;
   budget: BudgetStats;

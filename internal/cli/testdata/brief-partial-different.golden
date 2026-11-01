@@ -1,0 +1,5 @@
+verdict: DIFFERENT partial=true reason=operations prefix_pairs=0 decided_pairs=2
+object: acl DEMO DIFFERENT witnesses=2
+obligations: none evaluated
+limitations: scope=ipv4-unfragmented-or-initial-with-complete-l4/v1
+artifact: ARTIFACT_PATH

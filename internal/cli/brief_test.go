@@ -14,6 +14,10 @@ const (
 	briefGoodACL = "ip access-list extended DEMO\n permit tcp host 192.0.2.10 host 198.51.100.10 eq 22\n deny ip any any\n"
 	briefDenyACL = "ip access-list extended DEMO\n deny ip any any\n"
 	briefWideACL = "ip access-list extended DEMO\n permit tcp any any eq 22\n"
+	// A wider pair whose delta needs more operations than the partial
+	// case's cap, so the search decides two rule pairs and then stops.
+	briefPartialBefore = "ip access-list extended DEMO\n permit tcp any any eq 22\n permit tcp any any eq 80\n permit tcp any any range 8000 8099\n permit udp any any eq 53\n permit tcp any any eq 443\n deny ip any any\n"
+	briefPartialAfter  = "ip access-list extended DEMO\n permit tcp any any eq 2222\n permit tcp any any eq 8080\n permit tcp any any range 8000 8099\n permit udp any any eq 5353\n permit tcp any any eq 443\n deny ip any any\n"
 )
 
 // briefArgs builds a diff --brief invocation in dir and returns the args and
@@ -46,6 +50,7 @@ func TestBriefGoldenFormats(t *testing.T) {
 		{"different obligation violated", briefGoodACL, briefDenyACL, true, nil, "brief-different-violated.golden", 1, "DIFFERENT"},
 		{"different no obligations", briefWideACL, briefDenyACL, false, nil, "brief-different-no-obligations.golden", 1, "DIFFERENT"},
 		{"inconclusive budget exhausted", briefWideACL, briefDenyACL, false, []string{"--max-operations", "1"}, "brief-inconclusive.golden", 2, "INCONCLUSIVE"},
+		{"different partial budget stopped", briefPartialBefore, briefPartialAfter, false, []string{"--max-operations", "150"}, "brief-partial-different.golden", 1, "DIFFERENT"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

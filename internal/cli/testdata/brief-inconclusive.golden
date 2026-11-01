@@ -1,4 +1,4 @@
-verdict: INCONCLUSIVE reason=operations
+verdict: INCONCLUSIVE reason=operations partial=true stage=permit_before prefix_pairs=0 decided_pairs=0
 object: acl DEMO INCONCLUSIVE
 obligations: none evaluated
 limitations: scope=ipv4-unfragmented-or-initial-with-complete-l4/v1

@@ -25,7 +25,7 @@ function entryRefLabel(t: Translate, entry: EntryRef): string {
 function ClassRow({ c }: { c: PrefixClass }) {
   const { t } = useI18n();
   return (
-    <li className={`change-class change-class--${c.effect}`}>
+    <li className={`card change-class change-class--${c.effect}`}>
       <div className="change-class__head">
         <StatusMark tone={c.effect === 'newly_denied' ? 'bad' : 'warn'} label={t(`prefix.effect.${c.effect}`)} />
         <strong>{t(c.routes === 1 ? 'prefix.routesOne' : 'prefix.routes', { count: c.routes.toLocaleString() })}</strong>
@@ -65,8 +65,8 @@ export function PrefixListDetail({ object }: { object: AnalysisObject }) {
         <ObjectStatusNote object={object} />
       ) : (
         <>
-          <div className={`verdict-plate verdict-plate--${report.verdict.toLowerCase()}`}>
-            <code className="verdict-plate__code">{report.verdict}</code>
+          <div className={`card verdict-plate verdict-plate--${report.verdict.toLowerCase()}`}>
+            <code className="badge">{report.verdict}</code>
             <h2>{verdictTitle(t, report.verdict)}</h2>
             <p>{prefixVerdictBody(t, report)}</p>
             {report.classes[0] && (
@@ -81,16 +81,16 @@ export function PrefixListDetail({ object }: { object: AnalysisObject }) {
           </div>
           {report.classes.length === 0 ? (
             report.verdict === 'EQUIVALENT' && report.complete
-              ? <p className="notice-line notice-line--neutral">{t('prefix.none')}</p>
+              ? <p className="banner banner--neutral">{t('prefix.none')}</p>
               : report.verdict === 'INCONCLUSIVE'
-                ? <p className="notice-line notice-line--warn">{t('prefix.incomplete', { reason: stopReasonLabel(t, report.reason) })}</p>
-                : <p className="notice-line notice-line--warn">{t('prefix.noClasses')}</p>
+                ? <p className="banner banner--warn">{t('prefix.incomplete', { reason: stopReasonLabel(t, report.reason) })}</p>
+                : <p className="banner banner--warn">{t('prefix.noClasses')}</p>
           ) : (
             <ol className="change-class-list">{report.classes.map((c, i) => <ClassRow key={i} c={c} />)}</ol>
           )}
           {report.classes_truncated && <p className="field-hint">{t('prefix.truncated', { shown: report.classes.length, total: report.total_classes })}</p>}
           <p className="field-hint">{t('prefix.modelScope')}</p>
-          <p className="notice-line notice-line--neutral">{t('prefix.noIntent')}</p>
+          <p className="banner banner--neutral">{t('prefix.noIntent')}</p>
           <TechnicalDetails title={t('result.comparisonDetails')}>
             <dl className="meta-list">
               <div><dt>{t('evidence.parser')}</dt><dd><code>{object.prefix_list?.parser}</code></dd></div>
@@ -110,13 +110,13 @@ export function PrefixListDetail({ object }: { object: AnalysisObject }) {
 // Explains why an object has no behavior comparison, by status.
 function ObjectStatusNote({ object }: { object: AnalysisObject }) {
   const { t } = useI18n();
-  if (object.errors?.length) return <p className="notice-line notice-line--warn">{t('object.unsupported')}</p>;
+  if (object.errors?.length) return <p className="banner banner--warn">{t('object.unsupported')}</p>;
   switch (object.status) {
-    case 'unchanged': return <p className="notice-line notice-line--neutral">{t('object.unchanged')}</p>;
+    case 'unchanged': return <p className="banner banner--neutral">{t('object.unchanged')}</p>;
     case 'added':
-    case 'removed': return <p className="notice-line notice-line--warn">{t('object.structural')}</p>;
-    case 'not_analyzed': return <p className="notice-line notice-line--warn">{t('object.notAnalyzed')}</p>;
-    default: return <p className="notice-line notice-line--warn">{t('object.unsupported')}</p>;
+    case 'removed': return <p className="banner banner--warn">{t('object.structural')}</p>;
+    case 'not_analyzed': return <p className="banner banner--warn">{t('object.notAnalyzed')}</p>;
+    default: return <p className="banner banner--warn">{t('object.unsupported')}</p>;
   }
 }
 

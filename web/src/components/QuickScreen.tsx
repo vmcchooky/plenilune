@@ -61,10 +61,10 @@ function QuickVerdictBanner({ review }: { review: Review }) {
   const partial = report?.partial ?? fromAnalysis?.partial ?? null;
   return (
     <>
-      <section className={`verdict-plate verdict-plate--${verdict.toLowerCase()}`} aria-labelledby="quick-verdict-title">
+      <section className={`card verdict-plate verdict-plate--${verdict.toLowerCase()}`} aria-labelledby="quick-verdict-title">
         <div className="verdict-plate__head">
           <ProvenanceTag tone={tone === 'bad' ? 'info' : tone} icon="shield">{t('result.runtime')}</ProvenanceTag>
-          <code className="verdict-plate__code">{verdict}</code>
+          <code className="badge">{verdict}</code>
           {partial && <span className="field-label">{t('partial.badge')}</span>}
           {report?.witnesses_truncated && <span className="field-label">{t('result.truncated')}</span>}
         </div>
@@ -204,7 +204,7 @@ function QuickObligations({ review }: { review: Review }) {
             </button>
           )}
           {review.canceled === 'compare' && (
-            <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>
+            <p className="banner banner--neutral">{t('common.canceled')}</p>
           )}
         </div>
       )}
@@ -290,7 +290,7 @@ export function QuickScreen({ review }: { review: Review }) {
         onDrop={onDrop}
       >
         <SampleBand review={review} />
-        <div className="source-spread">
+        <div className="card source-spread">
           <SourceEditor
             id="before"
             label={t('source.before')}
@@ -316,7 +316,7 @@ export function QuickScreen({ review }: { review: Review }) {
         <BusyPanel label={t('source.busy')} onCancel={review.cancel} />
       )}
       {review.canceled === 'parse' && !review.analysis && (
-        <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>
+        <p className="banner banner--neutral">{t('common.canceled')}</p>
       )}
       {!bothPresent && !review.analysis && (
         <EmptyState icon="file" title={t('quick.empty.title')} body={t('quick.empty.body')} />

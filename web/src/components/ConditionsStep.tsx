@@ -89,7 +89,7 @@ function AiResultPanel({ ai, review }: { ai: AIResult; review: Review }) {
         <StatusMark tone={aiTone(ai.status)} label={aiStatusLabel(t, ai.status)} />
       </div>
       <p className="ai-model">{t('ai.model')}: <code>{ai.provenance.model}</code></p>
-      {notice && <p className={`notice-line notice-line--${aiTone(ai.status)}`}>{t(notice)}</p>}
+      {notice && <p className={`banner banner--${aiTone(ai.status)}`}>{t(notice)}</p>}
       {ai.questions && ai.questions.length > 0 && (
         <div className="ai-questions">
           <h3>{t('cond.ai.questions')}</h3>
@@ -121,7 +121,7 @@ function AiResultPanel({ ai, review }: { ai: AIResult; review: Review }) {
           </button>
         </div>
       ) : ai.status === 'completed' || ai.status === 'partial' ? (
-        <p className="notice-line notice-line--neutral">{t('ai.noObligations')}</p>
+        <p className="banner banner--neutral">{t('ai.noObligations')}</p>
       ) : null}
       {ai.summary && (
         <blockquote className="ai-text">
@@ -237,7 +237,7 @@ export function ConditionsStep({ review }: { review: Review }) {
           <BusyPanel label={t('cond.ai.busy')} onCancel={review.cancel} />
         )}
         {review.canceled === 'aiProposal' && (
-          <p className="notice-line notice-line--neutral">{t('cond.ai.canceled')}</p>
+          <p className="banner banner--neutral">{t('cond.ai.canceled')}</p>
         )}
         {ai && <AiResultPanel ai={ai} review={review} />}
         {review.busy !== 'aiProposal' && (
@@ -313,7 +313,7 @@ export function ConditionsStep({ review }: { review: Review }) {
           </label>
         )}
         {review.canceled === 'compare' && (
-          <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>
+          <p className="banner banner--neutral">{t('common.canceled')}</p>
         )}
         {review.busy === 'compare' ? (
           <BusyPanel label={t('accept.busy')} onCancel={review.cancel} />

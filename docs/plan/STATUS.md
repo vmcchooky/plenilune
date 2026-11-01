@@ -9,7 +9,7 @@ File sống duy nhất về trạng thái. Agent cập nhật sau mỗi hạng m
 
 | ID | Câu hỏi | Trạng thái |
 |---|---|---|
-| P0-D1 | Schema cho field đã redact: bump version hay giữ field deprecated? (khuyến nghị: bump) | todo |
+| P0-D1 | Schema cho field đã redact: bump version hay giữ field deprecated? (khuyến nghị: bump) | done — Chooky chốt 31/10/2026: bump schema version (`plenilune.analysis/v1` → `v2`) |
 | P2-6 | Rà soát pháp lý GPL trước phân phối MoonStorm kèm Plenilune | todo |
 | P3-9 | Làm route-maps hay không (và với phạm vi diễn đạt nào)? | todo |
 | P3-10 | Vendor thứ hai: làm hay không; nếu làm thì vendor nào? | todo |
@@ -18,7 +18,7 @@ File sống duy nhất về trạng thái. Agent cập nhật sau mỗi hạng m
 
 | ID | Hạng mục | Trạng thái | Bằng chứng / ghi chú |
 |---|---|---|---|
-| P0-1 | Redact secret khỏi artifact và UI | todo | Cần P0-D1 trước |
+| P0-1 | Redact secret khỏi artifact và UI | done | Nhánh `fix/p0-1-redact-secrets` từ main a1d3b65. Schema bump v1→v2 theo P0-D1: SectionChange bỏ `header` thô → `header_kind` (≤2 token) + `lines` + `section_sha256`; Reference bỏ `text` → `line`/`kind`/`name`; artifact v1 đóng băng vẫn replay được (fixture `internal/analysis/testdata/analysis-v1-artifact.json` + test P01). Repair receipt có candidate gắn nhãn `sensitive` (ngoài digest projection; receipt cũ giữ digest, vẫn replay). Test synthetic secret: `TestP01ArtifactCarriesNoRawSecretText`, `TestP01ReplayV2ArtifactAndTamperDetection`, `TestP01ReplayAcceptsFrozenV1Artifact`, `TestP01CandidateReceiptIsLabeledSensitive` PASS; cổng Go đầy đủ (gofmt/vet/test/race/build) + web (npm test/build) xanh trên Linux/Go 1.26.7 — cổng Windows do owner chạy lại khi merge. Không đổi verdict/engine/replay semantics. |
 | P0-2 | Siết local API (Host/Origin/Fetch Metadata, timeout, semaphore) | todo | |
 | P0-3 | UX vi mô (references panel, bỏ framing tỉ lệ, ticket summary, nhãn equivalent) | todo | |
 

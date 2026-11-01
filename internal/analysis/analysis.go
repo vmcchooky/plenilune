@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"regexp"
+	"strings"
 	"time"
 
 	"plenilune/internal/ciscoacl"
@@ -17,8 +18,12 @@ import (
 )
 
 const (
-	RequestSchema       = "plenilune.analysis-request/v1"
-	Schema              = "plenilune.analysis/v1"
+	RequestSchema = "plenilune.analysis-request/v1"
+	Schema        = "plenilune.analysis/v2"
+	// SchemaV1 is the frozen pre-redaction artifact schema. New analysis is
+	// never emitted as v1; v1 artifacts remain replayable from their original
+	// sources (see Replay).
+	SchemaV1            = "plenilune.analysis/v1"
 	ReplayRequestSchema = "plenilune.analysis-replay-request/v1"
 	MaxAnalyzed         = 16
 	MaxSelect           = 64
@@ -105,12 +110,34 @@ type Count struct {
 	Count int    `json:"count"`
 }
 
+// SectionChange is one structural change in an unanalyzed section. The
+// current (v2) shape never carries raw configuration text: HeaderKind keeps
+// at most the first two header tokens, Lines counts the section's lines and
+// SectionSHA256 binds the exact section text so a holder of the sources can
+// verify which section changed. For a modified section Lines counts the
+// after section and SectionSHA256 binds before-text, a NUL separator and
+// after-text. Header is the frozen v1 field, populated only when reproducing
+// a v1 artifact for replay.
 type SectionChange struct {
-	Kind       string `json:"kind"`
-	Header     string `json:"header"`
-	Change     string `json:"change"`
-	BeforeLine int    `json:"before_line,omitempty"`
-	AfterLine  int    `json:"after_line,omitempty"`
+	Kind          string `json:"kind"`
+	Header        string `json:"header,omitempty"`
+	HeaderKind    string `json:"header_kind,omitempty"`
+	Lines         int    `json:"lines,omitempty"`
+	SectionSHA256 string `json:"section_sha256,omitempty"`
+	Change        string `json:"change"`
+	BeforeLine    int    `json:"before_line,omitempty"`
+	AfterLine     int    `json:"after_line,omitempty"`
+}
+
+// headerKind keeps at most the first two tokens of a section header, e.g.
+// "interface GigabitEthernet0/1" or "snmp-server community". Anything after
+// the second token (community strings, secret values, hashes) is dropped.
+func headerKind(text string) string {
+	f := fields(text)
+	if len(f) > 2 {
+		f = f[:2]
+	}
+	return strings.Join(f, " ")
 }
 
 type ACLAnalysis struct {
@@ -268,6 +295,14 @@ func Analyze(ctx context.Context, req Request) (Result, error) {
 	return analyzeVersion(ctx, req, currentVersions())
 }
 func analyzeVersion(ctx context.Context, req Request, versions Versions) (Result, error) {
+	return analyzeSchema(ctx, req, versions, Schema)
+}
+
+// analyzeSchema emits the artifact in the given schema shape. The v1 shape
+// is produced only to recompute a recorded v1 artifact during replay; new
+// analysis always uses Schema.
+func analyzeSchema(ctx context.Context, req Request, versions Versions, schema string) (Result, error) {
+	legacy := schema == SchemaV1
 	opts, policies, err := validateRequest(req)
 	if err != nil {
 		return Result{}, err
@@ -279,7 +314,7 @@ func analyzeVersion(ctx context.Context, req Request, versions Versions) (Result
 		selected = []ObjectRef{}
 	}
 	res := Result{
-		Schema: Schema, Tool: evidence.Tool{Version: evidence.ToolVersion, Commit: "unversioned"}, Versions: versions,
+		Schema: schema, Tool: evidence.Tool{Version: evidence.ToolVersion, Commit: "unversioned"}, Versions: versions,
 		Request: RequestEcho{Select: selected, Policies: policies, Options: opts},
 		Sources: map[string]SourceInfo{}, Objects: []Object{}, Coverage: map[string]Coverage{},
 		UnanalyzedChanges: []SectionChange{}, Limitations: []string{},
@@ -287,7 +322,7 @@ func analyzeVersion(ctx context.Context, req Request, versions Versions) (Result
 	invs := map[string]inventory{}
 	for side, s := range map[string]Source{"before": req.Before, "after": req.After} {
 		data := []byte(s.Text)
-		invs[side] = intakeWithParser(data, versions.PrefixListParser)
+		invs[side] = intakeFormat(data, versions.PrefixListParser, legacy)
 		res.Sources[side] = SourceInfo{SHA256: digest(data), Bytes: len(data), Lines: invs[side].lines, Ref: s.Ref}
 	}
 	before, after := invs["before"], invs["after"]
@@ -351,7 +386,7 @@ func analyzeVersion(ctx context.Context, req Request, versions Versions) (Result
 		}
 	}
 	res.Coverage["before"], res.Coverage["after"] = coverage(before, res.Objects), coverage(after, res.Objects)
-	res.UnanalyzedChanges, res.Summary.UnanalyzedChanges = sectionChanges(before.unanalyzed, after.unanalyzed)
+	res.UnanalyzedChanges, res.Summary.UnanalyzedChanges = sectionChanges(before.unanalyzed, after.unanalyzed, legacy)
 	if len(res.UnanalyzedChanges) > maxUnanalyzed {
 		res.UnanalyzedChanges, res.UnanalyzedTruncated = res.UnanalyzedChanges[:maxUnanalyzed], true
 	}
@@ -513,8 +548,10 @@ func coverage(inv inventory, reviewed []Object) Coverage {
 }
 
 // sectionChanges compares unanalyzed sections by header text. This is a
-// structural text comparison and makes no behavioral claim.
-func sectionChanges(before, after []section) ([]SectionChange, int) {
+// structural text comparison and makes no behavioral claim. The current
+// shape redacts the header (see SectionChange); legacy reproduces the v1
+// shape with the raw header text for replay of v1 artifacts.
+func sectionChanges(before, after []section, legacy bool) ([]SectionChange, int) {
 	index := func(ss []section) (map[string]section, []string) {
 		m, order := map[string]section{}, []string{}
 		seen := map[string]int{}
@@ -530,6 +567,25 @@ func sectionChanges(before, after []section) ([]SectionChange, int) {
 		}
 		return m, order
 	}
+	shape := func(sc SectionChange, b, a *section) SectionChange {
+		if legacy {
+			sc.Header = b.header.text
+			return sc
+		}
+		sc.HeaderKind = headerKind(b.header.text)
+		switch sc.Change {
+		case "removed":
+			sc.Lines = len(b.lines())
+			sc.SectionSHA256 = digest([]byte(b.text()))
+		case "added":
+			sc.Lines = len(a.lines())
+			sc.SectionSHA256 = digest([]byte(a.text()))
+		default: // modified: bind both sides, count the after section
+			sc.Lines = len(a.lines())
+			sc.SectionSHA256 = digest([]byte(b.text() + "\x00" + a.text()))
+		}
+		return sc
+	}
 	bm, border := index(before)
 	am, aorder := index(after)
 	out := []SectionChange{}
@@ -539,15 +595,15 @@ func sectionChanges(before, after []section) ([]SectionChange, int) {
 		a, ok := am[k]
 		switch {
 		case !ok:
-			out = append(out, SectionChange{Kind: kind, Header: b.header.text, Change: "removed", BeforeLine: b.header.number})
+			out = append(out, shape(SectionChange{Kind: kind, Change: "removed", BeforeLine: b.header.number}, &b, nil))
 		case a.text() != b.text():
-			out = append(out, SectionChange{Kind: kind, Header: b.header.text, Change: "modified", BeforeLine: b.header.number, AfterLine: a.header.number})
+			out = append(out, shape(SectionChange{Kind: kind, Change: "modified", BeforeLine: b.header.number, AfterLine: a.header.number}, &b, &a))
 		}
 	}
 	for _, k := range aorder {
 		if _, ok := bm[k]; !ok {
 			a := am[k]
-			out = append(out, SectionChange{Kind: sectionKind(fields(a.header.text)), Header: a.header.text, Change: "added", AfterLine: a.header.number})
+			out = append(out, shape(SectionChange{Kind: sectionKind(fields(a.header.text)), Change: "added", AfterLine: a.header.number}, &a, &a))
 		}
 	}
 	return out, len(out)
@@ -611,13 +667,15 @@ type ReplayResult struct {
 
 // Replay recomputes the artifact from the original configuration bytes and
 // the recorded request echo. Any byte, version or result difference fails.
+// Artifacts recorded under the frozen v1 schema are recomputed in the v1
+// shape, so they stay replayable; new analysis is never emitted as v1.
 func Replay(ctx context.Context, before, after []byte, r Result) (ReplayResult, error) {
 	claimed := r.SHA256
 	sealed, err := Seal(r)
 	if err != nil || sealed.SHA256 != claimed || claimed == "" {
 		return ReplayResult{}, invalid("EVIDENCE_MISMATCH", "analysis digest does not match its content")
 	}
-	if r.Schema != Schema || !supportedVersions(r.Versions) || r.Tool.Version != evidence.ToolVersion {
+	if r.Schema != Schema && r.Schema != SchemaV1 || !supportedVersions(r.Versions) || r.Tool.Version != evidence.ToolVersion {
 		return ReplayResult{}, invalid("EVIDENCE_MISMATCH", "unsupported analysis schema or engine version")
 	}
 	if r.Sources["before"].SHA256 != digest(before) || r.Sources["after"].SHA256 != digest(after) {
@@ -630,7 +688,7 @@ func Replay(ctx context.Context, before, after []byte, r Result) (ReplayResult, 
 	for _, p := range r.Request.Policies {
 		req.Policies = append(req.Policies, ObjectPolicy{Domain: p.Domain, Name: p.Name, Policy: p.Policy})
 	}
-	fresh, err := analyzeVersion(ctx, req, r.Versions)
+	fresh, err := analyzeSchema(ctx, req, r.Versions, r.Schema)
 	if err != nil {
 		return ReplayResult{}, err
 	}

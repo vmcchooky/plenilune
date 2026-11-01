@@ -277,7 +277,7 @@ export async function standaloneAnalysis(before: string, after: string): Promise
   const extent = (text: string) => (text === before ? b : a);
   const changed = before !== after;
   return {
-    schema: 'plenilune.analysis/v1',
+    schema: 'plenilune.analysis/v2',
     tool: { version: '0.2.0-dev', commit: 'unversioned' },
     versions: { intake: 'plenilune-intake/v0.1', acl_engine: 'acl-exact/v0.2' },
     request: { select: [], policies: [], options: {} },

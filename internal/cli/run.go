@@ -25,7 +25,7 @@ Commands:
   analyze --before FILE --after FILE [--select domain:name,...]
   analyze --request FILE|-          Inventory two configuration versions, compare
                                      supported objects (acl, prefix-list) and emit
-                                     plenilune.analysis/v1; - reads stdin
+                                     plenilune.analysis/v2; - reads stdin
   analyze-replay --before FILE --after FILE --evidence FILE
   analyze-replay --request FILE|-   Recompute an analysis artifact offline
   version                            Print tool, build and parser versions

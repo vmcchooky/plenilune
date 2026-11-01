@@ -99,7 +99,7 @@ export function ConfigOverview({ review }: { review: Review }) {
           <ul className="section-changes">
             {analysis.unanalyzed_changes.map((c, i) => (
               <li key={i}>
-                <code>{t(`overview.change.${c.change}`)}</code> {c.header}
+                <code>{t(`overview.change.${c.change}`)}</code> {c.header_kind}
                 <small> · {[c.before_line ? `${t('common.before')} ${c.before_line}` : '', c.after_line ? `${t('common.after')} ${c.after_line}` : ''].filter(Boolean).join(' · ')}</small>
               </li>
             ))}

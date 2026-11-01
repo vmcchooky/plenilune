@@ -148,6 +148,10 @@ allowed_changes (<=12 Region). Nil/null/omitted allowed_changes = undeclared;
 Repair `plenilune.repair/v1`: version, status/reason, input hashes, frozen policy/hash,
 patch request, options, candidate/hash, conditions/digest, comparison, collateral,
 sha256. Digest là compact JSON toàn DTO trừ sha256. Không có AI metadata trong hash.
+Receipt có candidate (toàn văn cấu hình ứng viên) được gắn nhãn `"sensitive": true`;
+nhãn là metadata xử lý, bị loại khỏi digest projection, nên receipt cũ không có nhãn
+giữ nguyên digest và vẫn replay được. Nhãn không phải cơ chế bảo mật; nơi lưu trữ
+phải xử lý mọi repair receipt như dữ liệu nhạy cảm.
 VERIFIED cần acceptance thật từ caller policy, all HOLDS và collateral VERIFIED;
 UNVERIFIED không được nâng thành thành công. Replay rerenders original-after + patch
 và so bytes/policy trước timing shortcut; replay PASS không đổi status gốc của proposal.
@@ -208,8 +212,15 @@ late preview/acceptance guards. Browser QA luồng mới cần chạy riêng.
 Domain-neutral review layer around the domain engines. It does not replace ACL
 comparison evidence; existing v1 evidence/replay is unchanged.
 
-Schemas: `plenilune.analysis-request/v1` → `plenilune.analysis/v1`;
-`plenilune.analysis-replay-request/v1` for one-document replay. Request
+Schemas: `plenilune.analysis-request/v1` → `plenilune.analysis/v2`;
+`plenilune.analysis-replay-request/v1` for one-document replay. The v2 bump
+(P0-1, owner decision P0-D1) removes raw configuration text from the
+artifact: `unanalyzed_changes` entries carry `header_kind` (at most the first
+two header tokens), `lines` and `section_sha256` instead of the raw `header`,
+and object `references` carry `line`, `kind` (referencing mechanism) and
+`name` instead of the raw line `text`. `plenilune.analysis/v1` is frozen:
+new analysis is never emitted as v1, but v1 artifacts remain replayable from
+their original sources (replay recomputes the v1 shape). Request
 `{schema,before:{text,ref?},after:{text,ref?},select?,policies?,options?}`;
 `ref` is an opaque caller correlation label, not identity/authentication.
 Options: ACL compare options, `max_classes` 1–128, `deadline_ms` 1–120000
@@ -236,8 +247,10 @@ Prefix-list entries are non-contiguous; the artifact binds their digest and line
 ranges and replay re-extracts them from the full sources.
 
 Coverage counts analyzed, unsupported and unanalyzed lines per side plus
-unanalyzed section kinds; `unanalyzed_changes` records added/removed/modified
-sections by header text (capped, with a truncated flag). `limitations` always
+unanalyzed section kinds; `unanalyzed_changes` pairs sections by header text
+but records only the redacted `header_kind`, the section line count and
+`section_sha256` — for a modified section the digest binds the before text, a
+NUL separator and the after text (capped, with a truncated flag). `limitations` always
 includes per-object behavior without application binding and both domain scopes,
 and adds unanalyzed/unsupported/added-removed qualifiers when present. No
 unanalyzed change becomes a behavior verdict.

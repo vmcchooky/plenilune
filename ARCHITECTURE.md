@@ -79,7 +79,7 @@ lượt này không gọi live Meta.
 
 Plenilune is no longer ACL-shaped at its edges. `internal/analysis` owns
 configuration intake, object pairing, coverage accounting and the versioned
-`plenilune.analysis/v1` artifact; ACL and prefix-list engines plug in as domains
+`plenilune.analysis/v2` artifact (v1 frozen, replay-only); ACL and prefix-list engines plug in as domains
 with their own parsers, budgets and verdicts. UI, report and the subprocess JSON
 client speak in objects and configuration versions; packet/rule vocabulary is
 confined to ACL object views. Unsupported objects and unanalyzed configuration

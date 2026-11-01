@@ -21,18 +21,24 @@ type Collateral struct {
 }
 
 type Result struct {
-	Schema            string               `json:"schema"`
-	Version           string               `json:"version"`
-	Status            string               `json:"status"`
-	Reason            string               `json:"reason,omitempty"`
-	BeforeSHA256      string               `json:"before_sha256"`
-	BaseAfterSHA256   string               `json:"base_after_sha256"`
-	Policy            *Policy              `json:"policy"`
-	PolicySHA256      string               `json:"policy_sha256,omitempty"`
-	Request           patch.Request        `json:"request"`
-	Options           verify.Options       `json:"options"`
-	Candidate         string               `json:"candidate,omitempty"`
-	CandidateSHA256   string               `json:"candidate_sha256,omitempty"`
+	Schema          string         `json:"schema"`
+	Version         string         `json:"version"`
+	Status          string         `json:"status"`
+	Reason          string         `json:"reason,omitempty"`
+	BeforeSHA256    string         `json:"before_sha256"`
+	BaseAfterSHA256 string         `json:"base_after_sha256"`
+	Policy          *Policy        `json:"policy"`
+	PolicySHA256    string         `json:"policy_sha256,omitempty"`
+	Request         patch.Request  `json:"request"`
+	Options         verify.Options `json:"options"`
+	Candidate       string         `json:"candidate,omitempty"`
+	CandidateSHA256 string         `json:"candidate_sha256,omitempty"`
+	// Sensitive marks a receipt whose candidate field carries full
+	// configuration text, so stores and reports must handle it as sensitive.
+	// It is a handling label, not evidence content: digest() excludes it, so
+	// receipts sealed before the label existed keep their digest and stay
+	// replayable.
+	Sensitive         bool                 `json:"sensitive,omitempty"`
 	Conditions        intent.Set           `json:"conditions"`
 	ObligationsDigest string               `json:"obligations_digest,omitempty"`
 	Comparison        *evidence.Comparison `json:"comparison,omitempty"`
@@ -105,6 +111,7 @@ func verifyVersion(ctx context.Context, before, after []byte, policy *Policy, re
 		return Result{}, errors.New("candidate rendering failed")
 	}
 	r.Candidate, r.CandidateSHA256 = string(candidate), evidence.ConfigDigest(candidate)
+	r.Sensitive = true
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
 	}
@@ -188,6 +195,7 @@ func seal(r Result) (Result, error) {
 }
 func digest(r Result) (string, error) {
 	r.SHA256 = ""
+	r.Sensitive = false // handling label only; never part of the sealed projection
 	b, err := json.Marshal(r)
 	if err != nil {
 		return "", err

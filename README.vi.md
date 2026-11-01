@@ -63,8 +63,10 @@ go build -o bin/plenilune.exe ./cmd/plenilune
 ```
 
 `analyze --before before.cfg --after after.cfg` (hoặc `--request FILE|-` cho JSON
-trong bộ nhớ) xuất `plenilune.analysis/v1`; `analyze-replay` tái lập offline từ
-đúng byte gốc. Client độc lập chỉ gọi binary và đọc JSON nằm ở
+trong bộ nhớ) xuất `plenilune.analysis/v2`; `analyze-replay` tái lập offline từ
+đúng byte gốc. Artifact không chứa nguyên văn cấu hình ngoài các object đã phân
+tích (redaction v2); artifact `plenilune.analysis/v1` đã đóng băng vẫn replay
+được từ source gốc. Client độc lập chỉ gọi binary và đọc JSON nằm ở
 `examples/moonstorm-client/`.
 
 `scripts/demo.ps1` build, trace và replay gói mẫu. `scripts/demo-exact.ps1`

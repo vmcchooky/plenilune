@@ -701,7 +701,7 @@ const en = {
   'object.notAnalyzed': "The object changed as text but was not analyzed in this run.",
   'object.structural': "Present in only one version; no behavior comparison.",
   'result.objectHeader': "{domain} {name}",
-  'evidence.analysis': "Analysis record (plenilune.analysis/v1)",
+  'evidence.analysis': "Analysis record (plenilune.analysis/v2)",
   'evidence.sourceBefore': "Exact before configuration",
   'evidence.sourceAfter': "Exact after configuration",
   'evidence.replayAnalysis': "Replay analysis record",

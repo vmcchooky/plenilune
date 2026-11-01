@@ -39,9 +39,9 @@ export function inspectReceipt(raw: string): ImportedReceipt {
   const value: unknown = JSON.parse(raw);
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('RECEIPT_INVALID');
   const receipt = value as Record<string, unknown>;
-  const kind = receipt.schema === 'plenilune.evidence/v1' ? 'comparison'
+  const kind = receipt.schema === 'plenilune.evidence/v1' || receipt.schema === 'plenilune.evidence/v2' ? 'comparison'
     : receipt.schema === 'plenilune.repair/v1' ? 'repair'
-      : receipt.schema === 'plenilune.analysis/v1' || receipt.schema === 'plenilune.analysis/v2' ? 'analysis' : null;
+      : receipt.schema === 'plenilune.analysis/v1' || receipt.schema === 'plenilune.analysis/v2' || receipt.schema === 'plenilune.analysis/v3' ? 'analysis' : null;
   if (!kind || typeof receipt.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(receipt.sha256)) {
     throw new Error('RECEIPT_INVALID');
   }

@@ -88,8 +88,9 @@ không được tự đoán khi replay. Wire change cần version/fixture/test c
 
 ## 5. Full comparison và API — implemented
 
-Schema `plenilune.evidence/v1`, không đổi nghĩa trace v1. DTO `evidence.Comparison`
-gồm schema/tool/parser_version/engine_version/scope/before/after/conditions/report/sha256.
+Schema `plenilune.evidence/v2` (P2-1; v1 đóng băng, xem đoạn dual digest dưới đây),
+không đổi nghĩa trace v1. DTO `evidence.Comparison`
+gồm schema/tool/parser_version/engine_version/scope/before/after/conditions/report/content_sha256/sha256.
 Before/after pin raw bytes digest + ACL name/kind; conditions là normalized Set hoặc null.
 Report gồm verdict, search_complete, reason, witnesses, witnesses_truncated,
 obligations, budget, options và partial (chỉ xuất hiện khi engine v0.4+ bị
@@ -116,6 +117,24 @@ Hash bind definitions/scope/results/budgets/options; chưa có elapsed/AI metada
 Replay kiểm schema/hash/input bytes, recheck witnesses rồi chạy lại engine cùng options.
 Logical budget outcomes replay được; timing-limited original/rerun trả TIMING_SENSITIVE,
 không full replay PASS. Điều này không phải chứng nhận ý định ngôn ngữ tự nhiên.
+
+Dual digest (P2-1, từ evidence v2): artifact mang hai digest. `content_sha256` =
+SHA-256 compact JSON của projection ngữ nghĩa cố định gồm schema, parser_version,
+engine_version, scope, before, after, conditions và report (options nằm trong report) —
+tức inputs, definitions, scope, versions của parser/engine, options và results.
+KHÔNG gồm build provenance: tool (version/commit), và không gồm chính hai digest.
+`sha256` giữ nguyên vai trò cũ và chính là artifact digest: SHA-256 compact JSON của
+toàn envelope trừ trường sha256 — gồm cả provenance và cả content_sha256 — nên nó định
+danh đúng artifact đó. Hệ quả: cùng input/options, hai build khác commit cho
+content_sha256 bằng nhau, sha256 khác nhau; caller dedup/cache/idempotency theo
+content_sha256, kiểm integrity của một artifact cụ thể theo sha256. Kiểm chứng
+(`CheckComparison`) tính lại CẢ HAI digest từ payload: sửa payload rồi tính lại envelope
+trên một content claim giả vẫn bị từ chối vì content được tính lại chứ không được tin.
+Artifact v1 đóng băng: chỉ có sha256, kiểm theo đúng quy tắc cũ (envelope digest, không
+được mang content_sha256); replay dispatch theo schema của chính artifact. Repair receipt
+nhúng comparison: khi replay, comparison được tính lại theo schema evidence đã ghi trong
+receipt (`SealComparisonAs`/`CompareEngineSchema`) để receipt thời v1 giữ nguyên byte.
+Kết quả replay (`workflow.ReplayResult`) mang thêm `content_sha256` khi artifact là v2.
 
 Partial results (P1-2, engine `acl-exact/v0.4`): field cộng thêm, không bump
 schema — evidence v1 và analysis v2 giữ nguyên, artifact cũ replay nguyên bytes.
@@ -289,7 +308,7 @@ late preview/acceptance guards. Browser QA luồng mới cần chạy riêng.
 Domain-neutral review layer around the domain engines. It does not replace ACL
 comparison evidence; existing v1 evidence/replay is unchanged.
 
-Schemas: `plenilune.analysis-request/v1` → `plenilune.analysis/v2`;
+Schemas: `plenilune.analysis-request/v1` → `plenilune.analysis/v3` (P2-1 dual digest; v2 đóng băng, xem dưới);
 `plenilune.analysis-replay-request/v1` for one-document replay. The v2 bump
 (P0-1, owner decision P0-D1) removes raw configuration text from the
 artifact: `unanalyzed_changes` entries carry `header_kind` (at most the first
@@ -307,9 +326,25 @@ and ≤200000 lines each; unknown fields and wrong types are rejected by the
 strict decoder.
 
 Result `{schema,tool,versions,request,sources,objects,coverage,unanalyzed_changes,
-summary,limitations,sha256}`. `sha256` is SHA-256 of compact JSON of the whole
+summary,limitations,content_sha256,sha256}`. `sha256` is SHA-256 of compact JSON of the whole
 artifact except `sha256`. Sources pin exact byte digests; no browser/UI state is
 required to replay.
+
+Dual digest (P2-1, from analysis v3): `content_sha256` is SHA-256 of compact JSON
+of the semantic projection — schema, versions, the request echo (selection,
+policy definitions, options), the sources by content (byte digest, byte and line
+counts — NOT the caller `ref` labels, which are correlation metadata), objects,
+coverage, unanalyzed changes (+truncated flag), summary, the global-budget record
+and limitations. Tool provenance is excluded, so the same result from a different
+build — or with different `ref` labels — keeps one content identity; `sha256`
+remains the whole-envelope (artifact) digest over every field, provenance and the
+content digest included. Replay verifies BOTH digests against the payload before
+recomputing (a forged content claim under a consistently recomputed envelope is
+rejected), and the replay result surfaces both. Frozen v1/v2 artifacts carry only
+the envelope digest and replay in their own shape under the original rules; a
+frozen shape carrying a content digest is rejected. In the TIMING_SENSITIVE
+projection both digests are excluded, like-for-like with the envelope digest,
+because the content payload contains the same timing-dependent budget outcomes.
 
 Objects are paired by `(domain,kind,name)` and carry `status`:
 `changed|equivalent|unchanged|added|removed|unsupported|inconclusive|not_analyzed`.
@@ -375,9 +410,16 @@ the completed objects' point evidence is still rechecked exactly — never
 as a full replay and never silently upgraded.
 
 The demo server memoizes sealed comparisons (`internal/workflow`
-`CompareCache`, process scope, FIFO-bounded) keyed by the digests of both
-inputs plus the conditions as supplied, the full options, the engine
-version and the tool identity, so reopening an already-compared object
+`CompareCache`, process scope, FIFO-bounded) keyed by the input-side
+content projection (P2-1): the digests of both inputs plus the conditions
+as supplied, the full options, and the parser and engine versions — exactly
+the inputs that determine the comparison's `content_sha256`. Build
+provenance is not keyed: neither the tool commit (excluded from content
+identity by P2-1) nor the tool version (a release label; semantics are
+pinned by the parser/engine versions and the version is validated against
+the producing build at seal time). A hit returns the artifact exactly as
+the producing computation sealed it, provenance included; callers identify
+it by its content digest. Reopening an already-compared object
 does not recompute it. A hit is the exact artifact a fresh computation
 produced for those inputs; timing-limited results are never stored; the
 cache is an internal optimization only and evidence replays independently

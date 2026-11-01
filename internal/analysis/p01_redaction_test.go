@@ -43,7 +43,10 @@ func findKey(t *testing.T, v any, key, path string) {
 func TestP01ArtifactCarriesNoRawSecretText(t *testing.T) {
 	b, a := load(t, "redaction")
 	r := run(t, b, a, nil)
-	if r.Schema != Schema || Schema != "plenilune.analysis/v2" {
+	// The literal pin names the current schema: v2 when P0-1 landed, v3
+	// since the P2-1 dual-digest bump. The redaction assertions below are
+	// the invariant; the pin just keeps "current" explicit.
+	if r.Schema != Schema || Schema != "plenilune.analysis/v3" {
 		t.Fatalf("schema %q", r.Schema)
 	}
 	raw, err := json.Marshal(r)
@@ -108,14 +111,12 @@ func TestP01ReplayV2ArtifactAndTamperDetection(t *testing.T) {
 	if _, err := Replay(context.Background(), []byte(b), []byte(a), tampered); !errors.As(err, &e) || e.Code != "EVIDENCE_MISMATCH" {
 		t.Fatalf("tampered header_kind accepted: %v", err)
 	}
-	// A resealed artifact under an unknown schema version is still rejected:
-	// the schema is pinned, never guessed at replay (CONTRACTS section 4).
+	// An artifact relabeled under an unknown schema version is still
+	// rejected: the schema is pinned, never guessed at replay (CONTRACTS
+	// section 4). (The unknown version moves with the current schema —
+	// this segment named v3 until P2-1 made v3 current.)
 	future := r
-	future.Schema = "plenilune.analysis/v3"
-	future, err = Seal(future)
-	if err != nil {
-		t.Fatal(err)
-	}
+	future.Schema = "plenilune.analysis/v4"
 	if _, err := Replay(context.Background(), []byte(b), []byte(a), future); !errors.As(err, &e) || e.Code != "EVIDENCE_MISMATCH" {
 		t.Fatalf("unknown schema accepted: %v", err)
 	}

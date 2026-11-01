@@ -160,14 +160,15 @@ func Ask(req Request) (Answer, error) {
 }
 
 // checkAnalysisSeal mirrors the first gate of analysis.Replay: the
-// record must re-seal to its recorded digest under a supported schema.
-// It verifies content integrity only — it recomputes nothing.
+// record must re-seal to its recorded digests under a supported schema
+// (current v3 with both digests, or a frozen v1/v2 shape). It verifies
+// content integrity only — it recomputes nothing.
 func checkAnalysisSeal(r analysis.Result) error {
-	if r.SHA256 == "" || (r.Schema != analysis.Schema && r.Schema != analysis.SchemaV1) {
+	if r.SHA256 == "" || (r.Schema != analysis.Schema && r.Schema != analysis.SchemaV2 && r.Schema != analysis.SchemaV1) {
 		return errors.New("unsupported analysis schema")
 	}
 	sealed, err := analysis.Seal(r)
-	if err != nil || sealed.SHA256 != r.SHA256 {
+	if err != nil || sealed.SHA256 != r.SHA256 || sealed.ContentSHA256 != r.ContentSHA256 {
 		return errors.New("analysis digest does not match its content")
 	}
 	return nil

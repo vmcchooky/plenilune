@@ -43,7 +43,13 @@ func Replay(ctx context.Context, before, after []byte, r Result) (workflow.Repla
 		rechecked++
 	}
 	// Verify rerenders from the original after, not from the stored candidate.
-	fresh, err := verifyVersion(ctx, before, after, r.Policy, r.Request, r.Options, r.Version)
+	// The embedded comparison is recomputed in its own recorded evidence
+	// schema, so receipts from an earlier evidence era stay byte-identical.
+	evidenceSchema := evidence.ComparisonSchema
+	if r.Comparison != nil {
+		evidenceSchema = r.Comparison.Schema
+	}
+	fresh, err := verifyVersion(ctx, before, after, r.Policy, r.Request, r.Options, r.Version, evidenceSchema)
 	if err != nil {
 		return workflow.ReplayResult{}, err
 	}

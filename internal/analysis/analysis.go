@@ -21,7 +21,14 @@ import (
 
 const (
 	RequestSchema = "plenilune.analysis-request/v1"
-	Schema        = "plenilune.analysis/v2"
+	// Schema is the current artifact schema (P2-1): the artifact carries
+	// two digests — content_sha256 over the semantic payload and the
+	// whole-envelope sha256 (the artifact digest). See CONTRACTS §8.
+	Schema = "plenilune.analysis/v3"
+	// SchemaV2 is the frozen pre-dual-digest artifact schema. New analysis
+	// is never emitted as v2; v2 artifacts remain replayable from their
+	// original sources (see Replay).
+	SchemaV2 = "plenilune.analysis/v2"
 	// SchemaV1 is the frozen pre-redaction artifact schema. New analysis is
 	// never emitted as v1; v1 artifacts remain replayable from their original
 	// sources (see Replay).
@@ -292,7 +299,18 @@ type Result struct {
 	Summary             Summary               `json:"summary"`
 	GlobalBudget        *GlobalBudget         `json:"global_budget,omitempty"`
 	Limitations         []string              `json:"limitations"`
-	SHA256              string                `json:"sha256,omitempty"`
+	// ContentSHA256 is the digest of the semantic payload only (P2-1):
+	// sources by content (byte digests, sizes — not the caller Ref
+	// labels), request echo (selection, policy definitions, options),
+	// versions, objects, coverage, unanalyzed changes, summary, the
+	// global-budget record and limitations. Tool provenance is excluded,
+	// so the same result produced by a different build keeps one content
+	// identity. Present only on Schema (v3) artifacts; frozen v1/v2
+	// artifacts carry only the envelope digest.
+	ContentSHA256 string `json:"content_sha256,omitempty"`
+	// SHA256 is the whole-envelope digest (the artifact digest): every
+	// field above, the tool provenance and the content digest included.
+	SHA256 string `json:"sha256,omitempty"`
 }
 
 func currentVersions() Versions {
@@ -973,8 +991,72 @@ func summarize(r *Result) {
 	}
 }
 
-// Seal stamps the digest over the full artifact except the digest field.
+// contentSource is the content projection of one source: its exact byte
+// identity and size, without the caller's Ref correlation label (caller
+// metadata, not result identity — see CONTRACTS §8).
+type contentSource struct {
+	SHA256 string `json:"sha256"`
+	Bytes  int    `json:"bytes"`
+	Lines  int    `json:"lines"`
+}
+
+// resultContent is the fixed semantic projection a v3 content digest is
+// taken over. Tool provenance, the source Ref labels and both digest
+// fields are excluded by construction.
+type resultContent struct {
+	Schema              string                   `json:"schema"`
+	Versions            Versions                 `json:"versions"`
+	Request             RequestEcho              `json:"request"`
+	Sources             map[string]contentSource `json:"sources"`
+	Objects             []Object                 `json:"objects"`
+	Coverage            map[string]Coverage      `json:"coverage"`
+	UnanalyzedChanges   []SectionChange          `json:"unanalyzed_changes"`
+	UnanalyzedTruncated bool                     `json:"unanalyzed_changes_truncated"`
+	Summary             Summary                  `json:"summary"`
+	GlobalBudget        *GlobalBudget            `json:"global_budget,omitempty"`
+	Limitations         []string                 `json:"limitations"`
+}
+
+func contentDigest(r Result) (string, error) {
+	sources := make(map[string]contentSource, len(r.Sources))
+	for side, s := range r.Sources {
+		sources[side] = contentSource{SHA256: s.SHA256, Bytes: s.Bytes, Lines: s.Lines}
+	}
+	p := resultContent{
+		Schema: r.Schema, Versions: r.Versions, Request: r.Request, Sources: sources,
+		Objects: r.Objects, Coverage: r.Coverage, UnanalyzedChanges: r.UnanalyzedChanges,
+		UnanalyzedTruncated: r.UnanalyzedTruncated, Summary: r.Summary,
+		GlobalBudget: r.GlobalBudget, Limitations: r.Limitations,
+	}
+	b, err := json.Marshal(p)
+	if err != nil {
+		return "", err
+	}
+	return digest(b), nil
+}
+
+// Seal stamps the artifact's digests. A current (v3) artifact gets both:
+// the content digest over the semantic payload, then the envelope digest
+// over the full artifact — content digest and tool provenance included —
+// except the envelope field itself. Frozen v1/v2 shapes are sealed under
+// their original rules (envelope digest only, no content field), which is
+// how replay recomputes them; a frozen shape carrying a content digest,
+// or a schema this build does not know, is an error rather than a guess.
 func Seal(r Result) (Result, error) {
+	switch r.Schema {
+	case Schema:
+		content, err := contentDigest(r)
+		if err != nil {
+			return Result{}, err
+		}
+		r.ContentSHA256 = content
+	case SchemaV1, SchemaV2:
+		if r.ContentSHA256 != "" {
+			return Result{}, invalid("EVIDENCE_MISMATCH", "a frozen-schema analysis must not carry a content digest")
+		}
+	default:
+		return Result{}, invalid("EVIDENCE_MISMATCH", "unsupported analysis schema")
+	}
 	r.SHA256 = ""
 	b, err := json.Marshal(r)
 	if err != nil {
@@ -988,22 +1070,31 @@ func Seal(r Result) (Result, error) {
 }
 
 type ReplayResult struct {
-	Status             string `json:"status"`
-	SHA256             string `json:"sha256"`
+	Status string `json:"status"`
+	// SHA256 is the artifact (envelope) digest of the replayed record.
+	SHA256 string `json:"sha256"`
+	// ContentSHA256 is the record's content digest; present only for
+	// current-schema (v3) artifacts.
+	ContentSHA256      string `json:"content_sha256,omitempty"`
 	RecheckedWitnesses int    `json:"rechecked_witnesses"`
 }
 
 // Replay recomputes the artifact from the original configuration bytes and
 // the recorded request echo. Any byte, version or result difference fails.
-// Artifacts recorded under the frozen v1 schema are recomputed in the v1
-// shape, so they stay replayable; new analysis is never emitted as v1.
+// Artifacts recorded under the frozen v1/v2 schemas are recomputed in their
+// own shape, so they stay replayable; new analysis is never emitted as v1
+// or v2. For a v3 artifact both digests are verified against the payload
+// before any recompute: the content digest is recomputed from the semantic
+// projection, never trusted from the record, so a forged content claim
+// under a consistently recomputed envelope is still rejected here (and a
+// payload difference is caught again by the fresh recompute below).
 func Replay(ctx context.Context, before, after []byte, r Result) (ReplayResult, error) {
 	claimed := r.SHA256
 	sealed, err := Seal(r)
-	if err != nil || sealed.SHA256 != claimed || claimed == "" {
+	if err != nil || sealed.SHA256 != claimed || sealed.ContentSHA256 != r.ContentSHA256 || claimed == "" {
 		return ReplayResult{}, invalid("EVIDENCE_MISMATCH", "analysis digest does not match its content")
 	}
-	if r.Schema != Schema && r.Schema != SchemaV1 || !supportedVersions(r.Versions) || r.Tool.Version != evidence.ToolVersion {
+	if r.Schema != Schema && r.Schema != SchemaV2 && r.Schema != SchemaV1 || !supportedVersions(r.Versions) || r.Tool.Version != evidence.ToolVersion {
 		return ReplayResult{}, invalid("EVIDENCE_MISMATCH", "unsupported analysis schema or engine version")
 	}
 	if r.Sources["before"].SHA256 != digest(before) || r.Sources["after"].SHA256 != digest(after) {
@@ -1025,10 +1116,10 @@ func Replay(ctx context.Context, before, after []byte, r Result) (ReplayResult, 
 		return ReplayResult{}, err
 	}
 	if timing {
-		return ReplayResult{Status: "TIMING_SENSITIVE", SHA256: claimed, RecheckedWitnesses: rechecked}, nil
+		return ReplayResult{Status: "TIMING_SENSITIVE", SHA256: claimed, ContentSHA256: r.ContentSHA256, RecheckedWitnesses: rechecked}, nil
 	}
-	if fresh.SHA256 != claimed {
+	if fresh.SHA256 != claimed || fresh.ContentSHA256 != r.ContentSHA256 {
 		return ReplayResult{}, invalid("EVIDENCE_MISMATCH", "replayed analysis differs from the receipt")
 	}
-	return ReplayResult{Status: "ANALYSIS_REPLAYED", SHA256: claimed, RecheckedWitnesses: rechecked}, nil
+	return ReplayResult{Status: "ANALYSIS_REPLAYED", SHA256: claimed, ContentSHA256: r.ContentSHA256, RecheckedWitnesses: rechecked}, nil
 }

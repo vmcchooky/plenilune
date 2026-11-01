@@ -85,9 +85,6 @@ func TestCompareCacheKeyCoversEveryInput(t *testing.T) {
 			o.MaxWitnesses = 3
 			return c.Compare(ctx, []byte(cacheACLBefore), []byte(cacheACLAfter), conds, o, cacheTool())
 		}},
-		{"tool changed", func() (evidence.Comparison, error) {
-			return c.Compare(ctx, []byte(cacheACLBefore), []byte(cacheACLAfter), conds, opts, evidence.Tool{Version: evidence.ToolVersion, Commit: "other"})
-		}},
 	}
 	seen := map[string]string{}
 	for _, tc := range base {
@@ -104,13 +101,38 @@ func TestCompareCacheKeyCoversEveryInput(t *testing.T) {
 	if hits != 0 || misses != len(base) {
 		t.Fatalf("every mutated input must miss: hits=%d misses=%d", hits, misses)
 	}
-	// Repeating the baseline is the only hit.
-	if _, err := base[0].call(); err != nil {
+	// Repeating the baseline is a hit.
+	baseline, err := base[0].call()
+	if err != nil {
 		t.Fatal(err)
 	}
 	hits, _, _ = c.Stats()
 	if hits != 1 {
 		t.Fatalf("baseline repeat: hits=%d", hits)
+	}
+	// Since P2-1 the key is the input-side content projection: changing
+	// ONLY the tool commit — build provenance, excluded from content
+	// identity — is also a hit and returns the artifact exactly as the
+	// producing computation sealed it. (Before P2-1 the tool identity
+	// was keyed and this call missed with a different artifact digest.)
+	provenance, err := c.Compare(ctx, []byte(cacheACLBefore), []byte(cacheACLAfter), conds, opts, evidence.Tool{Version: evidence.ToolVersion, Commit: "other"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pb, err := json.Marshal(provenance)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bb, err := json.Marshal(baseline)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(pb) != string(bb) {
+		t.Fatalf("commit-only change must return the cached artifact byte-identical:\n%s\n%s", pb, bb)
+	}
+	hits, misses, _ = c.Stats()
+	if hits != 2 || misses != len(base) {
+		t.Fatalf("commit-only change must hit: hits=%d misses=%d", hits, misses)
 	}
 }
 

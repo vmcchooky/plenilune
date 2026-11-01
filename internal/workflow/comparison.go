@@ -28,6 +28,14 @@ func Compare(ctx context.Context, before, after []byte, conditions *intent.Set, 
 
 // CompareEngine seals a comparison produced by the named engine version.
 func CompareEngine(ctx context.Context, before, after []byte, conditions *intent.Set, opts verify.Options, tool evidence.Tool, engine string) (evidence.Comparison, error) {
+	return CompareEngineSchema(ctx, before, after, conditions, opts, tool, engine, evidence.ComparisonSchema)
+}
+
+// CompareEngineSchema is CompareEngine sealing in the shape of the named
+// evidence schema. The frozen v1 shape exists only so replay paths that
+// embed comparisons (repair receipts) can recompute a recorded artifact
+// in its own shape; fresh comparisons use CompareEngine.
+func CompareEngineSchema(ctx context.Context, before, after []byte, conditions *intent.Set, opts verify.Options, tool evidence.Tool, engine string, schema string) (evidence.Comparison, error) {
 	b, a, err := parsePair(before, after)
 	if err != nil {
 		return evidence.Comparison{}, err
@@ -36,12 +44,16 @@ func CompareEngine(ctx context.Context, before, after []byte, conditions *intent
 	if err != nil {
 		return evidence.Comparison{}, err
 	}
-	return evidence.SealComparison(evidence.Comparison{Tool: tool, EngineVersion: engine, Before: input(before, b), After: input(after, a), Conditions: conditions, Report: r})
+	return evidence.SealComparisonAs(evidence.Comparison{Tool: tool, EngineVersion: engine, Before: input(before, b), After: input(after, a), Conditions: conditions, Report: r}, schema)
 }
 
 type ReplayResult struct {
-	Status             string `json:"status"`
-	SHA256             string `json:"sha256"`
+	Status string `json:"status"`
+	// SHA256 is the artifact (envelope) digest of the replayed record.
+	SHA256 string `json:"sha256"`
+	// ContentSHA256 is the record's content digest; present only for
+	// current-schema (evidence v2) artifacts.
+	ContentSHA256      string `json:"content_sha256,omitempty"`
 	RecheckedWitnesses int    `json:"rechecked_witnesses"`
 }
 
@@ -92,7 +104,7 @@ func Replay(ctx context.Context, before, after []byte, c evidence.Comparison) (R
 		return ReplayResult{}, err
 	}
 	if c.Report.Budget.TimingLimited || r.Budget.TimingLimited {
-		return ReplayResult{Status: "TIMING_SENSITIVE", SHA256: c.SHA256, RecheckedWitnesses: n}, nil
+		return ReplayResult{Status: "TIMING_SENSITIVE", SHA256: c.SHA256, ContentSHA256: c.ContentSHA256, RecheckedWitnesses: n}, nil
 	}
 	x, err := json.Marshal(r)
 	if err != nil {
@@ -105,7 +117,7 @@ func Replay(ctx context.Context, before, after []byte, c evidence.Comparison) (R
 	if string(x) != string(y) {
 		return ReplayResult{}, errors.New("replayed comparison report does not match")
 	}
-	return ReplayResult{Status: "COMPARISON_REPLAYED", SHA256: c.SHA256, RecheckedWitnesses: n}, nil
+	return ReplayResult{Status: "COMPARISON_REPLAYED", SHA256: c.SHA256, ContentSHA256: c.ContentSHA256, RecheckedWitnesses: n}, nil
 }
 
 func parsePair(before, after []byte) (ciscoacl.ACL, ciscoacl.ACL, error) {

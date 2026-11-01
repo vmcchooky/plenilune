@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"sync"
 
+	"plenilune/internal/ciscoacl"
 	"plenilune/internal/evidence"
 	"plenilune/internal/intent"
 	"plenilune/internal/verify"
@@ -18,13 +19,20 @@ import (
 // evidence is still created once per distinct input and replays
 // independently of the cache.
 //
-// The key binds every input of the computation: both configuration byte
-// digests, the conditions as supplied, the full options, the engine
-// version and the tool identity. Changing any one of them is a miss by
-// construction. Results whose search stopped on a timing limit are
-// never stored: their content depends on machine load, so they are
-// recomputed (and replay as TIMING_SENSITIVE) instead of being frozen
-// into the cache.
+// The key is the input-side content projection (P2-1): it binds exactly
+// the inputs that determine the comparison's content_sha256 — both
+// configuration byte digests, the conditions as supplied, the full
+// options, and the parser and engine versions. Changing any one of them
+// is a miss by construction. Build provenance is NOT keyed: neither the
+// tool commit (the provenance P2-1 removes from content identity) nor
+// the tool version (a release label — the computation's semantics are
+// pinned by the parser/engine versions, and the version is validated
+// against the producing build at seal time). A hit therefore returns
+// the artifact as the producing computation sealed it, tool provenance
+// included; callers identify it by its content digest. Results whose
+// search stopped on a timing limit are never stored: their content
+// depends on machine load, so they are recomputed (and replay as
+// TIMING_SENSITIVE) instead of being frozen into the cache.
 type CompareCache struct {
 	mu       sync.Mutex
 	capacity int
@@ -48,18 +56,18 @@ type compareKey struct {
 	AfterSHA   string         `json:"after_sha256"`
 	Conditions *intent.Set    `json:"conditions"`
 	Options    verify.Options `json:"options"`
+	Parser     string         `json:"parser"`
 	Engine     string         `json:"engine"`
-	Tool       evidence.Tool  `json:"tool"`
 }
 
-func cacheKey(before, after []byte, conditions *intent.Set, opts verify.Options, tool evidence.Tool, engine string) (string, error) {
+func cacheKey(before, after []byte, conditions *intent.Set, opts verify.Options, engine string) (string, error) {
 	k := compareKey{
 		BeforeSHA:  evidence.ConfigDigest(before),
 		AfterSHA:   evidence.ConfigDigest(after),
 		Conditions: conditions,
 		Options:    opts,
+		Parser:     ciscoacl.ParserVersion,
 		Engine:     engine,
-		Tool:       tool,
 	}
 	b, err := json.Marshal(k)
 	if err != nil {
@@ -72,7 +80,7 @@ func cacheKey(before, after []byte, conditions *intent.Set, opts verify.Options,
 // Compare returns the cached sealed comparison for the exact inputs, or
 // computes, seals and (unless timing-limited) stores it.
 func (c *CompareCache) Compare(ctx context.Context, before, after []byte, conditions *intent.Set, opts verify.Options, tool evidence.Tool) (evidence.Comparison, error) {
-	key, err := cacheKey(before, after, conditions, opts, tool, verify.EngineVersion)
+	key, err := cacheKey(before, after, conditions, opts, verify.EngineVersion)
 	if err != nil {
 		return Compare(ctx, before, after, conditions, opts, tool)
 	}

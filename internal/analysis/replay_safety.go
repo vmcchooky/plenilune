@@ -93,7 +93,13 @@ func replaySafety(ctx context.Context, before, after []byte, recorded, fresh Res
 		return 0, false, mismatch()
 	}
 	x, y := recorded, fresh
+	// Both digests leave the projection: the content payload includes the
+	// same timing-dependent budget outcomes as the envelope, so a v3
+	// content digest differs between a cut recording and its rerun for
+	// exactly the reasons the envelope digest does. (The recorded digests
+	// were already verified against the recorded payload by Replay.)
 	x.SHA256, y.SHA256 = "", ""
+	x.ContentSHA256, y.ContentSHA256 = "", ""
 	x.Summary = Summary{UnanalyzedChanges: recorded.Summary.UnanalyzedChanges}
 	y.Summary = Summary{UnanalyzedChanges: fresh.Summary.UnanalyzedChanges}
 	x.Objects = append([]Object(nil), recorded.Objects...)

@@ -43,7 +43,7 @@ function ClassRow({ c, review, onProbe }: { c: ChangeClass; review: Review; onPr
   if (!source) return null;
   const first = review.parsed?.firstLine ?? { before: 1, after: 1 };
   return (
-    <li className={`change-class change-class--${c.effect}`}>
+    <li className={`card change-class change-class--${c.effect}`}>
       <div className="change-class__head">
         <StatusMark tone={c.effect === 'newly_denied' ? 'bad' : 'warn'} label={t(`changes.effect.${c.effect}`)} />
         {c.examples[0] && <code className="change-class__region">{boxText(c.examples[0], t('changes.any'))}</code>}
@@ -87,7 +87,7 @@ export function ChangeClasses({ review }: { review: Review }) {
         // notice bounds what was never decided. Pre-v0.4 artifacts carry
         // no partial and keep the notice-only rendering below.
         <>
-          <p className="notice-line notice-line--warn">{t('changes.incomplete', { reason: stopReasonLabel(t, report.reason ?? '') })}</p>
+          <p className="banner banner--warn">{t('changes.incomplete', { reason: stopReasonLabel(t, report.reason ?? '') })}</p>
           {report.classes.length > 0 && (
             <>
               <p className="field-hint">{t('partial.classesNote')}</p>
@@ -97,9 +97,9 @@ export function ChangeClasses({ review }: { review: Review }) {
           <PartialNotice partial={report.partial} showDecidedPairs={false} showUndecidedPairs />
         </>
       ) : !report.complete ? (
-        <p className="notice-line notice-line--warn">{t('changes.incomplete', { reason: stopReasonLabel(t, report.reason ?? '') })}</p>
+        <p className="banner banner--warn">{t('changes.incomplete', { reason: stopReasonLabel(t, report.reason ?? '') })}</p>
       ) : report.classes.length === 0 ? (
-        <p className="notice-line notice-line--neutral">{t('changes.none')}</p>
+        <p className="banner banner--neutral">{t('changes.none')}</p>
       ) : (
         <>
           <p className="change-classes__summary">{t('changes.summary', { denied, permitted })}</p>

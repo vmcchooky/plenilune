@@ -198,7 +198,7 @@ export function EvidenceStep({ review }: { review: Review }) {
                 <Icon name="replay" size={15} /> {t('evidence.replayComparison')}
               </button>
             )}
-            {review.canceled === 'replayComparison' && <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>}
+            {review.canceled === 'replayComparison' && <p className="banner banner--neutral">{t('common.canceled')}</p>}
           </div>
           <div className="replay-tool">
             <h3>{t('evidence.replayRepair')}</h3>
@@ -219,7 +219,7 @@ export function EvidenceStep({ review }: { review: Review }) {
                 <Icon name="replay" size={15} /> {t('evidence.replayRepair')}
               </button>
             )}
-            {review.canceled === 'replayRepair' && <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>}
+            {review.canceled === 'replayRepair' && <p className="banner banner--neutral">{t('common.canceled')}</p>}
           </div>
         </div>
       </section>
@@ -364,7 +364,7 @@ export function AnalysisReplay({ review }: { review: Review }) {
           <Icon name="replay" size={15} /> {t('evidence.replayAnalysis')}
         </button>
       )}
-      {review.canceled === 'replayAnalysis' && <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>}
+      {review.canceled === 'replayAnalysis' && <p className="banner banner--neutral">{t('common.canceled')}</p>}
     </div>
   );
 }

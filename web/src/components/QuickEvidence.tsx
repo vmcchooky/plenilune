@@ -172,7 +172,7 @@ export function QuickEvidence({ review }: { review: Review }) {
                     <Icon name="replay" size={15} /> {t('evidence.replayComparison')}
                   </button>
                 )}
-                {review.canceled === 'replayComparison' && <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>}
+                {review.canceled === 'replayComparison' && <p className="banner banner--neutral">{t('common.canceled')}</p>}
               </div>
             )}
             <AnalysisReplay review={review} />

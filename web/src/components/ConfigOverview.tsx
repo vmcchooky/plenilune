@@ -90,7 +90,7 @@ export function ConfigOverview({ review }: { review: Review }) {
     <section className="config-overview" aria-labelledby="overview-title">
       <SectionHeading id="overview-title" title={t('overview.title')} />
       <p className="config-overview__headline">{t(headline, { count: s.changed })}</p>
-      <p className={`notice-line notice-line--${s.unanalyzed_changes > 0 ? 'warn' : 'neutral'}`}>
+      <p className={`banner banner--${s.unanalyzed_changes > 0 ? 'warn' : 'neutral'}`}>
         {s.unanalyzed_changes > 0 ? t(unanalyzedKey, { count: s.unanalyzed_changes }) : t('overview.unanalyzedNone')}
       </p>
       {analysis.objects.length > 0 && (

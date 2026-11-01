@@ -78,7 +78,7 @@ export function ChatPanel({ comparison, analysis }: { comparison: Comparison | n
 
       <div className="chat-panel__suggestions">
         {SUGGESTIONS.map((key) => (
-          <button key={key} type="button" className="chip" onClick={() => setInput(t(key))}>
+          <button key={key} type="button" className="badge" onClick={() => setInput(t(key))}>
             {t(key)}
           </button>
         ))}

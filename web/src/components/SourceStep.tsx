@@ -23,7 +23,7 @@ export function SourceStep({ review }: { review: Review }) {
 
       <SampleBand review={review} />
 
-      <div className="source-spread">
+      <div className="card source-spread">
         <SourceEditor
           id="before"
           label={t('source.before')}
@@ -72,7 +72,7 @@ export function SourceStep({ review }: { review: Review }) {
       </TechnicalDetails>
 
       {review.canceled === 'parse' && (
-        <div className="notice notice--neutral" role="status">
+        <div className="banner banner--neutral" role="status">
           <Icon name="info" size={16} />
           <p>{t('common.canceled')}</p>
         </div>

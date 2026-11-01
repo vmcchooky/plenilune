@@ -74,7 +74,7 @@ export function ConditionEditorList({ review }: { review: Review }) {
               </div>
               <button
                 type="button"
-                className="button button--quiet button--small condition-row__remove"
+                className="button button--quiet button--small button--danger condition-row__remove"
                 disabled={busy}
                 aria-label={t('cond.remove', { id: condition.id })}
                 onClick={() => review.removeCondition(condition.id)}
@@ -144,7 +144,7 @@ export function ScopeEditor({ review }: { review: Review }) {
                 <h3>{t('scope.region', { index: index + 1 })}</h3>
                 <button
                   type="button"
-                  className="button button--quiet button--small"
+                  className="button button--quiet button--small button--danger"
                   disabled={busy}
                   aria-label={t('scope.remove', { index: index + 1 })}
                   onClick={() => review.removeRegion(index)}

@@ -99,7 +99,7 @@ export function ReportView({ input }: { input: ReportInput }) {
         <h3 id="report-verdict">{t('report.section.verdict')}</h3>
         <p className="report-verdict">
           <strong>{verdictTitle(t, report.verdict)}</strong>
-          <code>{report.verdict}</code>
+          <code className="badge">{report.verdict}</code>
         </p>
         <p>{verdictBody(t, report.verdict, report.reason)}</p>
         <p className="field-hint">

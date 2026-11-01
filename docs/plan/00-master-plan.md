@@ -82,3 +82,10 @@ cuối file này (ngày, ai, đổi gì, vì sao). Trạng thái từng hạng m
 
 - 31/10/2026 — Chí Nhân lập kế hoạch từ ba báo cáo nghiên cứu/audit/đối chiếu
   ngày 31/10/2026 theo yêu cầu của Chooky.
+- 01/11/2026 — Chí Nhân bổ sung luồng sử dụng nhanh theo quyết định của
+  Chooky: P1-8 (luồng verdict nhanh), P1-9 (CLI tóm tắt), P1-10 (chat thẩm
+  vấn trên màn verdict) vào Phase 1 và P2-8 (trigger & hộp thư verdict) vào
+  Phase 2, xếp tầng 0 (trigger/inbox) — 1 (verdict nhanh/CLI) — 2 (chat thẩm
+  vấn + bằng chứng). Vì sao: nghiên cứu hành vi người dùng cho thấy quy
+  trình 5 ga hiện tại dài dòng, làm giảm khả năng dùng thực tế dù chi tiết
+  là giá trị cốt lõi — kết luận phải lên trước, chi tiết theo yêu cầu.

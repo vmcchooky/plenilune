@@ -148,3 +148,94 @@ engine, acceptance thuộc người.
 **Nghiệm thu:** đo trên corpus session synthetic: tỉ lệ proposal qua được
 verify, chi phí/latency; cap mới ghi vào `AI_AGENT_DESIGN.md` + CONTRACTS.
 Live qualification vẫn là việc riêng, không suy từ mock.
+
+## P1-8 — Luồng verdict nhanh (quick verdict path)
+
+**Vấn đề:** UI hiện ép người dùng đi qua thanh 5 ga (Source → Conditions →
+Result → Repair → Evidence); verdict đầu tiên chỉ thấy được sau ga
+Conditions. Trong khi đó verdict và obligations phụ thuộc lẫn nhau: thấy
+thay đổi mới biết nên đặt obligation gì, đặt xong lại muốn quay lại xem thay
+đổi — luồng chia bước bắt người dùng qua lại đúng hai ga đó.
+
+**Cơ sở nghiên cứu (Chooky đã duyệt 01/11/2026):**
+- Progressive disclosure (Nielsen, 1995; NN/g): phần nâng cao/ít dùng thuộc
+  về lớp phụ; lớp đầu chỉ chứa thứ đa số ca cần.
+- Wizard hợp với tác vụ hiếm gặp dành cho người mới; soát thay đổi là việc
+  *thường xuyên của chuyên gia* — hướng dẫn từng bước làm chậm họ.
+- Luồng chia bước (staged) khiến người dùng kẹt khi các bước phụ thuộc nhau;
+  ở đây verdict ↔ obligations phụ thuộc nhau đúng nghĩa đó.
+- Time-to-first-value quyết định việc giữ chân ở phiên đầu: bắt cấu hình
+  trước khi thấy giá trị làm rớt người dùng.
+- Hiệu ứng mặc định (default effect): đa số người dùng không đổi mặc định —
+  đường mặc định thực chất là sản phẩm.
+
+**Làm:**
+1. Một vùng thả duy nhất cho before/after; đủ hai input là parse + phân tích
+   **tự chạy** — verdict hiện với **0 click** thêm.
+2. Màn verdict là màn nhà: banner verdict + một dòng tóm tắt; danh sách
+   object kèm chip trạng thái; obligations **inline ngay trên cùng màn**,
+   sửa là trạng thái cập nhật tại chỗ (dạng liệt kê từng obligation của
+   P0-3); ca không có obligation không bị chặn ở bất kỳ đâu.
+3. Repair chỉ xuất hiện theo ngữ cảnh trên màn verdict khi verdict là
+   DIFFERENT và có obligation bị vi phạm.
+4. Bằng chứng thành ngăn kéo/tab trên cùng màn; ticket summary (P0-3) là
+   hành động chia sẻ kết quả.
+5. Luồng 5 ga hiện tại giữ làm **chế độ duyệt sâu** tường minh — không còn
+   là mặc định.
+6. Ăn kiêng chữ: mỗi vùng một tiêu đề + một dòng ngắn; giải thích dài
+   chuyển vào tooltip/lớp trợ giúp.
+
+**Không làm (đường đỏ):** verdict không bao giờ nói quá phạm vi mô hình;
+INCONCLUSIVE nổi bật ngang các verdict khác; dòng limitations ở lại trên
+màn verdict (rút ngắn, không xóa); không đổi engine/schema/API; chế độ
+duyệt sâu không mất năng lực nào so với hiện tại.
+
+**Nghiệm thu (đo được):**
+- Thả hai file xong verdict hiện với 0 click; ca không-obligations tới
+  được verdict mà không qua bất kỳ UI điều kiện nào.
+- Sửa obligation inline → trạng thái render lại tại chỗ, không điều hướng.
+- Toàn bộ web test hiện có xanh, cộng test mới cho auto-run và obligations
+  inline.
+- Kiểm tra trực quan trên cổng Windows của owner (như đã làm ở P0-3).
+
+## P1-9 — CLI tóm tắt (terse CLI verdict)
+
+**Vấn đề:** đầu ra CLI hiện là artifact/báo cáo đầy đủ. Người dùng terminal
+và script cần một dạng ngắn, ổn định để liếc nhanh và để máy grep, kèm mã
+thoát phân biệt kết cục.
+
+**Làm:** chế độ tóm tắt cho đường diff/analyze của CLI với ngân sách dòng
+cố định: một dòng verdict; một dòng trạng thái cho từng object; obligations
+dạng liệt kê (như P0-3); một dòng limitations. Từ ngữ ổn định, máy grep
+được. Mã thoát có tài liệu, phân biệt EQUIVALENT / DIFFERENT /
+INCONCLUSIVE / lỗi.
+
+**Không làm:** không đổi artifact JSON; báo cáo đầy đủ cho người giữ
+nguyên.
+
+**Nghiệm thu:** golden test cho định dạng tóm tắt ở cả bốn lớp kết cục; mã
+thoát có test bao phủ; tài liệu (README/usage) cập nhật.
+
+## P1-10 — Chat thẩm vấn trên màn verdict (verdict interrogation)
+
+**Ý tưởng:** sau khi có artifact hoàn chỉnh, người dùng hỏi về *chính kết
+quả đó* ngay trên màn verdict ("vì sao OB-2 bị vi phạm", "cho xem
+witness"). Đây là mở rộng của AI agent session hiện có, liên kết với ngân
+sách rủi ro của P1-7. Chat là lớp thẩm vấn tầng 2, không phải đường nhập
+liệu: nghiên cứu NN/g về chatbot cho thấy gõ câu hỏi chậm hơn nhìn kết quả
+có cấu trúc ở tác vụ dạng này, và hộp chat trống làm mất tính khám phá.
+
+**Làm:** panel hỏi đáp neo vào một artifact đã hoàn tất trên màn verdict.
+Mọi câu trả lời phải bám artifact qua engine tools — AI đề xuất, engine
+quyết định (đúng quy tắc dự án và ngân sách rủi ro ở master plan); mọi
+khẳng định thực tế trong câu trả lời phải truy được về field của artifact
+hoặc kết quả engine tool.
+
+**Không làm (đường đỏ):** chat không bao giờ là đường nhập cấu hình hay
+obligation; không chặn và không thay thế màn verdict; chat không phát ra
+và không sửa được bất kỳ verdict nào.
+
+**Nghiệm thu:** panel chạy trên artifact đã hoàn tất mà không phải nhập
+lại cấu hình; test với artifact fixture + bộ câu hỏi kịch bản, kiểm mọi
+khẳng định truy được về artifact/tool; AI chưa cấu hình → thông báo rõ
+ràng, màn verdict vẫn dùng được đầy đủ.

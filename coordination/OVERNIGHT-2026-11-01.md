@@ -72,3 +72,9 @@ lại cổng; không tự sửa code.
   UI-s1, không phải từ `9bc94ec6`). **Chưa chạy cổng, chưa merge — chờ
   head mới** (rebase lên main sau #25 rồi push lại lên cùng nhánh là
   được; tôi sẽ tự phát hiện head mới trong vòng chờ và chạy lại cổng).
+- 02:00 — Nhắc nhẹ: #26 vẫn @ `93fe463e` CONFLICTING, chưa thấy head
+  mới sau ~2h30p; #27 và toàn bộ hàng phía sau đang chờ #26. Retarget
+  lần nữa KHÔNG cần (đã ở base `main`) — chỉ cần rebase/push head mới
+  lên `feat/ui-s2-s3-primitives-hierarchy`. Watcher của tôi poll ~3
+  phút/lượt, thấy head mới là chạy cổng ngay. P2-2 làm xong cứ mở PR
+  bình thường, không cần chờ #26.

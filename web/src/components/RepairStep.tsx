@@ -77,7 +77,10 @@ function RepairAiConsent({ review }: { review: Review }) {
   );
 }
 
-export function RepairStep({ review }: { review: Review }) {
+// Embedded mode renders the same repair workspace without the step chrome
+// (header and stage navigation) for the quick verdict screen, where repair
+// is a contextual section rather than a stage. The verify action stays.
+export function RepairStep({ review, embedded = false }: { review: Review; embedded?: boolean }) {
   const { t } = useI18n();
   const accepted = review.accepted;
   const comparison = review.comparison;
@@ -171,10 +174,12 @@ export function RepairStep({ review }: { review: Review }) {
   const evidenceReady = Boolean(receipt);
 
   return (
-    <div className="step">
-      <StepHeader kicker={t('repair.kicker')} title={t('repair.title')} lede={t('repair.lede')}>
-        <ProvenanceTag icon="lock">{t('repair.applyNone')}</ProvenanceTag>
-      </StepHeader>
+    <div className={embedded ? 'repair-embedded' : 'step'}>
+      {!embedded && (
+        <StepHeader kicker={t('repair.kicker')} title={t('repair.title')} lede={t('repair.lede')}>
+          <ProvenanceTag icon="lock">{t('repair.applyNone')}</ProvenanceTag>
+        </StepHeader>
+      )}
 
       {scopeMode === 'undeclared'  && <p className="notice-line notice-line--warn">{t('repair.scope.undeclaredWarn')}</p>}
       {scopeMode === 'none' && <p className="notice-line notice-line--neutral">{t('repair.scope.noneNote')}</p>}
@@ -529,6 +534,14 @@ export function RepairStep({ review }: { review: Review }) {
 
       {review.busy === 'repair' ? (
         <BusyPanel label={t('repair.verifyBusy')} onCancel={review.cancel} />
+      ) : embedded ? (
+        receipt ? null : (
+          <ActionBar note={t('repair.noReceipt')}>
+            <button type="button" className="button button--primary" onClick={review.verifyManualRepair} disabled={busy || review.edits.length === 0}>
+              <Icon name="shield" size={17} /> {t('repair.verify')}
+            </button>
+          </ActionBar>
+        )
       ) : (
         <ActionBar note={receipt ? (receipt.receipt.status === 'VERIFIED' ? t('repair.verifiedHint') : t('repair.notVerifiedHint')) : t('repair.noReceipt')}>
           <button type="button" className="button button--secondary" onClick={() => review.navigate('result')}>{t('repair.back')}</button>

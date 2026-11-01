@@ -54,9 +54,14 @@ Server chỉ nghe trên máy bạn (127.0.0.1), mở app không hề gọi AI ha
 
 ![Bước 01 — Nguồn & ý định](screenshots/vi-guide-01-nguon.png)
 
-Muốn đổi ngôn ngữ giao diện: bấm **VI**/**EN** ở góc phải trên. Giao diện có
-5 bước theo thứ tự: **01 Nguồn & ý định → 02 Điều kiện & phạm vi → 03 Kết quả
-→ 04 Bản sửa → 05 Bằng chứng**. Bấm số bước trên rail trái để quay lại bước đó.
+Muốn đổi ngôn ngữ giao diện: bấm **VI**/**EN** ở góc phải trên. Ứng dụng mở ở
+chế độ **Kết luận nhanh**: đưa vào hai cấu hình là kết luận tự hiện; điều kiện,
+bản sửa và bằng chứng đều nằm trên cùng một màn hình. Bài thực hành dưới đây
+đi theo chế độ **Duyệt sâu** — quy trình 5 bước theo thứ tự: **01 Nguồn & ý
+định → 02 Điều kiện & phạm vi → 03 Kết quả → 04 Bản sửa → 05 Bằng chứng**;
+bấm **Duyệt sâu** ở phía trên để chuyển chế độ, và bấm số bước trên rail trái
+để quay lại bước đó. Ảnh chụp màn hình trong tài liệu này là của chế độ Duyệt
+sâu và sẽ được chụp lại cho chế độ Kết luận nhanh sau.
 
 ## 3. Bài thực hành 15 phút (không cần API key)
 

@@ -98,3 +98,20 @@ lại cổng; không tự sửa code.
   npm test 16 file / 109 test (giữ nguyên như bạn dự báo) · build ok.
   Giới hạn fail-loud trong STATUS không gây lỗi test nào. PR backend —
   không cần cổng hình ảnh. Đang chờ PR p2-2 tiếp theo trong hàng.
+- 07:05 — Cảm ơn đã đóng #26. **Nhóm 4 PR mới (#30, #29, #31, #32) đều
+  CONFLICTING — cùng một kiểu lỗi lineage như #26**: cả 4 nhánh được cắt
+  độc lập từ main cũ `47d952a` (trước khi #27/p2-1 merge), mỗi nhánh một
+  commit, chỉnh chồng nhau lên cùng files (ít nhất `docs/plan/
+  STATUS.md`). Bằng chứng nguyên văn:
+  `git log -1 origin/feat/p2-2-capabilities` → `82e15c4 parent=47d952a`;
+  `git merge-base --is-ancestor 3ac0a99c4 origin/feat/p2-2-capabilities`
+  → NOT ancestor.
+  `git merge-tree origin/main origin/feat/p2-2-capabilities` → `CONFLICT
+  (content): Merge conflict in docs/plan/STATUS.md` (merge-base
+  `47d952a47`). #29/#31/#32 cũng mergeable=CONFLICTING với base xếp
+  trên của chúng. Tôi đã retarget #30 về main (theo kế hoạch stack) —
+  trạng thái không đổi. **Chưa gate gì của nhóm này.** Pattern đã chữa
+  thành công cho #26→#28: nhánh mới cắt từ main HIỆN TẠI (`9d53df1`)
+  cho p2-2, merge xong thì nhánh p2-3 cắt từ main mới, cứ thế tuần tự —
+  hoặc push head rebase tuần tự lên từng nhánh hiện có rồi tôi retarget
+  base PR kế tiếp. Watcher sẽ bắt head mới ngay.

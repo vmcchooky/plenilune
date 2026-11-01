@@ -7,7 +7,7 @@ import { fileStamp, prettyJson } from '../lib/format';
 import { replayLabel } from '../lib/labels';
 import { buildMarkdownReport, buildTicketSummary } from '../lib/report';
 import type { ReportInput } from '../lib/report';
-import { replayInstructions, reviewCopy, standaloneRepairRaw } from '../lib/reviewArtifacts';
+import { exportBundleManifest, replayInstructions, reviewCopy, standaloneRepairRaw } from '../lib/reviewArtifacts';
 import { Icon } from './Icon';
 import { ReportView } from './ReportView';
 import {
@@ -32,6 +32,8 @@ export function EvidenceStep({ review }: { review: Review }) {
   const { t, locale } = useI18n();
   const [view, setView] = useState<'report' | 'raw'>('report');
   const [generatedAt] = useState(() => new Date());
+  const [bundleBusy, setBundleBusy] = useState(false);
+  const [bundleError, setBundleError] = useState<string | null>(null);
   const accepted = review.accepted;
   const comparison = review.comparison;
   if (!comparison) return review.analysis ? <AnalysisEvidence review={review} /> : null;
@@ -110,6 +112,27 @@ export function EvidenceStep({ review }: { review: Review }) {
 
   function download(content: string, filename: string) {
     downloadText(filename, content, 'application/json');
+  }
+
+  async function downloadBundle() {
+    if (!accepted || !comparison) return;
+    setBundleBusy(true);
+    setBundleError(null);
+    try {
+      const manifest = await exportBundleManifest({
+        before: accepted.before,
+        after: accepted.after,
+        comparison: comparison.raw,
+        repair: repair ? standaloneRepairRaw(repair.receipt, repair.raw) : undefined,
+        report: markdown,
+        instructions: replayInstructions(locale, Boolean(repair), comparison.comparison.tool.version, Boolean(review.analysis)),
+      });
+      downloadText('bundle-manifest.json', manifest, 'application/json');
+    } catch {
+      setBundleError(t('evidence.bundleFailed'));
+    } finally {
+      setBundleBusy(false);
+    }
   }
 
   return (
@@ -198,7 +221,7 @@ export function EvidenceStep({ review }: { review: Review }) {
                 <Icon name="replay" size={15} /> {t('evidence.replayComparison')}
               </button>
             )}
-            {review.canceled === 'replayComparison' && <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>}
+            {review.canceled === 'replayComparison' && <p className="banner banner--neutral">{t('common.canceled')}</p>}
           </div>
           <div className="replay-tool">
             <h3>{t('evidence.replayRepair')}</h3>
@@ -219,7 +242,7 @@ export function EvidenceStep({ review }: { review: Review }) {
                 <Icon name="replay" size={15} /> {t('evidence.replayRepair')}
               </button>
             )}
-            {review.canceled === 'replayRepair' && <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>}
+            {review.canceled === 'replayRepair' && <p className="banner banner--neutral">{t('common.canceled')}</p>}
           </div>
         </div>
       </section>
@@ -244,6 +267,9 @@ export function EvidenceStep({ review }: { review: Review }) {
           </button>
           <button type="button" className="download-item" onClick={() => downloadText(ticketName, ticketSummary, 'text/markdown;charset=utf-8')}>
             <Icon name="file" size={18} /><span><strong>{t('evidence.downloadTicket')}</strong><small>{ticketName}</small></span><Icon name="download" size={16} />
+          </button>
+          <button type="button" className="download-item" onClick={downloadBundle} disabled={bundleBusy}>
+            <Icon name="file" size={18} /><span><strong>{t('evidence.downloadBundle')}</strong><small>bundle-manifest.json</small></span><Icon name="download" size={16} />
           </button>
           {repair?.receipt.candidate && <button type="button" className="download-item" onClick={() => downloadText('candidate.acl', repair.receipt.candidate!, 'text/plain;charset=utf-8')}>
             <Icon name="file" size={18} /><span><strong>{copy.candidate}</strong><small>candidate.acl</small></span><Icon name="download" size={16} />
@@ -272,6 +298,7 @@ export function EvidenceStep({ review }: { review: Review }) {
             <Icon name="arrow" size={16} />
           </button>
         </div>
+        {bundleError && <p className="banner banner--warn" role="alert">{bundleError}</p>}
       </section>
 
       <ActionBar note={t('evidence.downloadNotice')}>
@@ -364,7 +391,7 @@ export function AnalysisReplay({ review }: { review: Review }) {
           <Icon name="replay" size={15} /> {t('evidence.replayAnalysis')}
         </button>
       )}
-      {review.canceled === 'replayAnalysis' && <p className="notice-line notice-line--neutral">{t('common.canceled')}</p>}
+      {review.canceled === 'replayAnalysis' && <p className="banner banner--neutral">{t('common.canceled')}</p>}
     </div>
   );
 }

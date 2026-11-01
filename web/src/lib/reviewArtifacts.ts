@@ -39,9 +39,9 @@ export function inspectReceipt(raw: string): ImportedReceipt {
   const value: unknown = JSON.parse(raw);
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('RECEIPT_INVALID');
   const receipt = value as Record<string, unknown>;
-  const kind = receipt.schema === 'plenilune.evidence/v1' ? 'comparison'
+  const kind = receipt.schema === 'plenilune.evidence/v1' || receipt.schema === 'plenilune.evidence/v2' ? 'comparison'
     : receipt.schema === 'plenilune.repair/v1' ? 'repair'
-      : receipt.schema === 'plenilune.analysis/v1' || receipt.schema === 'plenilune.analysis/v2' ? 'analysis' : null;
+      : receipt.schema === 'plenilune.analysis/v1' || receipt.schema === 'plenilune.analysis/v2' || receipt.schema === 'plenilune.analysis/v3' ? 'analysis' : null;
   if (!kind || typeof receipt.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(receipt.sha256)) {
     throw new Error('RECEIPT_INVALID');
   }
@@ -97,6 +97,47 @@ export async function replayImported(
     throw new ApiError('Replay response does not match imported receipt.', 'RESPONSE_INVALID');
   }
   return result;
+}
+
+export interface BundleExportParts {
+  before: string;
+  after: string;
+  comparison: string;
+  repair?: string;
+  report?: string;
+  instructions?: string;
+}
+
+// Asks the local runtime for the review bundle manifest
+// (plenilune.bundle/v1, P2-4) of this case and returns its exact
+// bytes. The manifest is an integrity index over the case files the
+// reviewer downloads with it — the server builds it with the same
+// shared builder as `plenilune bundle-export`, so both exports are
+// byte-identical for the same case. The receipts remain the proof;
+// the manifest only indexes them.
+export async function exportBundleManifest(parts: BundleExportParts, signal?: AbortSignal): Promise<string> {
+  let response: Response;
+  try {
+    response = await fetch('/api/bundle/export', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(parts), signal,
+    });
+  } catch (cause) {
+    if (cause instanceof DOMException && cause.name === 'AbortError') throw cause;
+    throw new ApiError('Local runtime is unavailable.', 'RUNTIME_UNAVAILABLE');
+  }
+  const text = await response.text();
+  if (!response.ok) {
+    let code = 'REQUEST_FAILED';
+    try {
+      const value = JSON.parse(text) as { error?: { code?: string } };
+      code = value.error?.code ?? code;
+    } catch { /* keep the default code */ }
+    throw new ApiError('Bundle export did not complete.', code, undefined, undefined, response.status);
+  }
+  let manifest: { schema?: unknown };
+  try { manifest = JSON.parse(text) as { schema?: unknown }; } catch { throw new ApiError('Invalid bundle manifest response.', 'RESPONSE_INVALID'); }
+  if (manifest.schema !== 'plenilune.bundle/v1') throw new ApiError('Bundle manifest schema mismatch.', 'RESPONSE_INVALID');
+  return text;
 }
 
 // The repair object is already Go-sealed. Extraction never recomputes its hash.

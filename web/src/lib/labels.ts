@@ -75,6 +75,27 @@ export function outcomeLabel(t: Translate, status: ObligationStatus): string {
   return t(outcomeKeys[status] ?? 'result.outcome.INCONCLUSIVE');
 }
 
+const outcomeWordKeys: Record<ObligationStatus, MessageKey> = {
+  HOLDS: 'result.outcomeWord.HOLDS',
+  VIOLATED: 'result.outcomeWord.VIOLATED',
+  INCONCLUSIVE: 'result.outcomeWord.INCONCLUSIVE',
+};
+
+// Inline lowercase status word for listings, e.g. "violated" in
+// "OB-1 violated · OB-2 holds · OB-3 holds".
+export function outcomeWord(t: Translate, status: ObligationStatus): string {
+  return t(outcomeWordKeys[status] ?? 'result.outcomeWord.INCONCLUSIVE');
+}
+
+// Per-obligation status listing. This replaces the former "passed: x/y"
+// ratio everywhere: each obligation is an independent outcome, not a score.
+export function obligationStatusList(
+  t: Translate,
+  obligations: readonly { id: string; status: ObligationStatus }[],
+): string {
+  return obligations.map((item) => `${item.id} ${outcomeWord(t, item.status)}`).join(' · ');
+}
+
 export function repairStatusLabel(t: Translate, status: RepairStatus): string {
   return t(repairKeys[status] ?? 'repair.status.UNVERIFIED');
 }

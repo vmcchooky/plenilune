@@ -116,11 +116,13 @@ và kiểm chứng bản sửa, rồi tải bằng chứng.
 
 ### Bước 4 — Đọc kết quả sau khi duyệt
 
-- **Màn hình hiện:** quay lại **Kết quả** với nhãn **Điều kiện đạt: 2/3**.
+- **Màn hình hiện:** quay lại **Kết quả** với dòng liệt kê **OB-1 không đạt ·
+  OB-2 đạt · OB-3 đạt**.
   Mục **Điều kiện cần kiểm chứng** cho biết: OB-1 **Không đạt**, OB-2 **Đạt**,
   OB-3 **Đạt**. Nhóm **Mới bị chặn** giờ có thêm nhãn **Ngoài phạm vi được
   phép**.
-- **Nghĩa gì:** 2/3 là ba kết luận độc lập, **không phải** "điểm an toàn 67%".
+- **Nghĩa gì:** mỗi điều kiện là một kết luận độc lập, **không phải** tỉ lệ
+  hay "điểm an toàn" phần trăm.
   OB-1 không đạt vì đúng như phát hiện ban đầu: SSH tới jump host bị chặn.
   Dòng **Tiếp theo** dẫn bạn sang chuẩn bị bản sửa.
 
@@ -327,7 +329,8 @@ AI mặc định **tắt**. Toàn bộ bài thực hành ở mục 3 không cầ
 4. Rail **02 Điều kiện & phạm vi** → đọc OB-1…, giữ **Không cho phép thay đổi
    hành vi nào** → **Xem policy đã chuẩn hóa** → tick → **Chấp nhận & kiểm
    chứng**.
-5. Đọc kết quả (Điều kiện đạt x/y, nhãn Ngoài phạm vi được phép).
+5. Đọc kết quả (dòng liệt kê trạng thái từng điều kiện OB-1…, nhãn Ngoài phạm
+   vi được phép).
 6. Rail **04 Bản sửa** → bấm **Xóa dòng** trên quy tắc gây lỗi → **Kiểm chứng
    bản sửa** → thấy **Đã kiểm chứng**.
 7. **Phát lại biên bản** → **Phát lại khớp** → **Nhận để review** (chưa áp dụng

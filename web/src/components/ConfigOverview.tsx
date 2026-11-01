@@ -23,6 +23,37 @@ function linesText(o: AnalysisObject, side: 'before' | 'after', absent: string):
   return extent.lines.map(([a, b]) => (a === b ? `${a}` : `${a}–${b}`)).join(', ');
 }
 
+// "Used at" panel: renders the artifact's structural references for one
+// object (v2 shape: line, kind = referencing mechanism, name = referenced
+// object). References are structure only — Plenilune does not model the
+// direction or the real binding, and the panel says so. Raw configuration
+// text is never shown here; only the mechanism, name and line recorded in
+// the artifact.
+export function ObjectReferences({ object }: { object: AnalysisObject }) {
+  const { t } = useI18n();
+  const sides = (['before', 'after'] as const)
+    .map((side) => ({ side, refs: object.references[side] }))
+    .filter(({ refs }) => refs.length > 0);
+  return (
+    <div className="object-references">
+      <h3>{t('overview.refs')}</h3>
+      <p className="field-hint">{t('overview.refsNote')}</p>
+      {sides.length === 0 ? (
+        <p className="field-hint">{t('overview.refsNone')}</p>
+      ) : (
+        <ul className="reference-list">
+          {sides.map(({ side, refs }) => refs.map((r, i) => (
+            <li key={`${side}:${r.line}:${r.kind}:${i}`}>
+              <code>{r.kind}</code> {r.name}
+              <small> · {t(side === 'before' ? 'common.before' : 'common.after')} {t('changes.rule', { line: r.line })}</small>
+            </li>
+          )))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function ObjectErrors({ object }: { object: AnalysisObject }) {
   const { t } = useI18n();
   if (!object.errors?.length) return null;

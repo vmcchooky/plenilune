@@ -3,7 +3,7 @@ import { actionLabel } from '../lib/conditions';
 import type { Translate } from '../lib/conditions';
 import { stopReasonLabel, verdictTitle } from '../lib/labels';
 import type { AnalysisObject, EntryRef, PrefixClass, PrefixReport } from '../lib/types';
-import { ObjectErrors } from './ConfigOverview';
+import { ObjectErrors, ObjectReferences } from './ConfigOverview';
 import { ProvenanceTag, SectionHeading, StatusMark, TechnicalDetails } from './Ui';
 
 function Entry({ entry }: { entry: EntryRef }) {
@@ -102,6 +102,7 @@ export function PrefixListDetail({ object }: { object: AnalysisObject }) {
           </TechnicalDetails>
         </>
       )}
+      <ObjectReferences object={object} />
     </section>
   );
 }
@@ -127,6 +128,7 @@ export function ObjectDetail({ object }: { object: AnalysisObject }) {
       <SectionHeading id="object-title" title={t('result.objectHeader', { domain: t(`overview.domain.${object.domain}`), name: object.name })} />
       <ObjectStatusNote object={object} />
       <ObjectErrors object={object} />
+      <ObjectReferences object={object} />
     </section>
   );
 }

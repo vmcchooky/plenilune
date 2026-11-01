@@ -18,6 +18,7 @@ import { formatTimestamp } from './format';
 import {
   aiStatusLabel,
   collateralStatusLabel,
+  obligationStatusList,
   outcomeLabel,
   repairReasonLabel,
   repairStatusLabel,
@@ -27,7 +28,7 @@ import {
   verdictBody,
   verdictTitle,
 } from './labels';
-import type { AIResult, Witness } from './types';
+import type { AIResult, Decision, Witness } from './types';
 import { collectWitnesses } from './witnesses';
 import { replayInstructions, reviewCopy } from './reviewArtifacts';
 
@@ -65,6 +66,14 @@ function packetText(witness: Witness): string {
   return `${protocol} ${src} → ${dst}`;
 }
 
+// Artifact-only decision reference for the ticket summary: action and line
+// number as recorded in the evidence, never the raw source line.
+function decisionRefText(t: Translate, decision: Decision): string {
+  const label = actionLabel(t, decision.action);
+  if (decision.implicit) return `${label} (${t('common.implicitDeny')})`;
+  return `${label} · ${t('result.ruleLine', { line: decision.line ?? 0 })}`;
+}
+
 function decisionText(t: Translate, action: 'permit' | 'deny', line: number | undefined, implicit: boolean, source: string): string {
   const label = actionLabel(t, action);
   if (implicit) return `${label} (${t('common.implicitDeny')})`;
@@ -94,7 +103,7 @@ export function buildMarkdownReport(input: ReportInput): string {
   push('');
   push(verdictBody(t, report.verdict, report.reason));
   push('');
-  push(`- ${t('result.conditionsSummary', { holds: report.obligations.filter((item) => item.status === 'HOLDS').length, total: report.obligations.length })}`);
+  push(`- ${obligationStatusList(t, report.obligations)}`);
   push(`- ${t('result.searchComplete')}: ${report.search_complete ? t('result.yes') : t('result.no')}`);
   if (report.witnesses_truncated) push(`- ${t('result.truncated')}`);
   push('');
@@ -237,5 +246,81 @@ export function buildMarkdownReport(input: ReportInput): string {
   push(copy.decisionNote);
   push('');
   push(replayInstructions(locale, Boolean(repair), comparison.comparison.tool.version));
+  return lines.join('\n');
+}
+
+// Deterministic ticket summary: a compact Markdown digest generated only
+// from the evidence artifacts (comparison + optional repair receipt). It
+// carries no timestamp, no session state, no AI prose and no raw
+// configuration text — deciding rules are cited by line number, exactly as
+// recorded in the artifact. Same artifact in, same summary out. The JSON
+// artifact remains authoritative.
+export function buildTicketSummary(input: ReportInput): string {
+  const { t, comparison, repair } = input;
+  const report = comparison.comparison.report;
+  const lines: string[] = [];
+  const push = (line = '') => lines.push(line);
+
+  push(`# ${t('ticket.title')}`);
+  push('');
+  push(`> ${t('ticket.note')}`);
+  push('');
+  push(`**${verdictTitle(t, report.verdict)}** \`${report.verdict}\``);
+  push('');
+  push(verdictBody(t, report.verdict, report.reason));
+  push('');
+  push(`- ${obligationStatusList(t, report.obligations)}`);
+  push(`- ${t('result.searchComplete')}: ${report.search_complete ? t('result.yes') : t('result.no')}`);
+  if (report.witnesses_truncated) push(`- ${t('result.truncated')}`);
+  push('');
+
+  push(`## ${t('report.section.witnesses')}`);
+  push('');
+  const entries = collectWitnesses(t, report);
+  if (entries.length === 0) {
+    push(t('report.noWitness'));
+  } else {
+    for (const entry of entries) {
+      push(`- ${entry.label} · \`${packetText(entry.witness)}\`: ${t('result.decisionBefore')}: ${decisionRefText(t, entry.witness.before)} · ${t('result.decisionAfter')}: ${decisionRefText(t, entry.witness.after)}`);
+    }
+  }
+  push('');
+
+  push(`## ${t('report.section.repair')}`);
+  push('');
+  if (repair) {
+    const receipt = repair.receipt;
+    push(`**${repairStatusLabel(t, receipt.status)}** \`${receipt.status}\``);
+    push('');
+    push(`- ${t('repair.collateral')}: ${collateralStatusLabel(t, receipt.collateral.status)} \`${receipt.collateral.status}\``);
+  } else {
+    push(t('report.noRepair'));
+  }
+  push('');
+
+  push(`## ${t('report.section.limits')}`);
+  push('');
+  push(`- ${t('evidence.limit.trace')}`);
+  push(`- ${t('evidence.limit.intent')}`);
+  push(`- ${t('evidence.limit.ai')}`);
+  push(`- ${t('evidence.limit.device')}`);
+  push(`- ${t('evidence.limit.scope')}`);
+  push('');
+
+  push(`## ${t('ticket.hashAndReplay')}`);
+  push('');
+  push(`- ${t('result.comparisonHash')}: \`${comparison.comparison.sha256}\``);
+  push(`- ${t('result.inputHash', { side: t('common.before') })}: \`${comparison.comparison.before.sha256}\``);
+  push(`- ${t('result.inputHash', { side: t('common.after') })}: \`${comparison.comparison.after.sha256}\``);
+  if (repair) {
+    push(`- ${t('repair.receiptHash')}: \`${repair.receipt.sha256 ?? ''}\``);
+  }
+  push('');
+  push('```sh');
+  push('plenilune replay --before before.acl --after after.acl --evidence comparison.json');
+  if (repair) {
+    push('plenilune repair-replay --before before.acl --after after.acl --evidence repair.json');
+  }
+  push('```');
   return lines.join('\n');
 }

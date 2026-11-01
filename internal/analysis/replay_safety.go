@@ -20,8 +20,19 @@ func supportedVersions(v Versions) bool {
 	if v == current {
 		return true
 	}
+	// Artifacts sealed under the previous ACL engine replay with that
+	// engine's accounting (reviewObject dispatches on Versions.ACLEngine).
+	legacyACL := current
+	legacyACL.ACLEngine = verify.IndexedEngineVersion
+	if v == legacyACL {
+		return true
+	}
 	current.PrefixListParser, current.PrefixListEngine = prefixlist.LegacyParserVersion, prefixlist.LegacyEngineVersion
-	return v == current
+	if v == current {
+		return true
+	}
+	legacyACL.PrefixListParser, legacyACL.PrefixListEngine = prefixlist.LegacyParserVersion, prefixlist.LegacyEngineVersion
+	return v == legacyACL
 }
 
 func mismatch() error {

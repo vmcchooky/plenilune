@@ -327,10 +327,16 @@ region matching and never upgrades the original verdict or authenticates produce
 
 ### Engine versions
 
-New ACL evidence is `acl-exact/v0.2`; new repair receipts `acl-repair/v0.2`.
+New ACL evidence is `acl-exact/v0.3`; new repair receipts `acl-repair/v0.3`.
+v0.3 aligns the longest common prefix of semantically identical rules and
+computes the exact delta only over the residual rules, on the complement of
+the prefix's covered region; obligations are evaluated against a permit
+cover of just the rules that can touch the condition region. It produces
+the same verdicts, change classes and obligation outcomes as v0.2
+(`TestP11DifferentialV03AgainstV02`, box-for-box delta tests) but different
+logical operation/box accounting, so version is part of evidence.
 v0.2 indexes candidate cuts and decides fragments against raw rules in first-match
-order. It produces the same boxes/verdicts as v0.1 (`TestIndexedEngineMatchesLegacy...`,
-box-for-box tests) but different logical operation/box accounting, so version is
-part of evidence. `acl-exact/v0.1` and `acl-repair/v0.1` remain supported for
-replay with their original accounting; SealComparison preserves a caller-supplied
-supported version.
+order, producing the same boxes/verdicts as v0.1 with its own accounting.
+`acl-exact/v0.2`/`acl-exact/v0.1` and `acl-repair/v0.2`/`acl-repair/v0.1`
+remain supported for replay with their original accounting; SealComparison
+preserves a caller-supplied supported version.

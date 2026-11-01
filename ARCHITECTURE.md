@@ -83,8 +83,9 @@ configuration intake, object pairing, coverage accounting and the versioned
 with their own parsers, budgets and verdicts. UI, report and the subprocess JSON
 client speak in objects and configuration versions; packet/rule vocabulary is
 confined to ACL object views. Unsupported objects and unanalyzed configuration
-are explicit and never become behavior verdicts. ACL v0.2 evidence and
-`acl-repair/v0.2` are new; v0.1 remains replayable with its original accounting.
+are explicit and never become behavior verdicts. ACL v0.3 evidence and
+`acl-repair/v0.3` are new; v0.2 and v0.1 remain replayable with their
+original accounting.
 
 Runtime update — 30/10/2026
 

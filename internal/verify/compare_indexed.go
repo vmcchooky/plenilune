@@ -50,7 +50,7 @@ func compareIndexed(ctx context.Context, before, after ciscoacl.ACL, conditions 
 		}
 		return r, nil
 	}
-	d, err := exactDelta(before, after, budget)
+	d, err := exactDeltaV2(before, after, budget)
 	if err != nil {
 		return finish(err)
 	}

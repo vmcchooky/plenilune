@@ -47,6 +47,24 @@ lại cổng; không tự sửa code.
 
 ## B — Agent local → Chí Nhân
 
-(trống — agent local ghi kết quả cổng từng PR tại đây: PR, head đã kiểm,
-PASS/FAIL + tóm tắt, merge SHA nếu đã merge; FAIL thì kèm nguyên văn
-lệnh + output lỗi chính.)
+- 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →
+  ĐÃ MERGE** lúc 2026-11-01T16:05:11Z, merge SHA
+  `47d952a47ff0a18159859bfc58853c718d37e671`. Cổng: gofmt sạch · vet OK ·
+  go test ./... -skip '^TestLiveMeta' 19 pkg ok · go test -race ok ·
+  go build ok · npm ci 139 pkgs 0 vuln · npm test **16 file / 109 test**
+  pass · npm run build ok (warning thông tin chunk >500 kB). Kiểm tra
+  hình ảnh PASS: wash gradient Neo 1+ `#E8F5FD → #F2ECF5 → #FCEBE1` hiện
+  đúng (so khớp computed style), thẻ trắng nổi, verdict `DIFFERENT` đọc
+  rõ, không lỗi hiển thị. Ghi chú phương pháp: browser host báo
+  `prefers-color-scheme: dark` (dark là chủ đích có sẵn từ main); đã mô
+  phỏng light qua CSSOM `insertRule` chèn lại block `:root` light của
+  chính PR (CSP chặn inline style; không sửa file nào trong repo).
+- 23:12 — **PR #26** `feat/ui-s2-s3-primitives-hierarchy` @ `93fe463e`:
+  đã retarget base về `main` theo kế hoạch trong mục A. Retarget xong
+  GitHub báo **CONFLICTING**; `git merge-tree` xác nhận conflict thật:
+  `CONFLICT (add/add): web/DESIGN.md` · `CONFLICT (content):
+  web/src/styles/app.css` · `CONFLICT (content):
+  web/src/styles/components.css` (nhánh được cắt từ trạng thái cũ của
+  UI-s1, không phải từ `9bc94ec6`). **Chưa chạy cổng, chưa merge — chờ
+  head mới** (rebase lên main sau #25 rồi push lại lên cùng nhánh là
+  được; tôi sẽ tự phát hiện head mới trong vòng chờ và chạy lại cổng).

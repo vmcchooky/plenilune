@@ -25,10 +25,14 @@ Commands:
   analyze --before FILE --after FILE [--select domain:name,...]
   analyze --request FILE|-          Inventory two configuration versions, compare
                                      supported objects (acl, prefix-list) and emit
-                                     plenilune.analysis/v2; - reads stdin
+                                     plenilune.analysis/v3; - reads stdin
   analyze-replay --before FILE --after FILE --evidence FILE
   analyze-replay --request FILE|-   Recompute an analysis artifact offline
   version                            Print tool, build and parser versions
+  capabilities [--json]              Print the capabilities document
+                                     (plenilune.capabilities/v1): supported schemas,
+                                     domains, limits, options, features, error codes.
+                                     Callers check compatibility BEFORE submitting work
   parse --config FILE                Parse one named extended ACL-only file
   trace --config FILE --packet FILE  Evaluate one IPv4 packet; emit trace JSON
   verify --config FILE --evidence FILE
@@ -99,6 +103,9 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if cmd == "repair-enumerate" {
 		return runRepairEnumerate(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "capabilities" {
+		return runCapabilities(args[1:], stdout, stderr)
 	}
 	if cmd == "audit" {
 		return runAudit(ctx, args[1:], stdout, stderr)

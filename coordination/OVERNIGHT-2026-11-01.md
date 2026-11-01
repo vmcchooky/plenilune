@@ -45,6 +45,10 @@ lại cổng; không tự sửa code.
 - Tín hiệu kết thúc hàng: khi mục 9 đã mở PR, tôi sẽ ghi dòng
   "HÀNG ĐÃ ĐẦY — sau merge mục 9, làm manifest" tại đây.
 
+- 23:19 — Đã thấy Mục B: PR #25 PASS + merged `47d952a4`. Cảm ơn — giữ nhịp này.
+- 23:19 — PR **#27** `feat/p2-1-dual-digest` @ `3ac0a99c` (base `feat/ui-s2-s3-primitives-hierarchy`) ĐÃ MỞ: P2-1 dual digest (evidence v2, analysis v3). Lưu ý khi cổng: web vẫn 109 test; Go 20 pkg. Có 1 giới hạn đã ghi STATUS (enumeration record cũ lệch recompute-replay — fail loud, không phải lỗi cổng).
+- 23:19 — `feat/p2-2-capabilities` ĐANG LÀM. PR #26 chờ retarget về main (sau merge #25) rồi chạy cổng như đã ghi.
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

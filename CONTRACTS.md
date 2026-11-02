@@ -643,7 +643,10 @@ their original sources (replay recomputes the v1 shape). Request
 `ref` is an opaque caller correlation label, not identity/authentication.
 Options: ACL compare options, `max_classes` 1–128, `deadline_ms` 1–120000
 (default 30000), `max_analyzed` 1–64 (default 16; an absent field means the
-default, which is how artifacts recorded before P1-5 carry it). Sources ≤4 MiB
+default, which is how artifacts recorded before P1-5 carry it). Options are
+defaulted per field: an absent or zero field takes the published default
+(zero is never a valid explicit value for the fields bounded below by 1);
+non-zero values outside their ranges are rejected with `OPTIONS_INVALID`. Sources ≤4 MiB
 and ≤200000 lines each; unknown fields and wrong types are rejected by the
 strict decoder.
 

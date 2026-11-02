@@ -248,8 +248,12 @@ func TestPrefixListTextChangeIsNotReportedUnchanged(t *testing.T) {
 
 func TestInvalidACLLimitsAreRejectedBeforeAnyVerdict(t *testing.T) {
 	before := "hostname R\n!\nip prefix-list P seq 5 permit 10.0.0.0/8\n"
+	// Over-ceiling limits are invalid. (All-zero limits are no longer
+	// this test's case: since the per-field defaults fix they mean
+	// "unset" and resolve to the defaults — see
+	// TestPartialOptionsTakePerFieldDefaults.)
 	bad := DefaultOptions()
-	bad.ACL.Limits = packetset.Limits{}
+	bad.ACL.Limits.MaxOperations = packetset.Defaults().MaxOperations + 1
 	_, err := Analyze(context.Background(), Request{Schema: RequestSchema, Before: Source{Text: before}, After: Source{Text: before}, Options: &bad})
 	var e *Error
 	if !errors.As(err, &e) || e.Code != "OPTIONS_INVALID" {
@@ -280,7 +284,7 @@ func TestRequestValidationAndCancellation(t *testing.T) {
 	var e *Error
 	for name, mutate := range map[string]func(*Request){
 		"schema":  func(r *Request) { r.Schema = "x" },
-		"options": func(r *Request) { o := DefaultOptions(); o.MaxClasses = 0; r.Options = &o },
+		"options": func(r *Request) { o := DefaultOptions(); o.MaxClasses = -1; r.Options = &o }, // -1: zero would now mean unset (per-field defaults)
 		"select":  func(r *Request) { r.Select = []ObjectRef{{Domain: "bgp", Name: "x"}} },
 		"ref":     func(r *Request) { r.Before.Ref = "bad\nref" },
 		"size":    func(r *Request) { r.After.Text = strings.Repeat("x", MaxSourceBytes+1) },

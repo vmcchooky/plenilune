@@ -448,6 +448,8 @@ const en = {
   'evidence.downloadRepairSession': 'AI repair session (raw)',
   'evidence.downloadReport': 'Report in {language} (.md)',
   'evidence.downloadTicket': 'Ticket summary (.md)',
+  'evidence.downloadBundle': 'Bundle manifest (.json)',
+  'evidence.bundleFailed': 'Bundle manifest export failed. Download the case files individually instead.',
   'evidence.downloadNotice': 'JSON files are raw server artifacts. They are not translated or edited.',
   'evidence.reportView': 'Translated report',
   'evidence.rawView': 'Raw data',

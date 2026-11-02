@@ -450,6 +450,8 @@ const vi = {
   'evidence.downloadRepairSession': 'Phiên AI đề xuất bản sửa (nguyên bản)',
   'evidence.downloadReport': 'Báo cáo {language} (.md)',
   'evidence.downloadTicket': 'Tóm tắt ticket (.md)',
+  'evidence.downloadBundle': 'Manifest gói hồ sơ (.json)',
+  'evidence.bundleFailed': 'Không xuất được manifest gói hồ sơ. Hãy tải từng tệp của hồ sơ thay thế.',
   'evidence.downloadNotice': 'Tệp JSON là nguyên bản từ máy chủ. Không dịch, không sửa.',
   'evidence.reportView': 'Báo cáo đã dịch',
   'evidence.rawView': 'Dữ liệu gốc',

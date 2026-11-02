@@ -58,6 +58,17 @@ Commands:
                                      Optional proposals FILE (JSON array of patch
                                      requests, e.g. AI proposals) folds into the
                                      same deterministic order
+  bundle-export --out DIR --before FILE --after FILE --comparison FILE [--repair FILE] [--report FILE] [--instructions FILE]
+                                     Export one review case as a bundle directory:
+                                     the case files under canonical names plus a
+                                     plenilune.bundle/v1 manifest (SHA-256 per
+                                     file). The manifest is an integrity index;
+                                     the receipts inside the files stay the proof
+  bundle-replay --dir DIR            Verify a bundle directory against its
+                                     manifest, then replay the comparison/analysis
+                                     and repair artifacts inside; exits 0 when
+                                     everything replays, 2 on a bundle integrity
+                                     failure or a timing-sensitive replay
   audit --config FILE                Exact audit of one ACL: unreachable and
                                      redundant rules (exact findings) plus
                                      generalization/correlation relations
@@ -104,6 +115,12 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if cmd == "repair-enumerate" {
 		return runRepairEnumerate(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "bundle-export" {
+		return runBundleExport(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "bundle-replay" {
+		return runBundleReplay(ctx, args[1:], stdout, stderr)
 	}
 	if cmd == "capabilities" {
 		return runCapabilities(args[1:], stdout, stderr)

@@ -66,6 +66,13 @@
       ]
     },
     {
+      "id": "plenilune.bundle",
+      "current": "plenilune.bundle/v1",
+      "supported": [
+        "plenilune.bundle/v1"
+      ]
+    },
+    {
       "id": "plenilune.chat",
       "current": "plenilune.chat/v1",
       "supported": [
@@ -197,7 +204,8 @@
     "dual_digest",
     "interrogation_chat",
     "partial_results",
-    "repair_enumeration"
+    "repair_enumeration",
+    "review_bundle"
   ],
   "error_codes": [
     "ACL_INVALID",
@@ -205,6 +213,9 @@
     "AI_MODEL_UNSUPPORTED",
     "ANALYSIS_FAILED",
     "AUDIT_INPUT_INVALID",
+    "BUNDLE_DIGEST_MISMATCH",
+    "BUNDLE_FILE_MISSING",
+    "BUNDLE_INVALID",
     "CANCELED",
     "CHAT_ARTIFACT_INVALID",
     "CHAT_INVALID",

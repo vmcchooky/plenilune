@@ -65,8 +65,12 @@ var Features = []string{
 // somewhere in non-test source outside this package, so the list
 // cannot advertise codes nothing produces. Status/outcome strings
 // (EQUIVALENT, VERIFIED, ANALYSIS_REPLAYED, …) are not error codes
-// and are deliberately absent.
+// and are deliberately absent. Since P2-3 the list is exactly the
+// errtax registry set (a test there enforces both directions): every
+// published code has a stage/retryable classification, including the
+// ACL parser's detail codes, which the parse/trace surfaces emit raw.
 var ErrorCodes = []string{
+	"ACL_INVALID",
 	"AI_CONFIG_INVALID",
 	"AI_MODEL_UNSUPPORTED",
 	"ANALYSIS_FAILED",
@@ -101,7 +105,19 @@ var ErrorCodes = []string{
 	"OBLIGATIONS_INVALID",
 	"OPTIONS_INVALID",
 	"OUTPUT_FAILED",
+	"PACKET_INVALID",
+	"PARSE_DOCUMENT",
+	"PARSE_EMPTY_ACL",
+	"PARSE_ENCODING",
 	"PARSE_FAILED",
+	"PARSE_HEADER",
+	"PARSE_INVALID_IP",
+	"PARSE_INVALID_PORT",
+	"PARSE_INVALID_TOKEN",
+	"PARSE_LIMIT",
+	"PARSE_MULTIPLE_ACLS",
+	"PARSE_NOT_FOUND",
+	"PARSE_SEQUENCE_ORDER",
 	"POLICY_INPUT_INVALID",
 	"POLICY_INVALID",
 	"POLICY_NOT_ACCEPTED",
@@ -109,6 +125,7 @@ var ErrorCodes = []string{
 	"REQUEST_LIMIT",
 	"REQUEST_SCHEMA",
 	"RESULT_TOO_LARGE",
+	"ROUTE_INVALID",
 	"SELECT_INVALID",
 	"SERVER_BUSY",
 	"SESSION_INPUT_INVALID",

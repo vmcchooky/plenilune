@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"plenilune/internal/capabilities"
 	"plenilune/internal/ciscoacl"
+	"plenilune/internal/errtax"
 	"plenilune/internal/evidence"
 	"plenilune/internal/intent"
 	"plenilune/internal/jsonio"
@@ -47,9 +48,14 @@ type normalizeResponse struct {
 
 type apiError struct {
 	Code    string `json:"code"`
+	Stage   string `json:"stage"`
 	Message string `json:"message"`
-	Line    int    `json:"line,omitempty"`
-	Side    string `json:"side,omitempty"`
+	Field   string `json:"field,omitempty"`
+	// Retryable is the taxonomy classification of the code (P2-3):
+	// true only for transient conditions a caller may retry unchanged.
+	Retryable bool   `json:"retryable"`
+	Line      int    `json:"line,omitempty"`
+	Side      string `json:"side,omitempty"`
 }
 
 type errorEnvelope struct {
@@ -210,6 +216,16 @@ func writeDomainError(w http.ResponseWriter, side string, err error) {
 }
 
 func writeError(w http.ResponseWriter, status int, err apiError) {
+	// Every HTTP error carries the unified taxonomy fields (P2-3):
+	// stage/retryable (and the request field, when the code implies
+	// one) come from the errtax registry, filled centrally here so no
+	// handler can forget them. An explicitly set field wins.
+	if stage, retryable, field, ok := errtax.Lookup(err.Code); ok {
+		err.Stage, err.Retryable = stage, retryable
+		if err.Field == "" {
+			err.Field = field
+		}
+	}
 	writeJSON(w, status, errorEnvelope{Error: err})
 }
 

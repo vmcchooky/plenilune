@@ -17,8 +17,8 @@ File sống duy nhất về trạng thái. Agent cập nhật sau mỗi hạng m
 | D4 (P1-7) | Proposal ngoài đưa vào `repair.Enumerate` đang không có cap (cap 64 chỉ áp candidate do engine sinh; đường AI live đã bị chặn bởi ngân sách phiên P1-7). Cap ở đâu? | done — Chooky chốt hướng 01/11/2026: cap ở tầng phiên/điểm vào, KHÔNG cap trong `Enumerate` (truncation lúc nhận sẽ không tái tạo được từ record khi replay — record phải giữ là sự thật đầy đủ). Hạng mục cài đặt nhỏ làm sau, chưa xếp lịch |
 | D5 (P1-10) | Kế hoạch ghi grounding "qua engine tools"; bản cài đặt dùng retrieval tất định ở core trên field của artifact, model được cấp 0 tool (chặt hơn). Chấp nhận và sửa chữ kế hoạch, hay làm lại theo tool-use? | done — Chooky chốt 01/11/2026: chấp nhận bản cài đặt; chữ kế hoạch P1-10 đã sửa tương ứng trong cùng đợt docs này |
 | P2-6 | Rà soát pháp lý GPL trước phân phối MoonStorm kèm Plenilune | done — Chooky chốt 02/11/2026 theo disposition của chủ sở hữu (`docs/plan/DISPOSITION-2026-11-02-p2-6.md`): chủ sở hữu bản quyền duy nhất không bị GPL của chính mình ràng buộc, nên không thuê rà soát ở thời điểm hiện tại; phân phối MoonStorm kèm Plenilune VẪN bị chặn cho tới khi có rà soát bằng văn bản hoặc disposition mới; ba mốc kích hoạt thuê luật sư (đóng góp bên thứ ba / thêm đồng sở hữu–nhà đầu tư / phân phối thương mại quy mô thật) ghi trong disposition; disposition tự vô hiệu nếu tính duy nhất của chủ sở hữu thay đổi. Đây là quyết định của chủ sở hữu, không phải kết luận pháp lý của agent |
-| P3-9 | Làm route-maps hay không (và với phạm vi diễn đạt nào)? | todo |
-| P3-10 | Vendor thứ hai: làm hay không; nếu làm thì vendor nào? | todo |
+| P3-9 | Làm route-maps hay không (và với phạm vi diễn đạt nào)? | done — Chooky chốt 02/11/2026: hoãn (xem `DISPOSITION-2026-11-02-p3-9-p3-10.md`) |
+| P3-10 | Vendor thứ hai: làm hay không; nếu làm thì vendor nào? | done — Chooky chốt 02/11/2026: hoãn (xem `DISPOSITION-2026-11-02-p3-9-p3-10.md`) |
 
 ## Phase 0 — Hardening
 
@@ -82,8 +82,8 @@ Ghi chú Phase 2: **Phase 2 đã đóng ở phía cài đặt và đặc tả.**
 | P3-6 | Object-groups | todo | |
 | P3-7 | IPv6 ACL | todo | |
 | P3-8 | Thư viện obligation CIS (phần ACL) | todo | |
-| P3-9 | Route-maps | todo | Cần quyết định riêng |
-| P3-10 | Vendor thứ hai | todo | Cần quyết định riêng |
+| P3-9 | Route-maps | deferred | Hoãn theo disposition của chủ sở hữu 02/11/2026 (`DISPOSITION-2026-11-02-p3-9-p3-10.md`); mở lại theo quyết định mới sau đợt nộp hackathon |
+| P3-10 | Vendor thứ hai | deferred | Hoãn theo disposition của chủ sở hữu 02/11/2026 (`DISPOSITION-2026-11-02-p3-9-p3-10.md`); mở lại khi thỏa tiền điều kiện của file phase, vendor chọn riêng tại thời điểm đó |
 
 ## Phát hiện ngoài phạm vi
 

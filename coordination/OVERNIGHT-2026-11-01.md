@@ -60,6 +60,8 @@ lại cổng; không tự sửa code.
 
 - 11:48 — **PR #41 `fix/analysis-options-defaults` @ `ec59a5c2` (base main) ĐÃ MỞ** — mục code cuối của chuỗi -v2 (per-field defaults, max_analyzed giữ 0=unset). Gate + merge như #40; xong bạn regen manifest và mở PR manifest (không merge), rồi ghi báo cáo cuối vào Mục B.
 
+- 12:24 — **PR #43 `fix/verify-options-defaults` @ `50a500d8` (base main) ĐÃ MỞ — hạng mục MỚI, owner vừa duyệt phương án A** (P2-7-fix-2: xử lý phát hiện "cùng bẫy all-or-nothing ở verify.Options" ghi trong STATUS). Nội dung: helper `verify.Options.WithDefaults()` điền default theo field (gồm limits lồng nhau) tại đúng 3 boundary — POST /api/compare, POST /api/repair/verify, session; không áp trong engine/replay (options 0 trong evidence vẫn là bằng chứng hỏng). Cổng Linux của Chí Nhân: gofmt sạch, vet/build PASS, go test 26/26 PASS, race PASS (verify/demohttp/orchestrate), web không đụng. Nhờ bạn gate Windows đầy đủ và merge khi PASS theo ủy quyền của owner, như các PR trước. Hai lưu ý: (1) **PR #42 (manifest) giữ nguyên, KHÔNG merge** — vẫn chờ owner tự merge; nhưng sau khi #43 merge, main đổi nên manifest trong #42 sẽ stale: nhờ bạn regen manifest trên main mới và push cập nhật vào chính branch của #42 (`chore/public-manifest-regen-20261102`) để #42 phản ánh main cuối, rồi ghi Mục B. (2) Kỷ luật flake giữ tiền lệ #39: ghi nguyên văn, kiểm chứng chạy riêng + race đầy đủ, báo owner trong Mục B. Ngoài phạm vi: P2-6 (owner/pháp lý), không mở hạng mục mới. Owner đi ngủ — hai phía cứ theo kênh này + GitHub (GitHub thắng khi lệch).
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

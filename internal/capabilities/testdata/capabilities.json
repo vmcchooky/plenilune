@@ -1,0 +1,255 @@
+{
+  "schema": "plenilune.capabilities/v1",
+  "tool": {
+    "name": "plenilune",
+    "version": "0.2.0-dev",
+    "commit": "snapshot-commit"
+  },
+  "schemas": [
+    {
+      "id": "plenilune.evidence",
+      "current": "plenilune.evidence/v2",
+      "supported": [
+        "plenilune.evidence/v1",
+        "plenilune.evidence/v2"
+      ]
+    },
+    {
+      "id": "plenilune.analysis",
+      "current": "plenilune.analysis/v3",
+      "supported": [
+        "plenilune.analysis/v1",
+        "plenilune.analysis/v2",
+        "plenilune.analysis/v3"
+      ]
+    },
+    {
+      "id": "plenilune.analysis-request",
+      "current": "plenilune.analysis-request/v1",
+      "supported": [
+        "plenilune.analysis-request/v1"
+      ]
+    },
+    {
+      "id": "plenilune.analysis-replay-request",
+      "current": "plenilune.analysis-replay-request/v1",
+      "supported": [
+        "plenilune.analysis-replay-request/v1"
+      ]
+    },
+    {
+      "id": "plenilune.repair",
+      "current": "plenilune.repair/v1",
+      "supported": [
+        "plenilune.repair/v1"
+      ]
+    },
+    {
+      "id": "plenilune.repair-enumeration",
+      "current": "plenilune.repair-enumeration/v1",
+      "supported": [
+        "plenilune.repair-enumeration/v1"
+      ]
+    },
+    {
+      "id": "plenilune.policy",
+      "current": "plenilune.policy/v1",
+      "supported": [
+        "plenilune.policy/v1"
+      ]
+    },
+    {
+      "id": "plenilune.audit",
+      "current": "plenilune.audit/v1",
+      "supported": [
+        "plenilune.audit/v1"
+      ]
+    },
+    {
+      "id": "plenilune.chat",
+      "current": "plenilune.chat/v1",
+      "supported": [
+        "plenilune.chat/v1"
+      ]
+    },
+    {
+      "id": "plenilune.ai",
+      "current": "plenilune.ai/v1",
+      "supported": [
+        "plenilune.ai/v1"
+      ]
+    },
+    {
+      "id": "plenilune.trace",
+      "current": "plenilune.trace/v1",
+      "supported": [
+        "plenilune.trace/v1"
+      ]
+    }
+  ],
+  "domains": [
+    {
+      "id": "acl",
+      "description": "Cisco IOS named extended IPv4 ACL",
+      "parser_version": "cisco-acl/v0.2",
+      "engine_version": "acl-exact/v0.4"
+    },
+    {
+      "id": "prefix-list",
+      "description": "Cisco IOS IPv4 prefix-list",
+      "parser_version": "cisco-prefix-list/v0.2",
+      "engine_version": "prefix-list-exact/v0.2"
+    }
+  ],
+  "limits": {
+    "acl": {
+      "max_rules": 512,
+      "max_lines": 10000,
+      "max_input_bytes": 2097152,
+      "max_operations": {
+        "default": 2000000,
+        "max": 2000000
+      },
+      "max_boxes": {
+        "default": 50000,
+        "max": 50000
+      },
+      "timeout_ns": {
+        "default": 2000000000,
+        "max": 2000000000
+      },
+      "max_witnesses": {
+        "default": 8,
+        "max": 64
+      }
+    },
+    "prefix_list": {
+      "max_entries": 10000
+    },
+    "analysis": {
+      "max_analyzed": {
+        "default": 16,
+        "max": 64
+      },
+      "max_classes": {
+        "default": 32,
+        "max": 128
+      },
+      "deadline_ms": {
+        "default": 30000,
+        "max": 120000
+      }
+    },
+    "ai_session": {
+      "max_model_requests": {
+        "default": 16,
+        "max": 32
+      },
+      "max_tool_calls": {
+        "default": 24,
+        "max": 64
+      },
+      "max_repair_proposals": {
+        "default": 6,
+        "max": 16
+      },
+      "max_output_corrections": {
+        "default": 2,
+        "max": 8
+      },
+      "session_deadline_default_ms": 120000
+    }
+  },
+  "options": [
+    {
+      "name": "acl.limits.max_operations",
+      "default": 2000000
+    },
+    {
+      "name": "acl.limits.max_boxes",
+      "default": 50000
+    },
+    {
+      "name": "acl.limits.timeout_ns",
+      "default": 2000000000
+    },
+    {
+      "name": "acl.max_witnesses",
+      "default": 8
+    },
+    {
+      "name": "max_classes",
+      "default": 32
+    },
+    {
+      "name": "deadline_ms",
+      "default": 30000
+    },
+    {
+      "name": "max_analyzed",
+      "default": 16
+    }
+  ],
+  "features": [
+    "ai_proposals",
+    "audit",
+    "compare_cache",
+    "dual_digest",
+    "interrogation_chat",
+    "partial_results",
+    "repair_enumeration"
+  ],
+  "error_codes": [
+    "AI_CONFIG_INVALID",
+    "AI_MODEL_UNSUPPORTED",
+    "ANALYSIS_FAILED",
+    "AUDIT_INPUT_INVALID",
+    "CANCELED",
+    "CHAT_ARTIFACT_INVALID",
+    "CHAT_INVALID",
+    "CHAT_LOCALE_UNSUPPORTED",
+    "CHAT_NO_ARTIFACT",
+    "CHAT_QUESTION_EMPTY",
+    "CHAT_QUESTION_TOO_LONG",
+    "COMPARISON_FAILED",
+    "COMPARISON_INVALID",
+    "CONTENT_TYPE",
+    "DEADLINE_EXCEEDED",
+    "DUPLICATE_DEFINITION",
+    "EVIDENCE_FAILED",
+    "EVIDENCE_MISMATCH",
+    "INPUT_ENCODING",
+    "INPUT_FAILED",
+    "INPUT_INVALID",
+    "INPUT_READ",
+    "INPUT_TOO_LARGE",
+    "INVALID_JSON",
+    "INVALID_OBLIGATION",
+    "INVALID_PACKET",
+    "INVALID_PATCH",
+    "INVALID_POLICY",
+    "INVALID_PROPOSALS",
+    "JSON_INVALID",
+    "LOCAL_ORIGIN_REQUIRED",
+    "OBLIGATIONS_INVALID",
+    "OPTIONS_INVALID",
+    "OUTPUT_FAILED",
+    "PARSE_FAILED",
+    "POLICY_INPUT_INVALID",
+    "POLICY_INVALID",
+    "POLICY_NOT_ACCEPTED",
+    "REPAIR_INPUT_INVALID",
+    "REQUEST_LIMIT",
+    "REQUEST_SCHEMA",
+    "RESULT_TOO_LARGE",
+    "SELECT_INVALID",
+    "SERVER_BUSY",
+    "SESSION_INPUT_INVALID",
+    "SOURCE_REF_INVALID",
+    "TIMING_SENSITIVE",
+    "TRACE_INVALID",
+    "UI_NOT_BUILT",
+    "UNSUPPORTED_KIND",
+    "USAGE"
+  ]
+}

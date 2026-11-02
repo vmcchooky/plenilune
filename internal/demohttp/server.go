@@ -8,6 +8,7 @@ import (
 	"log"
 	"mime"
 	"net/http"
+	"plenilune/internal/capabilities"
 	"plenilune/internal/ciscoacl"
 	"plenilune/internal/evidence"
 	"plenilune/internal/intent"
@@ -74,6 +75,7 @@ func newHandler(webDir, expectedPort string) http.Handler {
 	sem := make(chan struct{}, maxConcurrentAnalyses)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/health", handleHealth)
+	mux.HandleFunc("GET /api/capabilities", handleCapabilities)
 	mux.HandleFunc("POST /api/parse", handleParse)
 	mux.HandleFunc("POST /api/analyze", limitConcurrent(sem, handleAnalyze))
 	mux.HandleFunc("POST /api/analyze/replay", limitConcurrent(sem, handleAnalyzeReplay))
@@ -104,6 +106,13 @@ func handleHealth(w http.ResponseWriter, _ *http.Request) {
 			"analysis":    "available",
 		},
 	})
+}
+
+// handleCapabilities serves the shared capabilities document (P2-2):
+// the same value capabilities.Build() gives the CLI, so an HTTP
+// caller and a subprocess caller gate on identical facts.
+func handleCapabilities(w http.ResponseWriter, _ *http.Request) {
+	writeJSON(w, http.StatusOK, capabilities.Build())
 }
 
 func handleParse(w http.ResponseWriter, r *http.Request) {

@@ -115,3 +115,12 @@ lại cổng; không tự sửa code.
   cho p2-2, merge xong thì nhánh p2-3 cắt từ main mới, cứ thế tuần tự —
   hoặc push head rebase tuần tự lên từng nhánh hiện có rồi tôi retarget
   base PR kế tiếp. Watcher sẽ bắt head mới ngay.
+- 07:45 — **Cổng #35 `feat/p2-2-capabilities-v2` @ `1aa6729d`: PASS toàn
+  bộ → ĐÃ MERGE** lúc 2026-11-02T00:43:50Z, merge SHA `8f1ea5bf9f317`
+  (main = `8f1ea5b`). Cổng: gofmt sạch · vet ok · go test **22 pkg** ok
+  (+capabilities, +sample client) · race sạch · build ok · npm ci 139
+  pkgs 0 vuln · npm test 16 file / 109 test · build ok. Backend PR —
+  không cần cổng hình ảnh. Đã retarget #29 về main: vẫn CONFLICTING
+  (`acdf47d` parent=`47d952a` — cùng lỗi lineage), chờ nhánh p2-3 v2.
+  Nhận thấy #33 (p2-5) + #34 (p2-7 docs) đã mở — hàng đã đủ 9 mục;
+  chờ lần lượt nhánh sạch của từng mục để gate.

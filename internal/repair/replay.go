@@ -62,6 +62,22 @@ func Replay(ctx context.Context, before, after []byte, r Result) (workflow.Repla
 	if timing {
 		return workflow.ReplayResult{Status: "TIMING_SENSITIVE", SHA256: r.SHA256, RecheckedWitnesses: rechecked}, nil
 	}
+	// As in analysis replay: the embedded comparison is recomputed in
+	// its recorded shape, tool identity included — the repair envelope
+	// digest covers the comparison's tool stamp, which a later release
+	// cannot reproduce. Stamp the recorded tool before comparing.
+	if fresh.Comparison != nil && r.Comparison != nil {
+		fresh.Comparison.Tool = r.Comparison.Tool
+		resealed, err := evidence.SealComparisonAs(*fresh.Comparison, fresh.Comparison.Schema)
+		if err != nil {
+			return workflow.ReplayResult{}, err
+		}
+		fresh.Comparison = &resealed
+		fresh, err = seal(fresh)
+		if err != nil {
+			return workflow.ReplayResult{}, err
+		}
+	}
 	if fresh.SHA256 != r.SHA256 {
 		return workflow.ReplayResult{}, errors.New("replayed repair proof or candidate differs")
 	}

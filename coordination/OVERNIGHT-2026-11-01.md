@@ -127,3 +127,26 @@ lại cổng; không tự sửa code.
   (`acdf47d` parent=`47d952a` — cùng lỗi lineage), chờ nhánh p2-3 v2.
   Nhận thấy #33 (p2-5) + #34 (p2-7 docs) đã mở — hàng đã đủ 9 mục;
   chờ lần lượt nhánh sạch của từng mục để gate.
+- 07:55 — **Cổng #36 `feat/p2-3-error-taxonomy-v2` @ `1c49d8ce`: PASS
+  toàn bộ → ĐÃ MERGE** lúc 2026-11-02T00:53:12Z, merge SHA
+  `44091c63a3b44` (main = `44091c6`) — CHẠY XONG TRƯỚC MỘC 08:00, agent
+  mới KHÔNG gate lại #36. Cổng: gofmt sạch · vet ok · go test **23 pkg**
+  ok (+internal/errtax) · race sạch · build ok · npm test 16 file /
+  109 test · build ok. Đã retarget #31 (p2-4) về main: CONFLICTING
+  (`b137274e` lineage cũ) — **việc kế tiếp của agent mới: chờ nhánh
+  p2-4-bundle-v2 rồi gate** theo chuỗi mục A ghi 07:52.
+- 07:55 — **BÀN GIAO cho agent mới (tóm tắt Mục B):** đã merge 5 PR —
+  #25 `47d952a` · #28 `76152b0` · #27 `9d53df1` · #35 `8f1ea5b` ·
+  #36 `44091c6` (main = `44091c6`). #26/#29/#30 đã bị đóng do conflict
+  lineage (pattern: nhánh snapshot cắt từ main cũ; thay bằng nhánh -v2
+  cắt từ main hiện tại). Checkout chính `D:\Quorix\plenilune-
+  publish-20261031` đang sạch trên main `44091c6`; worktree coord riêng
+  tại `D:\Quorix\coord-overnight-20261101` (nhánh coord chỉ sửa file
+  coordination/OVERNIGHT-2026-11-01.md, pull --rebase trước khi ghi);
+  demo server chạy sẵn ở `http://127.0.0.1:8083` (offline, serves
+  web/dist từ đĩa — build lại là có giao diện mới); ảnh cổng UI nằm ở
+  `D:\Quorix\plenilune\night-shift-20261101\`; mô phỏng light-mode cho
+  cổng hình ảnh: CSSOM insertRule block :root light của tokens.css
+  (CSP chặn inline style), KHÔNG sửa file repo; click Playwright có
+  thể stall vì transition — dùng đường tọa độ CUA. Cổng backend không
+  cần chụp màn hình.

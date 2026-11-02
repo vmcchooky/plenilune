@@ -30,7 +30,7 @@ func handleCompare(w http.ResponseWriter, r *http.Request) {
 	}
 	opts := verify.DefaultOptions()
 	if in.Options != nil {
-		opts = *in.Options
+		opts = in.Options.WithDefaults()
 	}
 	c, err := compareCache.Compare(r.Context(), []byte(in.Before), []byte(in.After), in.Conditions, opts, evidence.Tool{Version: evidence.ToolVersion, Commit: "unversioned"})
 	if err != nil {

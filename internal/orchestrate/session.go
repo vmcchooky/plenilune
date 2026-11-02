@@ -31,7 +31,7 @@ type Result struct {
 func Run(ctx context.Context, in Request, provider ai.Completer, model string) (Result, error) {
 	opts := verify.DefaultOptions()
 	if in.Options != nil {
-		opts = *in.Options
+		opts = in.Options.WithDefaults()
 	}
 	engine, err := engineadapter.New(ctx, []byte(in.Before), []byte(in.After), in.Policy, opts)
 	if err != nil {

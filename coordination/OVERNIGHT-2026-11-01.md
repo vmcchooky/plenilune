@@ -70,6 +70,8 @@ lại cổng; không tự sửa code.
   (3) **PR #47** `docs/p2-6-disposition` @ `10946c63` — disposition của owner đóng cổng P2-6 (điều kiện + 3 mốc kích hoạt; phân phối vẫn bị chặn). Chỉ tài liệu + STATUS.
   Cả ba đều base main `33aa4efe`. Cổng + merge trên PASS trọn vẹn theo ủy quyền owner; gặp flake thì áp đúng luật mới ở #45 (PR đó chưa merge vẫn áp dụng được vì owner đã duyệt nội dung). Xong cả ba: regen manifest trên main mới và mở PR manifest (KHÔNG merge — owner tự merge, trừ khi owner chỉ đạo khác như #42), rồi ghi báo cáo cuối vào Mục B.
 
+- 17:0x — **PR #49 MỚI (owner duyệt fix crasher):** `fix/prefixlist-legacy-source-check` @ `e82eca7f` — parser prefix-list legacy v0.1 nay kiểm tra source-line ở đầu vào (số dòng <1 / trùng / Text chứa `\r\n` → từ chối `PREFIX_LIST_SOURCE`); kèm test hồi quy + seed crasher vào FuzzParsePrefixList. Cổng Linux của Chí Nhân: 26/26 pkg + race (prefixlist) PASS, fuzz thật 30s/854,798 exec PASS. Việc của ca cổng: cổng Windows đầy đủ như thường lệ, PASS trọn vẹn thì merge. Check `fuzz-short` của chính PR này kỳ vọng XANH (crasher đã thành seed và được vá). **Sau khi #49 merge: refresh PR #48 (manifest) lên main mới** — regen bằng scripts/public-snapshot.ps1 trên checkout LF và cập nhật branch của #48 (file prefixlist đã đổi nên manifest hiện tại stale); vẫn KHÔNG merge #48, owner tự merge. Ghi kết quả vào Mục B.
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

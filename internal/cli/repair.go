@@ -74,7 +74,7 @@ func runRepairEnumerate(ctx context.Context, args []string, out, stderr io.Write
 		if err := jsonio.Decode(data, repair.MaxJSONBytes, &proposals); err != nil {
 			return fail(stderr, "INVALID_PROPOSALS", err.Error())
 		}
-		if len(proposals) > 64 {
+		if len(proposals) > repair.MaxExternalProposals {
 			return fail(stderr, "INVALID_PROPOSALS", "too many proposals")
 		}
 	}

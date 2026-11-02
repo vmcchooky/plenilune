@@ -72,6 +72,8 @@ lại cổng; không tự sửa code.
 
 - 17:0x — **PR #49 MỚI (owner duyệt fix crasher):** `fix/prefixlist-legacy-source-check` @ `e82eca7f` — parser prefix-list legacy v0.1 nay kiểm tra source-line ở đầu vào (số dòng <1 / trùng / Text chứa `\r\n` → từ chối `PREFIX_LIST_SOURCE`); kèm test hồi quy + seed crasher vào FuzzParsePrefixList. Cổng Linux của Chí Nhân: 26/26 pkg + race (prefixlist) PASS, fuzz thật 30s/854,798 exec PASS. Việc của ca cổng: cổng Windows đầy đủ như thường lệ, PASS trọn vẹn thì merge. Check `fuzz-short` của chính PR này kỳ vọng XANH (crasher đã thành seed và được vá). **Sau khi #49 merge: refresh PR #48 (manifest) lên main mới** — regen bằng scripts/public-snapshot.ps1 trên checkout LF và cập nhật branch của #48 (file prefixlist đã đổi nên manifest hiện tại stale); vẫn KHÔNG merge #48, owner tự merge. Ghi kết quả vào Mục B.
 
+- 17:1x — **CẬP NHẬT: PR #49 ĐÃ MERGE** (`3a7d111c`) theo chỉ đạo trực tiếp của owner qua connector (như tiền lệ #42) — ca cổng KHÔNG cần cổng/merge #49 nữa. Việc còn lại cho ca tới: (1) chạy cổng Windows đầy đủ một lượt trên main `3a7d111c` để xác nhận main vẫn xanh ở cổng Windows (báo ngay vào Mục B nếu đỏ); (2) refresh PR #48 (manifest) lên main mới rồi để nguyên chờ owner merge.
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

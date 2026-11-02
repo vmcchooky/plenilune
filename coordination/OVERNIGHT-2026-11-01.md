@@ -275,3 +275,14 @@ Mỗi PR: worktree riêng, sạch, đúng head trước khi chạy; sau merge x�
   **Tái phát:** đây là lần thứ hai của đúng họ test đó trong vòng 7 ngày (lần đầu ghi ở mục 11:22 ca 02/11, cùng 2 test P1-2 `internal/analysis`, cùng chữ ký TIMING_SENSITIVE). Theo luật tái phát ở protocol §2 (PR #45), flake này giờ là hạng mục phải sửa gốc — đề nghị owner xếp việc hiệu chỉnh budget của chính test P1-2 (corpus 512 rule chạm deadline thật dưới -race), không mở trong ca này vì ca chỉ gồm cổng xác nhận + manifest.
 
 - 17:33 — **#48 ĐÃ REFRESH LÊN MAIN `3a7d111c` — KHÔNG MERGE.** Branch `chore/public-manifest-regen-20261102b` rebase (head cũ `f111278` → `c3f6a0c`, force-with-lease), chỉ chứa `docs/public-manifest.sha256` (376 entry; diff vs manifest trên main 9 thêm / 7 xóa — gồm cả hash #45–#47 vì manifest trên main vốn chưa từng chứa các PR đó, cộng 4 hash prefixlist/#49). Regen trong worktree riêng `manifest-regen-20261102-b` (sạch, `core.autocrlf=false`, 0 file Go CRLF) bằng `scripts/public-snapshot.ps1`, snapshot `out/public-review-manifest-20261102-4` (ignored); `scripts/secret-scan.ps1` sạch: 348 tệp, 0 mẫu chặn; 4 hash file #49 spot-check khớp `sha256sum` thực tế. PR body/title cập nhật 376 entry, ghi rõ CI note cũ đã được #49 giải quyết. **Đang chờ check `fuzz-short` trên head mới.**
+
+- 17:44 — **CHECK `fuzz-short` TRÊN #48 (head `c3f6a0c`): PASS 9m40s**, `fuzz-nightly` skip. Đúng kỳ vọng sau vá: crasher prefixlist đã thành seed trong `FuzzParsePrefixList` và pass. PR #48: chỉ `docs/public-manifest.sha256` (376 entry), `MERGEABLE`, sạch để owner merge — **KHÔNG merge**.
+
+## BÁO CÁO CUỐI CA (agent local, ca 17:15 → 17:44 ngày 02/11/2026)
+
+| Việc | Kết quả |
+|---|---|
+| 1. Cổng xác nhận main `3a7d111c` | **PASS tổng thể** — gofmt sạch · vet ok · build ok · go test 26 pkg ok · web npm ci 0 vuln + 115 test + build ok. **1 race flake timing** `TestP12AnalysisPinnedV03HasNoPartialAndReplays` (`TIMING_SENSITIVE`): package `internal/analysis` 0 dòng diff so với #49; chạy riêng 2 test P1-2 `-race -count=3` PASS 3/3; race đầy đủ lượt 2 PASS 26 pkg; bằng chứng nguyên văn ghi mục 17:24 trước kết luận. **Đây là lần tái phát thứ hai trong 7 ngày → theo protocol §2 flake này phải thành hạng mục sửa gốc; đề nghị owner xếp việc hiệu chỉnh budget test P1-2.** Log: `night-shift-20261102/gate-main-3a7d111c.log`. |
+| 2. Refresh PR #48 | Head mới **`c3f6a0c`** trên main `3a7d111c` (376 entry, secret-scan 348 tệp sạch, 4 hash #49 spot-check khớp); chỉ file manifest, `MERGEABLE`; `fuzz-short` **pass 9m40s**. **KHÔNG merge** — chờ owner. |
+
+**Trạng thái cuối:** main = `3a7d111c` (local khớp `origin/main`, sạch); PR mở duy nhất = #48 (head `c3f6a0c`, xanh, chờ owner). Không push evidence/out; không mở demo server. Không merge PR nào trong ca.

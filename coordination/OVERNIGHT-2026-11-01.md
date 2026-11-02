@@ -223,3 +223,5 @@ Các PR snapshot cũ **#26/#29/#30/#31/#32/#33/#34 đều CLOSED** (bị thay b�
 **Còn mở:** PR #42 (manifest) — chờ owner merge. P2-6 pháp lý — owner. Không mở hạng mục mới.
 
 **Ghi chú:** manifest trong #42 được regen trên `18ae079`; sau đó #44 chỉ đổi mode `scripts/fuzz.sh` (nội dung byte không đổi) nên manifest vẫn khớp nội dung `0468af5`. Không push evidence/out. Worktree cổng `gate-p2-4-20261102`, `manifest-regen-20261102`, `fuzz-execbit-20261102` để nguyên ngoài repo.
+
+- 13:56 — **ĐÍNH CHÍNH trạng thái #42 (thay dòng 13:43):** #42 đã được rebase tiếp lên main cuối `0468af5` (sau #44) — head mới `beb1244` (commit message ghi đúng main `0468af5`), vẫn chỉ file `docs/public-manifest.sha256` (374 entry), **KHÔNG merge**. Lý do: bản trước dựa trên `18ae079` (trước fix mode) nên check `fuzz-short` cũ còn đỏ do *Permission denied*; `scripts/fuzz.sh` không nằm trong manifest (script chỉ copy `*.ps1`) nên rebase không đổi hash nào. Check mới trên PR: `fuzz-short` **pass 9m41s** (seed step success), `fuzz-nightly` skip; PR `MERGEABLE`, sạch để owner merge. Trạng thái cuối giữ nguyên: main `0468af5`, #43 + #44 merged, #42 mở chờ owner.

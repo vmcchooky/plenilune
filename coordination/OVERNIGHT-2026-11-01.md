@@ -115,6 +115,8 @@ lại cổng; không tự sửa code.
 - Flake lần thứ hai của cùng một test trong 7 ngày.
 - P3-9/P3-10: chỉ bắt đầu khi Chooky quyết.
 
+- 19:40 — **Hai PR đang chờ cổng, theo đúng thứ tự này:** (1) **PR #51** `docs/p3-9-p3-10-deferral` @ `b3227c9` — ghi quyết định hoãn P3-9/P3-10 (docs-only). (2) **PR #52** `feat/p3-1-release-train` @ `a812c8e` — P3-1 release train v1.0.0 (code + docs; có sửa replay analysis/repair để receipt cũ vẫn replay được sau bump version — đọc mô tả PR). Cả hai đều cắt từ main `4b58ae77` và đều đụng `docs/plan/STATUS.md` ở các hàng khác nhau: merge #51 TRƯỚC; nếu #52 conflict trên STATUS sau khi #51 merge thì GIỮ NGUYÊN, báo vào Mục B — Chí Nhân sẽ cắt lại nhánh, agent local không tự giải quyết conflict. Sau khi #52 merge: regen manifest (PR này thêm CHANGELOG.md + RELEASING.md vào cây public) rồi mới chạy **P3-2 live-UI qualification trên build main mới nhất (1.0.0)** theo checklist trong runbook ở trên.
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

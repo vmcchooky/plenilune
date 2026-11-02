@@ -3,6 +3,7 @@ import { useI18n } from './i18n';
 import { useReview } from './hooks/useReview';
 import { ConditionsStep } from './components/ConditionsStep';
 import { EvidenceStep } from './components/EvidenceStep';
+import { InboxPanel } from './components/InboxPanel';
 import { RepairStep } from './components/RepairStep';
 import { QuickScreen } from './components/QuickScreen';
 import { ResultStep } from './components/ResultStep';
@@ -72,6 +73,10 @@ export function App() {
           {review.error && (
             <InlineError error={review.error} onDismiss={review.clearError} />
           )}
+          {/* Tier 0 of the fast flow (P2-8): fired triggers surface
+              above both modes; the key changes with each completed
+              artifact so a just-finished run refreshes the inbox. */}
+          <InboxPanel refreshKey={review.comparison?.comparison.sha256 ?? review.analysis?.result.sha256 ?? null} />
           {mode === 'quick' ? (
             <QuickScreen review={review} />
           ) : (

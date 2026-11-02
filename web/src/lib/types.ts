@@ -578,3 +578,37 @@ export interface ChatAnswer {
   locale: string;
   ai: ChatPhrasing;
 }
+
+// P2-8 triggers & verdict inbox: a watch pins one object (domain +
+// name) to trigger conditions; the server evaluates every completed
+// analysis/comparison against the object's recorded outcome and files
+// an inbox entry per fired condition. Entries point at the producing
+// artifact by content digest — the artifact remains the record.
+export type TriggerCondition = 'verdict_changed' | 'any_different' | 'obligation_failed';
+
+export interface WatchRule {
+  domain: string;
+  name: string;
+  conditions: TriggerCondition[];
+}
+
+export interface InboxEntry {
+  id: number;
+  domain: string;
+  name: string;
+  condition: TriggerCondition;
+  previous_verdict?: Verdict;
+  verdict?: Verdict;
+  violated_obligations?: string[];
+  artifact_kind: 'analysis' | 'comparison';
+  content_sha256: string;
+  sha256?: string;
+  time: string;
+  read: boolean;
+  stale: boolean;
+}
+
+export interface InboxDocument {
+  entries: InboxEntry[];
+  unread: number;
+}

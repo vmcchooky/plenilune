@@ -1914,3 +1914,113 @@
   .quick-obligations,
   .config-overview { padding: var(--space-4); }
 }
+/* P2-8 verdict inbox: fired triggers + watched objects. Verdict
+   meaning stays in the entry badges; the panel itself is a plain
+   card on the app wash like every other tier-2 surface. */
+.inbox-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  margin-bottom: var(--space-8);
+  animation: fade-in var(--dur-2) var(--ease);
+}
+
+.inbox-panel__actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.inbox-panel__empty {
+  color: var(--muted);
+  font-size: var(--text-body);
+}
+
+.inbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.inbox-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+}
+
+.inbox-entry--unread .inbox-entry__name { font-weight: 600; }
+
+.inbox-entry__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.inbox-entry__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.inbox-watch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-top: var(--border-thin) solid var(--line);
+  padding-top: var(--space-4);
+}
+
+.inbox-watch h3 { font-size: var(--text-md); }
+
+.inbox-watch__help {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.watch-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.watch-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.inbox-watch__form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-3);
+}
+
+.inbox-watch__conditions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.inbox-watch__condition {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}

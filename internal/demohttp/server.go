@@ -95,6 +95,10 @@ func newHandler(webDir, expectedPort string) http.Handler {
 	mux.HandleFunc("POST /api/agent/session", limitConcurrent(sem, handleAgentSession))
 	mux.HandleFunc("POST /api/chat/ask", limitConcurrent(sem, handleChatAsk))
 	mux.HandleFunc("POST /api/bundle/export", handleBundleExport)
+	mux.HandleFunc("GET /api/watches", handleListWatches)
+	mux.HandleFunc("PUT /api/watches", handleReplaceWatches)
+	mux.HandleFunc("GET /api/inbox", handleListInbox)
+	mux.HandleFunc("POST /api/inbox/read", handleInboxRead)
 	mux.Handle("GET /", staticHandler(webDir))
 	return securityHeaders(localOnly(expectedPort, mux))
 }

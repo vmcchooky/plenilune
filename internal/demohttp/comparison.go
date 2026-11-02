@@ -37,6 +37,9 @@ func handleCompare(w http.ResponseWriter, r *http.Request) {
 		comparisonError(w, err)
 		return
 	}
+	// A completed comparison is a trigger event (P2-8), cache hit or
+	// fresh: the store deduplicates repeat sightings of one artifact.
+	observeComparison(c)
 	// EQUIVALENT, DIFFERENT and INCONCLUSIVE are domain outcomes, all HTTP 200.
 	writeJSON(w, http.StatusOK, c)
 }

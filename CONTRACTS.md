@@ -170,6 +170,7 @@ trong cùng một thay đổi.
 | CHAT_QUESTION_EMPTY | validate | false | field: question |
 | CHAT_QUESTION_TOO_LONG | validate | false | field: question |
 | COMPARISON_INVALID | validate | false | |
+| INBOX_INVALID | validate | false | field: id |
 | INPUT_ENCODING | validate | false | |
 | INVALID_OBLIGATION | validate | false | |
 | INVALID_PACKET | validate | false | |
@@ -190,6 +191,7 @@ trong cùng một thay đổi.
 | SESSION_INPUT_INVALID | validate | false | |
 | SOURCE_REF_INVALID | validate | false | field: ref |
 | UNSUPPORTED_KIND | validate | false | |
+| WATCHES_INVALID | validate | false | field: watches |
 | ANALYSIS_FAILED | engine | false | |
 | COMPARISON_FAILED | engine | false | |
 | EVIDENCE_FAILED | engine | false | |
@@ -266,6 +268,62 @@ replay timing-sensitive. Đường web: `POST /api/bundle/export` nhận các
 text artifact của case và trả về đúng byte manifest canonical; nút
 xuất ở màn hình evidence tải `bundle-manifest.json` cùng các tệp case
 vốn đã tải riêng lẻ.
+
+### Trigger & hộp thư verdict — implemented (P2-8)
+
+Tầng 0 của luồng nhanh. Người dùng ghim (watch) các đối tượng cần
+canh theo `(domain, name)` — `domain` là `acl` hoặc `prefix-list`,
+vắng mặt mặc định `acl` — kèm tập điều kiện kích hoạt:
+`verdict_changed`, `any_different`, `obligation_failed`. Mỗi khi một
+lượt phân tích (`POST /api/analyze`) hoặc so sánh (`POST /api/compare`)
+hoàn tất trong server, kết quả của từng đối tượng có verdict engine
+được đối chiếu với kết quả đã ghi gần nhất của chính đối tượng đó;
+mỗi điều kiện khớp sinh một mục hộp thư verdict (inbox entry).
+Đánh giá là đồng bộ tại thời điểm hoàn tất, trong tiến trình server:
+không daemon, không scheduler, không watcher file.
+
+Ngữ nghĩa từng điều kiện:
+
+- `verdict_changed`: chỉ bắn khi cả kết quả trước và kết quả hiện tại
+  đều là verdict đã quyết định (EQUIVALENT/DIFFERENT) và khác nhau;
+  entry mang `previous_verdict` và `verdict`. INCONCLUSIVE — kể cả
+  kết quả một phần dừng vì ngân sách, mà verdict của nó vẫn là
+  INCONCLUSIVE — được ghi thành trạng thái của đối tượng nhưng không
+  bao giờ là một phía của "verdict changed": cạn ngân sách là sự kiện
+  của lượt tìm kiếm, không phải của cấu hình, và không được nâng
+  thành thay đổi hành vi.
+- `any_different`: bắn khi kết quả hiện tại là DIFFERENT đã quyết
+  định và artifact sinh ra nó (theo `content_sha256`) chưa từng được
+  báo cho đối tượng này; cùng một artifact gặp lại (compare cache
+  hit, chạy lại cùng input) không bắn hai lần.
+- `obligation_failed`: chỉ đường compare mới đánh giá obligation.
+  Bắn khi tập obligation VIOLATED xuất hiện ID chưa vi phạm trong
+  kết quả đã ghi gần nhất; entry mang đúng các ID mới vi phạm.
+  Vi phạm cũ còn nguyên không bắn lại, và một lượt phân tích (không
+  đánh giá obligation) không xóa tập vi phạm đã ghi.
+
+Entry mang: đối tượng (domain + name), điều kiện đã bắn, verdict
+hiện tại, `violated_obligations` khi áp dụng, `artifact_kind`
+(`analysis` hoặc `comparison`), cặp digest (`content_sha256`,
+`sha256`) của artifact sinh ra nó, thời điểm server ghi và cờ đã
+đọc. `stale` được tính lúc đọc: true khi đối tượng đã có kết quả
+mới hơn kể từ entry đó — đây là đánh dấu hiển thị, không phải cơ
+chế vô hiệu hóa quyết định (việc đó thuộc P3-4). Hộp thư không chứa
+verdict nào ngoài verdict engine đã ghi trong artifact mà entry
+trỏ tới; mở entry là mở artifact đó.
+
+Bề mặt API (mọi route sau guard `localOnly` như mọi `/api/*`):
+`GET /api/watches`; `PUT /api/watches` thay toàn bộ danh sách (lỗi
+định dạng → `WATCHES_INVALID`, stage validate, field `watches`);
+`GET /api/inbox` trả entries mới nhất trước kèm số chưa đọc;
+`POST /api/inbox/read` nhận `{id}` hoặc `{all: true}` (id lạ →
+`INBOX_INVALID`, field `id`). Toàn bộ trạng thái — watches, kết quả
+đã ghi theo đối tượng, entries — sống trong bộ nhớ tiến trình
+server như compare cache (P1-5), giới hạn 64 watches, 256 entries
+(rớt cũ nhất) và 512 đối tượng có trạng thái; khởi động lại server
+là bắt đầu trống. Không ghi đĩa; không thông báo ra ngoài app
+(phía MoonStorm của trigger là đặc tả ở P2-7). Engine nằm ở
+`internal/inbox`; capabilities công bố feature `verdict_inbox`.
 
 ## 5. Full comparison và API — implemented
 

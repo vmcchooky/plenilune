@@ -205,7 +205,8 @@
     "interrogation_chat",
     "partial_results",
     "repair_enumeration",
-    "review_bundle"
+    "review_bundle",
+    "verdict_inbox"
   ],
   "error_codes": [
     "ACL_INVALID",
@@ -230,6 +231,7 @@
     "DUPLICATE_DEFINITION",
     "EVIDENCE_FAILED",
     "EVIDENCE_MISMATCH",
+    "INBOX_INVALID",
     "INPUT_ENCODING",
     "INPUT_FAILED",
     "INPUT_INVALID",
@@ -275,6 +277,7 @@
     "TRACE_INVALID",
     "UI_NOT_BUILT",
     "UNSUPPORTED_KIND",
-    "USAGE"
+    "USAGE",
+    "WATCHES_INVALID"
   ]
 }

@@ -23,6 +23,7 @@ vi.mock('../src/lib/api', async (importOriginal) => {
       health: vi.fn(), analyze: vi.fn(), analyzeReplay: vi.fn(), trace: vi.fn(),
       parse: vi.fn(), normalize: vi.fn(), normalizePolicy: vi.fn(), compare: vi.fn(),
       replayComparison: vi.fn(), agentSession: vi.fn(), repairVerify: vi.fn(), repairReplay: vi.fn(),
+      listWatches: vi.fn(), replaceWatches: vi.fn(), listInbox: vi.fn(), markInboxRead: vi.fn(),
     },
   };
 });
@@ -43,6 +44,8 @@ beforeEach(() => {
   });
   acceptedComparison = comparison;
   vi.mocked(runtime.health).mockResolvedValue(artifact({ service: 'plenilune-demo', runtime: {} }));
+  vi.mocked(runtime.listWatches).mockResolvedValue(artifact({ watches: [] }));
+  vi.mocked(runtime.listInbox).mockResolvedValue(artifact({ entries: [], unread: 0 }));
   vi.mocked(runtime.analyze).mockImplementation(async (before, after, _select, policies) => {
     const data = await standaloneAnalysis(before, after);
     if (policies) {

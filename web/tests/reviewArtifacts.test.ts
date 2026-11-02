@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  decodeUtf8, inspectReceipt, MAX_SOURCE_BYTES, readReviewFile,
+  decodeUtf8, exportBundleManifest, inspectReceipt, MAX_SOURCE_BYTES, readReviewFile,
   replayImported, replayInstructions, standaloneRepairRaw,
 } from '../src/lib/reviewArtifacts';
 import type { ImportedFile } from '../src/lib/reviewArtifacts';
@@ -71,6 +71,22 @@ describe('independent review artifacts', () => {
     const replay = () => replayImported(file('before'), file('after'), file(JSON.stringify(repairSnapshot.receipt)));
     await expect(replay()).rejects.toMatchObject({ code: 'RESPONSE_INVALID' });
     await expect(replay()).rejects.toMatchObject({ code: 'EVIDENCE_MISMATCH' });
+  });
+
+  it('exports the bundle manifest from the local runtime and maps typed errors', async () => {
+    const manifest = JSON.stringify({ schema: 'plenilune.bundle/v1', files: [{ role: 'before', path: 'before.acl', sha256: '0'.repeat(64) }] });
+    const fetch = vi.fn()
+      .mockResolvedValueOnce(new Response(manifest))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ error: { code: 'BUNDLE_INVALID' } }), { status: 400 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ schema: 'plenilune.bundle/v99', files: [] })));
+    vi.stubGlobal('fetch', fetch);
+    const parts = { before: 'b', after: 'a', comparison: 'c', report: '# Report\n' };
+    await expect(exportBundleManifest(parts)).resolves.toBe(manifest);
+    const [url, init] = fetch.mock.calls[0];
+    expect(url).toBe('/api/bundle/export');
+    expect(JSON.parse(init.body)).toEqual(parts);
+    await expect(exportBundleManifest(parts)).rejects.toMatchObject({ code: 'BUNDLE_INVALID' });
+    await expect(exportBundleManifest(parts)).rejects.toMatchObject({ code: 'RESPONSE_INVALID' });
   });
 
   it('writes runnable commands for the actual downloaded filenames in both languages', () => {

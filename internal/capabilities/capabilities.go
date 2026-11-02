@@ -23,6 +23,7 @@ import (
 	"plenilune/internal/agent"
 	"plenilune/internal/analysis"
 	"plenilune/internal/audit"
+	"plenilune/internal/bundle"
 	"plenilune/internal/chat"
 	"plenilune/internal/ciscoacl"
 	"plenilune/internal/evidence"
@@ -44,6 +45,7 @@ const (
 	FeatureCompareCache      = "compare_cache"
 	FeaturePartialResults    = "partial_results"
 	FeatureDualDigest        = "dual_digest"
+	FeatureReviewBundle      = "review_bundle"
 )
 
 // Features is the curated feature list for this build. Every entry
@@ -57,6 +59,7 @@ var Features = []string{
 	FeatureInterrogationChat,
 	FeaturePartialResults,
 	FeatureRepairEnumeration,
+	FeatureReviewBundle,
 }
 
 // ErrorCodes is the curated list of typed error codes a caller can
@@ -75,6 +78,9 @@ var ErrorCodes = []string{
 	"AI_MODEL_UNSUPPORTED",
 	"ANALYSIS_FAILED",
 	"AUDIT_INPUT_INVALID",
+	"BUNDLE_DIGEST_MISMATCH",
+	"BUNDLE_FILE_MISSING",
+	"BUNDLE_INVALID",
 	"CANCELED",
 	"CHAT_ARTIFACT_INVALID",
 	"CHAT_INVALID",
@@ -243,6 +249,7 @@ func BuildWithTool(version, commit string) Document {
 			{ID: "plenilune.repair-enumeration", Current: repair.EnumerationSchema, Supported: []string{repair.EnumerationSchema}},
 			{ID: "plenilune.policy", Current: repair.PolicySchema, Supported: []string{repair.PolicySchema}},
 			{ID: "plenilune.audit", Current: audit.Schema, Supported: []string{audit.Schema}},
+			{ID: "plenilune.bundle", Current: bundle.Schema, Supported: []string{bundle.Schema}},
 			{ID: "plenilune.chat", Current: chat.Schema, Supported: []string{chat.Schema}},
 			{ID: "plenilune.ai", Current: agent.ResultSchema, Supported: []string{agent.ResultSchema}},
 			{ID: "plenilune.trace", Current: evidence.TraceSchema, Supported: []string{evidence.TraceSchema}},

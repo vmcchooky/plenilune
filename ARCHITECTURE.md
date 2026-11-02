@@ -43,6 +43,7 @@ flowchart LR
 | `internal/intent` | Typed obligation, strict validation | Chứng nhận AI hiểu đúng ý định |
 | `internal/evidence` | Trace/full comparison DTO và digest | Tự thay kết quả verifier |
 | `internal/workflow` | Parse pair, compare/seal, semantic replay và cache comparison theo nội dung | Provider, file I/O |
+| `internal/bundle` | Bundle manifest của một review case (`plenilune.bundle/v1`): build/parse/verify chỉ mục SHA-256 theo role | File I/O, verdict, sửa artifact |
 | `internal/patch`, `internal/repair` | Pinned edits, frozen policy, collateral và repair replay | Device/file apply, provider |
 | `internal/audit` | Sealed single-ACL audit records (`plenilune.audit/v1`) và audit replay | Sửa cấu hình, auto-fix, verdict so sánh |
 | `internal/chat` | Thẩm vấn tất định trên artifact đã seal (`plenilune.chat/v1`) + diễn đạt AI opt-in | Chạy analysis, đổi verdict, accept obligation, ghi artifact |

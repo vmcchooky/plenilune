@@ -162,6 +162,8 @@ trong cùng một thay đổi.
 | PARSE_SEQUENCE_ORDER | parse | false | line |
 | ROUTE_INVALID | parse | false | line |
 | AUDIT_INPUT_INVALID | validate | false | |
+| BUNDLE_FILE_MISSING | validate | false | field: role |
+| BUNDLE_INVALID | validate | false | field: role khi có |
 | CHAT_INVALID | validate | false | |
 | CHAT_LOCALE_UNSUPPORTED | validate | false | field: locale |
 | CHAT_NO_ARTIFACT | validate | false | |
@@ -193,6 +195,7 @@ trong cùng một thay đổi.
 | EVIDENCE_FAILED | engine | false | |
 | TRACE_INVALID | engine | false | |
 | DEADLINE_EXCEEDED | budget | true | |
+| BUNDLE_DIGEST_MISMATCH | replay | false | field: role |
 | CHAT_ARTIFACT_INVALID | replay | false | |
 | EVIDENCE_MISMATCH | replay | false | |
 | TIMING_SENSITIVE | replay | true | (xem ghi chú) |
@@ -220,6 +223,49 @@ Ghi chú phân tầng:
   `partial` đã seal); deadline rơi giữa analysis → object `not_analyzed`
   trong artifact đã seal; deadline đã qua trước khi bắt đầu / hủy →
   error typed `DEADLINE_EXCEEDED` / `CANCELED`, không có artifact.
+
+### Review bundle — implemented (P2-4)
+
+Schema `plenilune.bundle/v1`: một review case được xuất thành một thư
+mục thường (không ZIP/archive) gồm các tệp của case và một tệp chỉ mục
+`bundle-manifest.json`. Manifest là *integrity index* thuần túy: mỗi
+entry ghi `role`, `path` (đường dẫn tương đối trong thư mục bundle) và
+`sha256` của đúng byte của tệp đó. Manifest không mang verdict, không
+thay receipt (receipt trong các tệp mới là bằng chứng — digest của
+chúng, gồm cặp `content_sha256`/`artifact_sha256` của P2-1, là thứ neo
+kết quả replay), và report trong bundle vẫn chỉ là view cho người đọc.
+
+Role và tên tệp canonical khi export: `before` → `before.acl`,
+`after` → `after.acl`, `comparison` → `comparison.json` (bắt buộc cả
+ba); `repair` → `repair.json`, `report` → `report.md`,
+`instructions` → `instructions.md` (tùy chọn khi export). Quy tắc toàn
+vẹn khi load: tệp đã được liệt kê trong manifest — kể cả role tùy
+chọn — là bắt buộc phải có mặt và khớp digest; thiếu tệp →
+`BUNDLE_FILE_MISSING`, lệch một byte → `BUNDLE_DIGEST_MISMATCH`, cả
+hai đều mang tên role trong `field`. Manifest bị từ chối bằng
+`BUNDLE_INVALID` nếu: sai schema, role lạ, trùng role hoặc trùng
+path, thiếu entry bắt buộc, entry không theo thứ tự role canonical,
+digest không đúng định dạng hex, hoặc path không phải đường dẫn tương
+đối sạch nằm trong thư mục bundle (chặn tuyệt đối, `..`, `\`, tiền tố
+ổ đĩa và chính tệp manifest). Manifest **không tự hash**: hash của chỉ
+mục không neo được gì (ai sửa tệp cũng sửa được chỉ mục); neo thật là
+các digest đã seal bên trong artifact, được chính replay kiểm lại.
+
+Builder duy nhất nằm ở `internal/bundle` (thuần, không I/O); CLI và
+demo server dùng chung nên manifest của hai đường xuất là byte-identical
+cho cùng một case. Đường CLI: `plenilune bundle-export --out DIR
+--before FILE --after FILE --comparison FILE [--repair FILE]
+[--report FILE] [--instructions FILE]` ghi các tệp (manifest ghi sau
+cùng) và in manifest; `plenilune bundle-replay --dir DIR` xác minh
+toàn vẹn trước, rồi chuyển artifact đã xác minh cho replay hiện hữu —
+role `comparison` chứa evidence `plenilune.evidence/v1|v2` →
+`workflow.Replay`, chứa analysis `plenilune.analysis/v1|v2|v3` →
+`analysis.Replay`, và `repair.json` nếu có → `repair.Replay`; exit 0
+chỉ khi mọi artifact có mặt đều replay khớp, 2 khi lỗi toàn vẹn hoặc
+replay timing-sensitive. Đường web: `POST /api/bundle/export` nhận các
+text artifact của case và trả về đúng byte manifest canonical; nút
+xuất ở màn hình evidence tải `bundle-manifest.json` cùng các tệp case
+vốn đã tải riêng lẻ.
 
 ## 5. Full comparison và API — implemented
 

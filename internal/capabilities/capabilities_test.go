@@ -14,6 +14,7 @@ import (
 	"plenilune/internal/agent"
 	"plenilune/internal/analysis"
 	"plenilune/internal/audit"
+	"plenilune/internal/bundle"
 	"plenilune/internal/chat"
 	"plenilune/internal/ciscoacl"
 	"plenilune/internal/evidence"
@@ -69,6 +70,7 @@ func TestSchemasMatchOwningConstants(t *testing.T) {
 		"plenilune.repair-enumeration":      {Current: repair.EnumerationSchema, Supported: []string{repair.EnumerationSchema}},
 		"plenilune.policy":                  {Current: repair.PolicySchema, Supported: []string{repair.PolicySchema}},
 		"plenilune.audit":                   {Current: audit.Schema, Supported: []string{audit.Schema}},
+		"plenilune.bundle":                  {Current: bundle.Schema, Supported: []string{bundle.Schema}},
 		"plenilune.chat":                    {Current: chat.Schema, Supported: []string{chat.Schema}},
 		"plenilune.ai":                      {Current: agent.ResultSchema, Supported: []string{agent.ResultSchema}},
 		"plenilune.trace":                   {Current: evidence.TraceSchema, Supported: []string{evidence.TraceSchema}},

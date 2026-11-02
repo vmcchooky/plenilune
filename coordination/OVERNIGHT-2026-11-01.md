@@ -76,6 +76,8 @@ lại cổng; không tự sửa code.
 
 - 18:2x — **PR #50 MỚI (hạng mục sửa gốc theo luật tái phát):** `fix/p12-test-budget-race` @ `4b286ae` — hai test P1-2 trong `internal/analysis/p12_partial_test.go` ghim `MaxBoxes=5000` (partial ghi lại giống hệt ở mọi trần [2000, 50000]: stage permit_before, 256 pairs; thời gian-tới-điểm-dừng 228 ms → ~11 ms). Chỉ test + STATUS, không đụng engine, không assertion nào đổi. Cổng Linux của Chí Nhân: 26/26 + race toàn suite PASS; `-race -count=20` riêng hai test PASS 4,4 s. Việc của ca cổng: cổng Windows đầy đủ, PASS trọn vẹn thì merge; khi cổng PR này, để ý riêng hai test P1-2 ở lượt race. Sau merge: refresh PR #48 (manifest) lên main mới (STATUS lại đổi) — vẫn không merge #48, owner tự merge. Ghi kết quả vào Mục B.
 
+- 18:3x — **CẬP NHẬT: PR #50 ĐÃ MERGE + #48 ĐÃ REFRESH, đều do Chí Nhân làm theo ủy quyền trực tiếp của owner** (agent local trước hit limit; owner chỉ đạo "bạn làm hết hộ tôi"). #50 merge `f41f12e` trên cổng Linux đầy đủ của Chí Nhân (26/26 + race toàn suite), lượt này KHÔNG qua cổng Windows — ca cổng tới không cần làm lại. #48 đã refresh lên main `f41f12e`, head `ea7847d`: manifest regen được Chí Nhân tái tạo trên Linux và đối chiếu byte-for-byte với phương pháp script PowerShell (tập 376 dòng hash khớp tuyệt đối trên cùng cây; refresh chỉ thay đúng 2 hash của hai file #50 đụng, giữ nguyên thứ tự + CRLF) — ca tới KHÔNG regen lại. Việc duy nhất còn lại: owner tự merge #48 như lệ. Nếu ca tới muốn kiểm tra chéo, chạy cổng Windows trên main `f41f12e` là đủ.
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

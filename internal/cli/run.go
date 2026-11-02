@@ -69,6 +69,22 @@ Commands:
                                      and repair artifacts inside; exits 0 when
                                      everything replays, 2 on a bundle integrity
                                      failure or a timing-sensitive replay
+  sign-keygen --out FILE             Generate an Ed25519 signing key: the
+                                     private key is written to FILE (0600,
+                                     never overwritten); only the fingerprint
+                                     and public key are printed
+  sign --key FILE --evidence FILE [--out FILE]
+                                     Detached signature (plenilune.signature/v1)
+                                     binding BOTH digests of a sealed evidence
+                                     (v2) or analysis (v3) artifact:
+                                     content_sha256 and the artifact sha256
+  verify-signature --evidence FILE --signature FILE [--fingerprint HEX] [--pubkey FILE]
+                                     Verify a detached signature: the artifact
+                                     digests are recomputed from the payload,
+                                     never trusted from the envelope; exits 0
+                                     SIGNATURE_VALID. A signature attests key
+                                     possession only — it never changes a
+                                     verdict or a replay outcome
   audit --config FILE                Exact audit of one ACL: unreachable and
                                      redundant rules (exact findings) plus
                                      generalization/correlation relations
@@ -124,6 +140,15 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if cmd == "capabilities" {
 		return runCapabilities(args[1:], stdout, stderr)
+	}
+	if cmd == "sign-keygen" {
+		return runSignKeygen(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "sign" {
+		return runSign(ctx, args[1:], stdout, stderr)
+	}
+	if cmd == "verify-signature" {
+		return runVerifySignature(ctx, args[1:], stdout, stderr)
 	}
 	if cmd == "audit" {
 		return runAudit(ctx, args[1:], stdout, stderr)

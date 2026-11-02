@@ -73,6 +73,13 @@
       ]
     },
     {
+      "id": "plenilune.signature",
+      "current": "plenilune.signature/v1",
+      "supported": [
+        "plenilune.signature/v1"
+      ]
+    },
+    {
       "id": "plenilune.chat",
       "current": "plenilune.chat/v1",
       "supported": [
@@ -202,6 +209,7 @@
     "audit",
     "compare_cache",
     "dual_digest",
+    "evidence_signing",
     "interrogation_chat",
     "partial_results",
     "repair_enumeration",
@@ -272,6 +280,11 @@
     "SELECT_INVALID",
     "SERVER_BUSY",
     "SESSION_INPUT_INVALID",
+    "SIGNATURE_DIGEST_MISMATCH",
+    "SIGNATURE_INVALID",
+    "SIGNATURE_MISMATCH",
+    "SIGN_ARTIFACT_UNSUPPORTED",
+    "SIGN_KEY_INVALID",
     "SOURCE_REF_INVALID",
     "TIMING_SENSITIVE",
     "TRACE_INVALID",

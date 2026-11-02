@@ -44,6 +44,7 @@ flowchart LR
 | `internal/evidence` | Trace/full comparison DTO và digest | Tự thay kết quả verifier |
 | `internal/workflow` | Parse pair, compare/seal, semantic replay và cache comparison theo nội dung | Provider, file I/O |
 | `internal/bundle` | Bundle manifest của một review case (`plenilune.bundle/v1`): build/parse/verify chỉ mục SHA-256 theo role | File I/O, verdict, sửa artifact |
+| `internal/signature` | Chữ ký tách rời Ed25519 trên cặp digest của evidence/analysis (`plenilune.signature/v1`): envelope sign/verify, fingerprint khóa công khai | Giữ private key, cổng verdict/replay, danh tính/approval |
 | `internal/patch`, `internal/repair` | Pinned edits, frozen policy, collateral và repair replay | Device/file apply, provider |
 | `internal/audit` | Sealed single-ACL audit records (`plenilune.audit/v1`) và audit replay | Sửa cấu hình, auto-fix, verdict so sánh |
 | `internal/inbox` | Trigger & hộp thư verdict (P2-8): watch theo đối tượng, đánh giá điều kiện trên kết quả đã ghi, entries trỏ về artifact theo content digest; state in-memory của server | Daemon/scheduler/watcher file, verdict mới, ghi đĩa |

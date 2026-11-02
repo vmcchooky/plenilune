@@ -21,6 +21,7 @@ import (
 	"plenilune/internal/packetset"
 	"plenilune/internal/prefixlist"
 	"plenilune/internal/repair"
+	"plenilune/internal/signature"
 	"plenilune/internal/verify"
 )
 
@@ -71,6 +72,7 @@ func TestSchemasMatchOwningConstants(t *testing.T) {
 		"plenilune.policy":                  {Current: repair.PolicySchema, Supported: []string{repair.PolicySchema}},
 		"plenilune.audit":                   {Current: audit.Schema, Supported: []string{audit.Schema}},
 		"plenilune.bundle":                  {Current: bundle.Schema, Supported: []string{bundle.Schema}},
+		"plenilune.signature":               {Current: signature.Schema, Supported: []string{signature.Schema}},
 		"plenilune.chat":                    {Current: chat.Schema, Supported: []string{chat.Schema}},
 		"plenilune.ai":                      {Current: agent.ResultSchema, Supported: []string{agent.ResultSchema}},
 		"plenilune.trace":                   {Current: evidence.TraceSchema, Supported: []string{evidence.TraceSchema}},
@@ -208,7 +210,7 @@ func TestFeaturesPinned(t *testing.T) {
 	if strings.Join(doc.Features, ",") != strings.Join(Features, ",") {
 		t.Fatal("document features differ from the Features list")
 	}
-	for _, f := range []string{FeatureRepairEnumeration, FeatureAudit, FeatureInterrogationChat, FeatureAIProposals, FeatureCompareCache, FeaturePartialResults, FeatureDualDigest} {
+	for _, f := range []string{FeatureRepairEnumeration, FeatureAudit, FeatureInterrogationChat, FeatureAIProposals, FeatureCompareCache, FeaturePartialResults, FeatureDualDigest, FeatureEvidenceSigning} {
 		if !contains(doc.Features, f) {
 			t.Fatalf("feature %s missing from document", f)
 		}

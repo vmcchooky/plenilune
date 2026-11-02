@@ -189,6 +189,9 @@ trong cùng một thay đổi.
 | RESULT_TOO_LARGE | validate | false | |
 | SELECT_INVALID | validate | false | field: select |
 | SESSION_INPUT_INVALID | validate | false | |
+| SIGNATURE_INVALID | validate | false | |
+| SIGN_ARTIFACT_UNSUPPORTED | validate | false | |
+| SIGN_KEY_INVALID | validate | false | |
 | SOURCE_REF_INVALID | validate | false | field: ref |
 | UNSUPPORTED_KIND | validate | false | |
 | WATCHES_INVALID | validate | false | field: watches |
@@ -200,6 +203,8 @@ trong cùng một thay đổi.
 | BUNDLE_DIGEST_MISMATCH | replay | false | field: role |
 | CHAT_ARTIFACT_INVALID | replay | false | |
 | EVIDENCE_MISMATCH | replay | false | |
+| SIGNATURE_DIGEST_MISMATCH | replay | false | |
+| SIGNATURE_MISMATCH | replay | false | |
 | TIMING_SENSITIVE | replay | true | (xem ghi chú) |
 | AI_CONFIG_INVALID | provider | false | |
 | AI_MODEL_UNSUPPORTED | provider | false | |
@@ -324,6 +329,65 @@ server như compare cache (P1-5), giới hạn 64 watches, 256 entries
 là bắt đầu trống. Không ghi đĩa; không thông báo ra ngoài app
 (phía MoonStorm của trigger là đặc tả ở P2-7). Engine nằm ở
 `internal/inbox`; capabilities công bố feature `verdict_inbox`.
+
+### Ký bằng chứng — implemented (P2-5)
+
+Schema `plenilune.signature/v1`: một envelope chữ ký Ed25519 tách rời
+(detached) neo vào MỘT artifact đã seal qua cặp digest của P2-1 —
+`content_sha256` VÀ `artifact_sha256` (trường `sha256` của artifact) —
+kèm `artifact_schema`, khóa công khai của người ký (base64) và
+`fingerprint` của khóa đó (SHA-256 trên byte thô của khóa công khai,
+dạng hex). Cả hai digest luôn được ký cùng nhau: chỉ ký content digest
+thì chữ ký đi theo được sang một bản in khác của cùng kết quả; chỉ ký
+envelope digest thì chữ ký neo vào provenance của build thay vì kết
+quả. Chuỗi byte được ký là canonical và mang tính contractual (đổi
+layout là vô hiệu mọi chữ ký đã phát hành):
+`plenilune.signature/v1\n<artifact_schema>\n<content_sha256>\n<artifact_sha256>\n`.
+Không canonicalize lại JSON (không JCS ở phase này): chữ ký ký trên
+digest đã pin, không ký trên byte thô của file artifact.
+
+Chỉ artifact mang cặp digest mới ký được: evidence
+`plenilune.evidence/v2` và analysis `plenilune.analysis/v3`. Artifact
+đóng băng (evidence v1, analysis v1/v2) không có content digest nên
+bị từ chối bằng `SIGN_ARTIFACT_UNSUPPORTED` thay vì hạ cấp xuống ký
+một digest; chúng vẫn replay unsigned theo quy tắc cũ. Sign đòi hỏi
+artifact tự kiểm chứng được: digest ghi trong artifact phải bằng
+digest tính lại bằng chính seal machinery của package sở hữu, lệch
+thì `EVIDENCE_MISMATCH` — không ký artifact chưa seal.
+
+Đường CLI: `sign-keygen --out FILE` sinh khóa Ed25519 (stdlib), ghi
+private key vào FILE (0600, từ chối ghi đè file đã tồn tại) và chỉ in
+fingerprint + khóa công khai; `sign --key FILE --evidence FILE
+[--out FILE]` phát envelope; `verify-signature --evidence FILE
+--signature FILE [--fingerprint HEX] [--pubkey FILE]` kiểm tra.
+Format tệp khóa: một dòng base64 (private key 64 byte hoặc seed 32
+byte; khóa công khai 32 byte). Verify tính lại cả hai digest từ
+payload — digest in trong envelope chỉ là claim bị kiểm chứng, không
+bao giờ được tin: envelope lệch digest đã tính lại →
+`SIGNATURE_DIGEST_MISMATCH` (artifact bị sửa, hoặc envelope của
+artifact khác); artifact lệch digest của chính nó →
+`EVIDENCE_MISMATCH`; chữ ký không khớp khóa trong envelope, hoặc
+fingerprint ghim / khóa của `--pubkey` không khớp →
+`SIGNATURE_MISMATCH`; envelope hỏng cấu trúc (sai schema, digest,
+khóa hay chữ ký sai định dạng, fingerprint không khớp khóa công khai
+đi kèm) → `SIGNATURE_INVALID`; tệp khóa hỏng → `SIGN_KEY_INVALID`.
+Private key không bao giờ xuất hiện trong envelope, artifact, log
+hay output: envelope chỉ mang khóa công khai và chữ ký.
+
+Chữ ký chứng minh đúng một điều: người giữ private key đã ký lên cặp
+digest này — tức *ai đã ký lên nội dung này* theo nghĩa sở hữu khóa.
+Nó KHÔNG chứng minh danh tính người ký, không phải quyết định duyệt
+(approval), không chứng minh phân tích đúng, và không chứng minh
+thời điểm ký (envelope cố ý không mang timestamp). Vì vậy verify
+không bao giờ là cổng của verdict, seal hay replay: artifact có chữ
+ký sai — hoặc không có chữ ký — vẫn replay y hệt artifact có chữ ký
+đúng; trạng thái chữ ký được báo riêng bên cạnh kết quả replay,
+không bao giờ thay nó và không bao giờ chặn nó. Mô hình khóa khi
+tích hợp: phía MoonStorm ký bằng khóa của mình và giữ private key ở
+phía MoonStorm; Plenilune chỉ cần đường verify bằng khóa công khai
+hoặc fingerprint. Không PKI, không phân phối khóa trong phạm vi
+này. Engine nằm ở `internal/signature`; capabilities công bố
+feature `evidence_signing` và schema `plenilune.signature`.
 
 ## 5. Full comparison và API — implemented
 

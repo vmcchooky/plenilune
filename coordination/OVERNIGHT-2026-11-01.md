@@ -206,3 +206,20 @@ Các PR snapshot cũ **#26/#29/#30/#31/#32/#33/#34 đều CLOSED** (bị thay b�
 - 13:17 — Việc kế tiếp đúng thứ tự: regen manifest trên main `18ae079` (checkout LF, `core.autocrlf=false`) và push vào branch của #42 — **không merge #42**; sau đó việc phụ fuzz exec bit.
 
 - 13:22 — **#42 MANIFEST ĐÃ CẬP NHẬT TRÊN MAIN MỚI `18ae079` — VẪN KHÔNG MERGE.** Branch `chore/public-manifest-regen-20261102` đã rebase lên main mới (commit cũ `8f9f90e` → `0b46492`, force-with-lease), chỉ chứa `docs/public-manifest.sha256` (374 entry; diff so với manifest cũ trên main: 86 thêm / 49 xóa — manifest trên main vốn còn stale từ trước chuỗi -v2 vì #42 chưa merge). Regen bằng `scripts/public-snapshot.ps1` trên worktree riêng `manifest-regen-20261102` (sạch, `core.autocrlf=false`, Go vẫn LF; 25 file CRLF pre-existing là loại được commit nguyên byte, `i/crlf` = `w/crlf` nên hash ổn định); snapshot `out/public-review-manifest-20261102-2` (ignored, không push). `scripts/secret-scan.ps1` sạch: 346 tệp, 0 mẫu chặn. Spot-check 3 hash (`internal/verify/types.go`, `CONTRACTS.md`, `docs/plan/STATUS.md`) khớp `sha256sum` thực tế trên cây main mới. PR body/title đã cập nhật 374 entry + lý do regen. **Chờ owner merge #42.**
+
+- 13:33 — **PR #44 `chore/fuzz-script-exec-bit` @ `24adf5e9`: CHECK `fuzz-short` XANH → ĐÃ MERGE** lúc 2026-11-02T06:32:59Z, merge SHA `0468af51e995` (main = `0468af5`). Branch cắt từ main `18ae079`; commit chỉ đổi mode: `old mode 100644` / `new mode 100755`, blob giữ nguyên `b673c11c…`, `git diff` nội dung rỗng, `git ls-files -s` = `100755` trước khi push. Sanity cục bộ: gofmt sạch · vet ok · build ok. Check Actions trên PR: bước `Seed corpora as tests` — trước đây chết *Permission denied* — nay **success**; `Short fuzz pass` **pass 9m47s**; `fuzz-short` toàn job pass, `fuzz-nightly` skip đúng. Sau merge, run push trên main `0468af5` (`41400608894`) cũng **success** (`fuzz-short` 9m47s, seed step success) — lưới fuzz P1-6 lần đầu chạy thật trên GitHub. Không phải sửa nội dung script/workflow.
+- 13:43 — **TRẠNG THÁI CUỐI:** main = `0468af5` (local khớp `origin/main`, sạch; mode `scripts/fuzz.sh` trên main = `100755`). #43 + #44 đã merge. **#42 vẫn MỞ, chưa merge** (quyền owner), head `0b46492`, manifest đã regen trên main `18ae079` (374 entry, secret-scan 346 tệp sạch) — lưu ý #42 giờ stale so với `0468af5` đúng một thay đổi mode (nội dung file không đổi nên hash manifest không đổi; merge #42 vẫn nhất quán byte). Check fuzz trên main xanh. Không có flake ở cổng nào của ca này.
+
+## BÁO CÁO CUỐI CA (agent local, ca 13:05 → 13:43 ngày 02/11/2026)
+
+**Đã xong, đúng thứ tự chỉ đạo:**
+
+| Việc | Kết quả | Bằng chứng |
+|---|---|---|
+| 1. PR #43 verify.Options defaults @ `50a500d8` | Cổng Windows đầy đủ **PASS**, 10/10 check HTTP độc lập, **ĐÃ MERGE** `18ae079` lúc 06:16:14Z | Log `D:\Quorix\plenilune\night-shift-20261102\gate-43.log`; cây merge trùng head (`git diff 50a500d8 origin/main` rỗng) |
+| 2. PR #42 manifest | Regen trên main mới `18ae079` (374 entry, secret-scan sạch), push `0b46492`, **KHÔNG merge** | PR body/title cập nhật; chỉ file `docs/public-manifest.sha256`; 3 hash spot-check khớp |
+| 3. PR #44 fuzz exec bit @ `24adf5e9` | `fuzz-short` PR **XANH** (seed step success, short pass 9m47s), **ĐÃ MERGE** `0468af5`; run main cũng xanh | Chỉ đổi mode 100644→100755, blob không đổi |
+
+**Còn mở:** PR #42 (manifest) — chờ owner merge. P2-6 pháp lý — owner. Không mở hạng mục mới.
+
+**Ghi chú:** manifest trong #42 được regen trên `18ae079`; sau đó #44 chỉ đổi mode `scripts/fuzz.sh` (nội dung byte không đổi) nên manifest vẫn khớp nội dung `0468af5`. Không push evidence/out. Worktree cổng `gate-p2-4-20261102`, `manifest-regen-20261102`, `fuzz-execbit-20261102` để nguyên ngoài repo.

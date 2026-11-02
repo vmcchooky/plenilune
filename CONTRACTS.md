@@ -26,7 +26,7 @@ Go DTO hiện tại ở `internal/ciscoacl`, `internal/intent`, `internal/eviden
 
 Exit 0: operation thành công, kể cả packet bị deny. Exit 2: usage/input,
 unsupported, cancellation, I/O hoặc replay mismatch. JSON result ở stdout;
-JSON error có `code`, `message`, source `line` khi biết ở stderr. Không có output
+JSON error theo taxonomy P2-3 (mục 4): `code`, `stage`, `message`, `retryable`, `field` khi áp dụng, source `line`/`side` khi biết ở stderr. Không có output
 result khi input/replay thất bại; lỗi ghi stdout có thể để lại stream JSON dở.
 Không tự lưu/overwrite file; caller quyết định output path.
 
@@ -110,6 +110,116 @@ ra ở non-test source; snapshot test ghim toàn bộ JSON). Caller kiểm
 capabilities TRƯỚC khi gửi cấu hình và từ chối sớm kèm lý do khi version/
 feature không khớp — client mẫu `examples/moonstorm-client/` (Go, stdlib)
 làm đúng việc này và là điểm mở rộng cho vòng analyze của P2-7.
+
+### Error taxonomy — implemented (P2-3)
+
+Mọi lỗi qua CLI/HTTP mang cùng một envelope: `code`, `stage`, `message`,
+`retryable`, cộng `field` khi biết field gây lỗi và `line`/`side` khi biết
+vị trí nguồn. CLI ghi envelope phẳng ở stderr; HTTP bọc trong
+`{"error": ...}`; riêng `diff --brief` giữ định dạng lỗi một dòng
+`error: CODE message` đã ghim từ P1-9 (không phải JSON). Caller map theo
+code/stage — không parse message text. Exit code và HTTP status không đổi
+so với trước P2-3; thay đổi này thuần cộng thêm field.
+
+`stage` ∈ `request | parse | validate | engine | budget | replay |
+provider`. `retryable=true` nghĩa là gửi lại đúng request đó có thể thành
+công — chỉ dành cho điều kiện thoáng qua (quá tải, hủy, deadline theo
+wall-clock, lỗi đọc/ghi I/O, replay phụ thuộc timing); mọi lỗi còn lại là
+`false` vì gửi lại nguyên trạng sẽ fail y hệt. Registry duy nhất nằm ở
+`internal/errtax` và bằng đúng `error_codes` của capabilities (test khóa
+cả hai chiều); bảng dưới đây là bản in của registry đó. Code không bao giờ
+đổi tên trong v1 — thêm code mới phải đăng ký ở errtax VÀ capabilities
+trong cùng một thay đổi.
+
+| Code | Stage | Retryable | Field/line |
+|---|---|---|---|
+| CANCELED | request | true | |
+| CONTENT_TYPE | request | false | |
+| INPUT_FAILED | request | false | |
+| INPUT_READ | request | true | |
+| INPUT_TOO_LARGE | request | false | |
+| INVALID_JSON | request | false | |
+| JSON_INVALID | request | false | |
+| LOCAL_ORIGIN_REQUIRED | request | false | |
+| OUTPUT_FAILED | request | true | |
+| SERVER_BUSY | request | true | |
+| UI_NOT_BUILT | request | false | |
+| USAGE | request | false | |
+| ACL_INVALID | parse | false | line |
+| DUPLICATE_DEFINITION | parse | false | line |
+| INPUT_INVALID | parse | false | side, line khi có |
+| PARSE_DOCUMENT | parse | false | line |
+| PARSE_EMPTY_ACL | parse | false | line |
+| PARSE_ENCODING | parse | false | line |
+| PARSE_FAILED | parse | false | side, line khi có |
+| PARSE_HEADER | parse | false | line |
+| PARSE_INVALID_IP | parse | false | line |
+| PARSE_INVALID_PORT | parse | false | line |
+| PARSE_INVALID_TOKEN | parse | false | line |
+| PARSE_LIMIT | parse | false | line |
+| PARSE_MULTIPLE_ACLS | parse | false | line |
+| PARSE_NOT_FOUND | parse | false | line |
+| PARSE_SEQUENCE_ORDER | parse | false | line |
+| ROUTE_INVALID | parse | false | line |
+| AUDIT_INPUT_INVALID | validate | false | |
+| CHAT_INVALID | validate | false | |
+| CHAT_LOCALE_UNSUPPORTED | validate | false | field: locale |
+| CHAT_NO_ARTIFACT | validate | false | |
+| CHAT_QUESTION_EMPTY | validate | false | field: question |
+| CHAT_QUESTION_TOO_LONG | validate | false | field: question |
+| COMPARISON_INVALID | validate | false | |
+| INPUT_ENCODING | validate | false | |
+| INVALID_OBLIGATION | validate | false | |
+| INVALID_PACKET | validate | false | |
+| INVALID_PATCH | validate | false | |
+| INVALID_POLICY | validate | false | |
+| INVALID_PROPOSALS | validate | false | |
+| OBLIGATIONS_INVALID | validate | false | |
+| OPTIONS_INVALID | validate | false | field: options |
+| PACKET_INVALID | validate | false | |
+| POLICY_INPUT_INVALID | validate | false | |
+| POLICY_INVALID | validate | false | field: policies |
+| POLICY_NOT_ACCEPTED | validate | false | field: policies |
+| REPAIR_INPUT_INVALID | validate | false | |
+| REQUEST_LIMIT | validate | false | |
+| REQUEST_SCHEMA | validate | false | field: schema |
+| RESULT_TOO_LARGE | validate | false | |
+| SELECT_INVALID | validate | false | field: select |
+| SESSION_INPUT_INVALID | validate | false | |
+| SOURCE_REF_INVALID | validate | false | field: ref |
+| UNSUPPORTED_KIND | validate | false | |
+| ANALYSIS_FAILED | engine | false | |
+| COMPARISON_FAILED | engine | false | |
+| EVIDENCE_FAILED | engine | false | |
+| TRACE_INVALID | engine | false | |
+| DEADLINE_EXCEEDED | budget | true | |
+| CHAT_ARTIFACT_INVALID | replay | false | |
+| EVIDENCE_MISMATCH | replay | false | |
+| TIMING_SENSITIVE | replay | true | (xem ghi chú) |
+| AI_CONFIG_INVALID | provider | false | |
+| AI_MODEL_UNSUPPORTED | provider | false | |
+
+Ghi chú phân tầng:
+
+- Code chi tiết của parser ACL (`PARSE_*`, `ACL_INVALID`, `ROUTE_INVALID`,
+  `PACKET_INVALID`) được bề mặt parse/trace phát nguyên trạng (kèm line)
+  vì các bề mặt đó trả chính lỗi parser. Trên đường compare/analysis, cùng
+  lỗi đó được gói thành `PARSE_FAILED` (workflow) hoặc nằm trong artifact
+  dưới dạng lỗi theo object (analysis intake) — chi tiết parser prefix-list
+  cũng vậy, không phát thành error code ở biên.
+- Code chi tiết của package trong (patch `PATCH_*`, agent `invalid_input`)
+  không bao giờ ra biên nguyên trạng: bề mặt gói thành `INVALID_PATCH` /
+  `REPAIR_INPUT_INVALID` / `SESSION_INPUT_INVALID`. Registry chỉ chứa code
+  thật sự ra biên; `errtax.FromError` từ chối adapt code chưa đăng ký để
+  việc gói đó không bị rò.
+- `TIMING_SENSITIVE` là *status* của replay (không phải error): nằm trong
+  `error_codes` và registry để caller có một bảng tra duy nhất; retryable
+  vì replay lại dưới tải khác có thể kết luận trọn vẹn.
+- Ngân sách/hủy không bao giờ là thành công một phần không đánh dấu:
+  budget dừng → verdict INCONCLUSIVE kèm `search_complete=false` (hoặc
+  `partial` đã seal); deadline rơi giữa analysis → object `not_analyzed`
+  trong artifact đã seal; deadline đã qua trước khi bắt đầu / hủy →
+  error typed `DEADLINE_EXCEEDED` / `CANCELED`, không có artifact.
 
 ## 5. Full comparison và API — implemented
 

@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"plenilune/internal/ciscoacl"
+	"plenilune/internal/errtax"
 	"plenilune/internal/evidence"
 	"plenilune/internal/intent"
 	"plenilune/internal/jsonio"
@@ -285,6 +286,14 @@ func output(out, stderr io.Writer, value any) int {
 }
 
 func outputError(stderr io.Writer, value any) int {
+	// Typed domain errors carrying a published code are emitted as
+	// the shared taxonomy envelope (code/stage/message/retryable plus
+	// line/side when known); anything else keeps its own shape.
+	if err, ok := value.(error); ok {
+		if env, adapted := errtax.FromError(err); adapted {
+			value = env
+		}
+	}
 	if err := json.NewEncoder(stderr).Encode(value); err != nil {
 		return 2
 	}
@@ -292,10 +301,7 @@ func outputError(stderr io.Writer, value any) int {
 }
 
 func fail(stderr io.Writer, code, message string) int {
-	return outputError(stderr, struct {
-		Code    string `json:"code"`
-		Message string `json:"message"`
-	}{code, message})
+	return outputError(stderr, errtax.For(code, message))
 }
 
 func buildVersion() any {

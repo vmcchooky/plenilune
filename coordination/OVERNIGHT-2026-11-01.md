@@ -254,3 +254,12 @@ Mỗi PR: worktree riêng, sạch, đúng head trước khi chạy; sau merge x�
 **Manifest:** PR **#48** mở tại `f111278`, chỉ file manifest (375 entry), secret-scan 347 tệp sạch, **KHÔNG merge** — chờ owner.
 
 **Trạng thái cuối:** main = `d44bc6f` (local khớp `origin/main`, sạch); không push evidence/out; không mở demo server. Không có flake nào trong ca.
+
+- 16:44 — **PHÁT HIỆN MỚI (ngoài 3 PR, tiền tồn tại): `fuzz-short` trên PR #48 ĐỎ vì crasher thật ở `internal/prefixlist`, không phải lỗi manifest.** Log nguyên văn (`gh run view 41421734067 --log-failed`):
+  `fuzz: minimizing 132-byte failing input file`
+  `--- FAIL: FuzzParsePrefixList (48.38s)`
+  `fuzz_test.go:61: parser cisco-prefix-list/v0.1 returned a list that fails Validate: PREFIX_LIST_SOURCE line 1: entry source references are invalid`
+  `Failing input written to testdata/fuzz/FuzzParsePrefixList/f8b0841c6b451491`
+  Input (artifact `fuzz-crashers-short`, run 41421734067): dòng `go test fuzz v1` + `[]byte("ip prefiX-list 0 denY\r0.0.0.0/0")`.
+  **Tái hiện tất định trên code main** (worktree `gate-47-20261102`, chép crasher vào testdata, `go test -run='FuzzParsePrefixList/f8b0841c6b451491' ./internal/prefixlist`): FAIL đúng thông điệp trên, exit 1. **Gốc:** `definitionLines` (fuzz_test.go) tách dòng bằng `\n` rồi chỉ `TrimRight` CR cuối dòng, nên CR **giữa dòng** còn nằm trong `SourceLine.Text`; parser dùng `strings.Fields` (CR là whitespace) nên vẫn parse ra entry hợp lệ, nhưng `List.Validate` (`profile.go:36`) từ chối mọi `Text` chứa `\r\n` → parser trả list tự vi phạm Validate. Prefixlist **không bị #45/#46/#47 đụng** (`git diff --stat 33aa4ef d44bc6f -- internal/prefixlist` rỗng). Run push trên main `41421501243` vừa rồi **success** — chỉ là may mắn do fuzz không tất định trong 60s, không chứng minh hết lỗi.
+  Chưa sửa (ngoài phạm vi ca: 3 PR + manifest); crasher mới chỉ nằm trong artifact Actions, chưa commit. Đề nghị owner xếp một hạng mục nhỏ: quyết định CR nội dòng là (a) tách dòng cả trước CR hoặc LF, hay (b) cho phép `\r` trong Text và nới Validate — theo tiền lệ P1-6 "crasher thành seed/test trước, không xóa/không nới target". Sau khi sửa nên commit crasher `f8b0841c6b451491` làm regression seed.

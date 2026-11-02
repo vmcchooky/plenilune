@@ -389,6 +389,25 @@ hoặc fingerprint. Không PKI, không phân phối khóa trong phạm vi
 này. Engine nằm ở `internal/signature`; capabilities công bố
 feature `evidence_signing` và schema `plenilune.signature`.
 
+### Tích hợp MoonStorm — đặc tả (P2-7)
+
+Đặc tả tích hợp đầy đủ cho MoonStorm nằm ở
+[docs/integration/moonstorm.md](docs/integration/moonstorm.md): mô hình
+subprocess (không bao giờ import thư viện Go — ranh giới GPL, trạng thái
+cổng pháp lý P2-6 ghi ở STATUS), cổng capabilities trước mọi job, pin
+schema + engine version + budget profile cho mỗi job với khóa
+idempotency là khóa cache của P2-1/P1-5, hai hàng đợi tách biệt với
+collection ưu tiên tuyệt đối, sự kiện kích hoạt (capture mới và
+obligation-set changed chạy lại trên capture cũ), lưu trữ mã hóa
+at-rest phía MoonStorm, và chính sách thử lại theo stage của taxonomy
+mục này. Bề mặt ổn định cho integrator: document capabilities, vòng
+analysis (request/artifact/replay), evidence, bundle, chữ ký, audit,
+repair/enumeration, error taxonomy và mã thoát — mọi bề mặt còn lại
+(route HTTP của demo server ngoài `GET /api/capabilities`, package Go,
+internals của web UI, phiên AI) là nội bộ, không phải hợp đồng. Client
+tham chiếu: `examples/moonstorm-client/` (Go, stdlib) chạy vòng
+capabilities → analyze → cache hit theo content digest → replay.
+
 ## 5. Full comparison và API — implemented
 
 Schema `plenilune.evidence/v2` (P2-1; v1 đóng băng, xem đoạn dual digest dưới đây),

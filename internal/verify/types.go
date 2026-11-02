@@ -14,6 +14,31 @@ type Options struct {
 
 func DefaultOptions() Options { return Options{Limits: packetset.Defaults(), MaxWitnesses: 8} }
 
+// WithDefaults returns o with every zero-valued field replaced by its
+// default, including the nested Limits fields. Zero is never a valid
+// explicit value for any field here — every validation floor is >= 1 —
+// so at a request boundary a zero field means "unset", and a partially
+// specified Options resolves field by field instead of failing whole
+// (the analysis options rule of P2-7-fix, applied to this family).
+// Callers apply it only where a request enters; options recorded in
+// sealed evidence are never healed by it — zero there stays invalid.
+func (o Options) WithDefaults() Options {
+	d := DefaultOptions()
+	if o.MaxWitnesses == 0 {
+		o.MaxWitnesses = d.MaxWitnesses
+	}
+	if o.Limits.MaxOperations == 0 {
+		o.Limits.MaxOperations = d.Limits.MaxOperations
+	}
+	if o.Limits.MaxBoxes == 0 {
+		o.Limits.MaxBoxes = d.Limits.MaxBoxes
+	}
+	if o.Limits.Timeout == 0 {
+		o.Limits.Timeout = d.Limits.Timeout
+	}
+	return o
+}
+
 type Report struct {
 	Verdict            string             `json:"verdict"`
 	SearchComplete     bool               `json:"search_complete"`

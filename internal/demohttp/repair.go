@@ -20,7 +20,7 @@ func handleRepair(w http.ResponseWriter, r *http.Request) {
 	}
 	opts := verify.DefaultOptions()
 	if in.Options != nil {
-		opts = *in.Options
+		opts = in.Options.WithDefaults()
 	}
 	result, err := repair.Verify(r.Context(), []byte(in.Before), []byte(in.After), in.Policy, in.Patch, opts)
 	if err != nil {

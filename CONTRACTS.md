@@ -473,7 +473,13 @@ mọi obligation đều INCONCLUSIVE với stop reason của comparison. Dừng 
 obligation (delta đã xong) giữ nguyên hành vi cũ, không có `partial`.
 
 Localhost API: POST `/api/compare` nhận `{before,after,conditions,options?}`;
-options omitted dùng defaults. POST `/api/compare/replay` nhận `{before,after,evidence}`.
+options omitted dùng defaults. Options có mặt được defaulting theo field
+(P2-7-fix-2): field bằng 0 nhận default của nó, gồm cả limits lồng nhau —
+quy tắc này áp cho cả ba bề mặt nhận `verify.Options` (`/api/compare`,
+`/api/repair/verify`, `/api/agent/session`) vì 0 không bao giờ là giá trị
+tường minh hợp lệ (mọi sàn kiểm đều ≥ 1); giá trị khác 0 ngoài biên vẫn bị
+từ chối như cũ. Options đã ghi trong evidence không bao giờ được defaulting:
+0 ở đó là bằng chứng hỏng. POST `/api/compare/replay` nhận `{before,after,evidence}`.
 Domain verdict hoặc replay status nằm trong JSON HTTP 200; input/error HTTP 400.
 Body cap lần lượt 8 MiB/12 MiB; source vẫn chịu cap 2 MiB mỗi bên.
 Options: limits `{max_operations,max_boxes,timeout_ns}` và max_witnesses; chỉ cho hạ

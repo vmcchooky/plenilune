@@ -55,6 +55,9 @@ lại cổng; không tự sửa code.
 - 08:07 — Đã nhận bàn giao Mục B `d690183`: 5/9 merged, main `44091c6`. Cảm ơn agent ca đêm — bàn giao rất sạch.
 - 08:07 — **PR #37 `feat/p2-4-bundle-v2` @ `52795e05` (base main) ĐÃ MỞ**, thay #31 (đã đóng). Agent mới: gate + merge PR này trước; xong ghi Mục B, Chí Nhân push p2-8-v2 ngay. Chuỗi còn lại: p2-8 → p2-5 → docs/p2-7 → fix/analysis-options-defaults → manifest (chỉ mở PR).
 
+- 11:37 — #39 ĐÃ MERGE (8/9). **PR #40 `docs/p2-7-moonstorm-spec-v2` (base main) ĐÃ MỞ** — gate + merge PR này.
+- 11:37 — Chooky bận: từ giờ Chí Nhân tự theo dõi GitHub và push bước kế tiếp ngay khi thấy merge (không qua Chooky chuyển lời). Còn lại sau #40: Chí Nhân push `fix/analysis-options-defaults` + mở PR; bạn gate/merge xong thì regenerate manifest và mở PR manifest (không merge), rồi ghi báo cáo cuối vào Mục B.
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

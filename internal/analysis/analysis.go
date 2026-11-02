@@ -346,6 +346,34 @@ func validateRequest(req Request) (Options, []PolicyEcho, error) {
 	opts := DefaultOptions()
 	if req.Options != nil {
 		opts = *req.Options
+		// A present options object names only the fields it means to
+		// change. Zero is never a valid explicit value for the fields
+		// filled below — the bounds check has always required each of
+		// them ≥ 1 — so a zero field unambiguously means unset and
+		// takes the default. MaxAnalyzed is the deliberate exception:
+		// its zero stays in the struct and maxAnalyzed resolves it at
+		// use sites, which is what pre-P1-5 artifact echoes record.
+		// The resolved struct is what the request echo records, so
+		// replay recompute sees the same full options.
+		dflt := DefaultOptions()
+		if opts.MaxClasses == 0 {
+			opts.MaxClasses = dflt.MaxClasses
+		}
+		if opts.DeadlineMS == 0 {
+			opts.DeadlineMS = dflt.DeadlineMS
+		}
+		if opts.ACL.MaxWitnesses == 0 {
+			opts.ACL.MaxWitnesses = dflt.ACL.MaxWitnesses
+		}
+		if opts.ACL.Limits.MaxOperations == 0 {
+			opts.ACL.Limits.MaxOperations = dflt.ACL.Limits.MaxOperations
+		}
+		if opts.ACL.Limits.MaxBoxes == 0 {
+			opts.ACL.Limits.MaxBoxes = dflt.ACL.Limits.MaxBoxes
+		}
+		if opts.ACL.Limits.Timeout == 0 {
+			opts.ACL.Limits.Timeout = dflt.ACL.Limits.Timeout
+		}
 	}
 	d := packetset.Defaults()
 	l := opts.ACL.Limits

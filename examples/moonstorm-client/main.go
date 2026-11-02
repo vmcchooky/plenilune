@@ -284,13 +284,13 @@ type source struct {
 }
 
 // analysisRequest is the plenilune.analysis-request/v1 document.
-// The options block is all-or-nothing on the wire: a present block
-// replaces the defaults wholesale, so a partial block (say, only a
-// deadline) leaves the remaining fields zero and is rejected with
-// OPTIONS_INVALID. The client therefore always sends the complete
-// budget profile below — the values the current contract publishes
-// as defaults in capabilities (options list), with the job's own
-// deadline substituted. The profile is part of the job's identity:
+// Options are defaulted per field on the wire: a field left out (or
+// zero) takes the published default, so a partial block — say, only
+// a deadline — is valid. This client still sends the complete budget
+// profile below — the values the current contract publishes as
+// defaults in capabilities (options list), with the job's own
+// deadline substituted — because the profile is part of the job's
+// identity either way:
 // the artifact echoes the effective options in its request echo,
 // inside the content projection, so the same configurations under
 // a different profile are a different result with a different

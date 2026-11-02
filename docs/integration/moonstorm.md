@@ -73,15 +73,15 @@ Mỗi job MoonStorm ghi (pin) ba thứ vào hồ sơ job của mình:
 
 1. **analysis schema** (`plenilune.analysis/v3`) và **engine version**
    đã gate ở mục 2;
-2. **budget profile**: toàn bộ khối `options` sẽ gửi (mục 5) — profile
-   là một phần của danh tính job, vì options nằm trong content
-   projection của artifact: cùng một cặp cấu hình dưới hai profile
-   khác nhau là hai kết quả khác nhau với hai `content_sha256` khác
-   nhau. Artifact tự ghi lại options hiệu lực ở request echo, nên
+2. **budget profile**: khối `options` hiệu lực của job (mục 5) —
+   profile là một phần của danh tính job, vì options nằm trong
+   content projection của artifact: cùng một cặp cấu hình dưới hai
+   profile khác nhau là hai kết quả khác nhau với hai `content_sha256`
+   khác nhau. Artifact tự ghi lại options hiệu lực ở request echo, nên
    profile luôn truy lại được từ chính artifact;
 3. **khóa idempotency** = khóa cache của P2-1/P1-5: digest của (digest
-   byte của hai phía, conditions/policies như được cấp, options đầy
-   đủ, parser version, engine version). Trước lượt chạy đầu, MoonStorm
+   byte của hai phía, conditions/policies như được cấp, options hiệu
+   lực sau defaulting theo field, parser version, engine version). Trước lượt chạy đầu, MoonStorm
    tính khóa này để dedup job trùng; sau lượt chạy đầu, `content_sha256`
    của artifact là khóa lưu trữ chính thức.
 
@@ -155,14 +155,17 @@ xuống đĩa** phía caller:
   validate) — không bao giờ bị clamp lặng lẽ. Bên chặt hơn thắng theo
   cấu trúc: caller không gửi được giá trị lỏng hơn trần, và tool
   không nới giá trị caller đã siết.
-- **Khối `options` là all-or-nothing**: có mặt là thay toàn bộ
-  defaults, không có defaulting theo field (ngoại lệ duy nhất:
-  `max_analyzed` vắng mặt/0 nghĩa là default 16, theo CONTRACTS §8).
-  Gửi khối một phần — ví dụ chỉ `deadline_ms` — để các field còn lại
-  bằng 0 và bị `OPTIONS_INVALID`. Caller hoặc bỏ hẳn `options`, hoặc
-  gửi đủ profile (defaults hiện hành công bố ở `options` trong
-  capabilities). Client mẫu gửi đủ profile và chỉ thay `deadline_ms`
-  theo job.
+- **Khối `options` được defaulting theo field**: field không gửi
+  (hoặc bằng 0) lấy default công bố ở `options` trong capabilities —
+  gửi một phần, ví dụ chỉ `deadline_ms`, là hợp lệ. 0 không bao giờ
+  là giá trị tường minh hợp lệ cho các field có biên dưới ≥ 1
+  (`deadline_ms`, `max_classes`, `max_witnesses`, giới hạn ACL), nên
+  0 luôn nghĩa là "không đặt". `max_analyzed` giữ quy ước riêng lâu
+  nay: vắng mặt/0 nghĩa là default 16 (theo CONTRACTS §8), và echo
+  ghi lại đúng trạng thái unset đó. Giá trị khác 0 ngoài khoảng —
+  kể cả số âm — vẫn bị `OPTIONS_INVALID` như trước. Options hiệu lực
+  sau defaulting là thứ request echo ghi lại. Client mẫu vẫn gửi đủ
+  profile và chỉ thay `deadline_ms` theo job; gửi đủ luôn hợp lệ.
 
 ### Artifact và cách đọc kết quả
 

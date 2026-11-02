@@ -30,6 +30,7 @@ import (
 	"plenilune/internal/packetset"
 	"plenilune/internal/prefixlist"
 	"plenilune/internal/repair"
+	"plenilune/internal/signature"
 	"plenilune/internal/verify"
 )
 
@@ -45,6 +46,7 @@ const (
 	FeatureCompareCache      = "compare_cache"
 	FeaturePartialResults    = "partial_results"
 	FeatureDualDigest        = "dual_digest"
+	FeatureEvidenceSigning   = "evidence_signing"
 	FeatureReviewBundle      = "review_bundle"
 	FeatureVerdictInbox      = "verdict_inbox"
 )
@@ -57,6 +59,7 @@ var Features = []string{
 	FeatureAudit,
 	FeatureCompareCache,
 	FeatureDualDigest,
+	FeatureEvidenceSigning,
 	FeatureInterrogationChat,
 	FeaturePartialResults,
 	FeatureRepairEnumeration,
@@ -138,6 +141,11 @@ var ErrorCodes = []string{
 	"SELECT_INVALID",
 	"SERVER_BUSY",
 	"SESSION_INPUT_INVALID",
+	"SIGNATURE_DIGEST_MISMATCH",
+	"SIGNATURE_INVALID",
+	"SIGNATURE_MISMATCH",
+	"SIGN_ARTIFACT_UNSUPPORTED",
+	"SIGN_KEY_INVALID",
 	"SOURCE_REF_INVALID",
 	"TIMING_SENSITIVE",
 	"TRACE_INVALID",
@@ -254,6 +262,7 @@ func BuildWithTool(version, commit string) Document {
 			{ID: "plenilune.policy", Current: repair.PolicySchema, Supported: []string{repair.PolicySchema}},
 			{ID: "plenilune.audit", Current: audit.Schema, Supported: []string{audit.Schema}},
 			{ID: "plenilune.bundle", Current: bundle.Schema, Supported: []string{bundle.Schema}},
+			{ID: "plenilune.signature", Current: signature.Schema, Supported: []string{signature.Schema}},
 			{ID: "plenilune.chat", Current: chat.Schema, Supported: []string{chat.Schema}},
 			{ID: "plenilune.ai", Current: agent.ResultSchema, Supported: []string{agent.ResultSchema}},
 			{ID: "plenilune.trace", Current: evidence.TraceSchema, Supported: []string{evidence.TraceSchema}},

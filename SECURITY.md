@@ -77,6 +77,40 @@ The security model is a **single-user localhost trust model**:
 - A failed, partial, malformed, refused or timed-out provider response is never
   turned into a completed or verified engine result.
 
+## Evidence signing keys
+
+Plenilune can attach a detached Ed25519 signature to a sealed evidence
+(`plenilune.evidence/v2`) or analysis (`plenilune.analysis/v3`) artifact
+(schema `plenilune.signature/v1`); see CONTRACTS §4 for the wire rules.
+The key model is deliberately small:
+
+- The private key belongs to the signer and never enters Plenilune's
+  artifacts, envelopes, logs or outputs. Standalone, the signer is the
+  local user: `plenilune sign-keygen --out FILE` writes the private key
+  to a caller-named file with 0600 permissions and refuses to overwrite
+  an existing key; only the fingerprint (SHA-256 of the raw public key)
+  and the public key are printed. When Plenilune is integrated with
+  MoonStorm, MoonStorm holds the key and signs on its side; Plenilune
+  then only needs its `verify-signature` path with a public key or a
+  pinned fingerprint.
+- A signature binds the artifact's two digests together
+  (`content_sha256` and the whole-envelope digest). Verification
+  recomputes both digests from the artifact payload and never trusts
+  the values printed in the envelope.
+- A valid signature proves only that the holder of the private key
+  signed those digests. It does not identify the signer, does not
+  record an approval, does not certify that the analysis is correct,
+  and carries no timestamp. Verification is therefore never a gate on
+  a verdict, a seal check or a replay: an artifact with an invalid or
+  absent signature replays exactly like a signed one, and the
+  signature status is only reported alongside.
+- There is no PKI, key distribution, revocation or key escrow. The
+  fingerprint pin is the only signer-binding mechanism; whoever
+  controls distribution of the fingerprint controls which signer is
+  trusted. Treat a private key file like any other secret: it is not
+  encrypted at rest, and losing it means losing the ability to sign as
+  that key — previously made signatures still verify.
+
 ## License and third-party boundary
 
 Plenilune's own source, including its Meta HTTP adapter and orchestration code,
@@ -103,14 +137,18 @@ service, model, marks or outputs, and Plenilune is not endorsed by Meta.
 - Export only what the review needs. Receipts and reports can still reveal
   configuration details even when they contain no key.
 - Hashes in receipts check content consistency. They are not signatures and do
-  not authenticate the author, approver or build.
+  not authenticate the author, approver or build. A detached signature, when
+  one is present, is verified separately (see "Evidence signing keys" above)
+  and likewise proves key possession only, not identity or approval.
 
 ## Known limitations and non-goals
 
 - No device, firmware, NAT, routing-table, TCP-state or real-connectivity
   validation. A packet witness is not an equivalence proof.
-- No user authentication, authorization, encryption at rest, remote audit,
-  tamper-proof ledger or signed approvals.
+- No user authentication, authorization, encryption at rest, remote audit or
+  tamper-proof ledger. Detached evidence signatures exist (see "Evidence
+  signing keys" above) but are key-possession attestations, not signed
+  approvals, identity or authorization.
 - No guarantee that the parser covers every vendor syntax; unsupported syntax is
   reported, not guessed.
 - No security audit, penetration test, fuzzing campaign or screen-reader

@@ -78,6 +78,43 @@ lại cổng; không tự sửa code.
 
 - 18:3x — **CẬP NHẬT: PR #50 ĐÃ MERGE + #48 ĐÃ REFRESH, đều do Chí Nhân làm theo ủy quyền trực tiếp của owner** (agent local trước hit limit; owner chỉ đạo "bạn làm hết hộ tôi"). #50 merge `f41f12e` trên cổng Linux đầy đủ của Chí Nhân (26/26 + race toàn suite), lượt này KHÔNG qua cổng Windows — ca cổng tới không cần làm lại. #48 đã refresh lên main `f41f12e`, head `ea7847d`: manifest regen được Chí Nhân tái tạo trên Linux và đối chiếu byte-for-byte với phương pháp script PowerShell (tập 376 dòng hash khớp tuyệt đối trên cùng cây; refresh chỉ thay đúng 2 hash của hai file #50 đụng, giữ nguyên thứ tự + CRLF) — ca tới KHÔNG regen lại. Việc duy nhất còn lại: owner tự merge #48 như lệ. Nếu ca tới muốn kiểm tra chéo, chạy cổng Windows trên main `f41f12e` là đủ.
 
+### RUNBOOK PHASE 3 (Chí Nhân, 2026-11-02 ~19:00) — agent local đọc kỹ trước ca
+
+## Bối cảnh
+- Plenilune nộp Meta AI Global Developer Hackathon, hạn nộp 4–5/11/2026. Mục tiêu của Chooky: xong toàn Phase 3 cuối ngày 3/11.
+- Vai trò: Chí Nhân = chính (thiết kế, code chính, mở PR, kiểm chứng độc lập, STATUS). Agent local (DeepSeek V4.1 Flash) = hỗ trợ: cổng Windows + merge khi PASS, regen manifest, chạy ma trận phát hành, qualification tại máy Windows, vá nhỏ CHỈ khi Chí Nhân ghi rõ tại Mục A. Không tự ý đổi code/design.
+- Main hiện tại: 4b58ae77. Repo chỉ còn branch main + coord.
+
+## Thứ tự hàng đợi (3B giữ đúng thứ tự cố định của file phase 05)
+1. P3-1 Release train (v1.0.0) — Chí Nhân build.
+2. P3-2 Qualification — agent local chủ trì tại máy Windows (xem checklist dưới), Chooky hỗ trợ 10 phút thiết bị thật trước 22:00 nếu kịp.
+3. P3-4 Stale-decision invalidation — Chí Nhân build.
+4. P3-3 SMT differential oracle (Z3, ngoài runtime) — Chí Nhân build khung + harness.
+5. P3-5 Standard ACL → 6. P3-6 Object-groups → 7. P3-7 IPv6 ACL → 8. P3-8 CIS obligation library — Chí Nhân build, cổng chung 3B: parser fail-closed, golden corpus trước code, oracle reduced-domain/differential, inventory trung thực, tài liệu semantics riêng.
+- P3-9 (route-maps) + P3-10 (vendor thứ hai): DECISION của chủ sở hữu — KHÔNG bắt đầu. (Khuyến nghị của Chí Nhân: hoãn có ghi quyết định; chờ Chooky chốt.)
+
+## Kỷ luật cổng (không đổi)
+- Một hạng mục = một PR, nhánh mới cắt từ main hiện hành sau khi hạng mục trước merge (mẫu -v2). Không nhánh xếp chồng.
+- Cổng Windows đầy đủ: gofmt, go vet, go test ./..., go test -race ./..., go build ./... (+ web npm test/build khi đụng web). Merge chỉ khi PASS toàn bộ.
+- Luật flake (protocol §2): merge sau một lần đỏ chỉ khi đủ 4 điều kiện + ghi bằng chứng nguyên văn vào Mục B TRƯỚC khi merge; cùng test flake 2 lần/7 ngày → thành việc sửa test.
+- Manifest: regen bằng scripts/public-snapshot.ps1 trên checkout LF sau mỗi merge có đụng cây public; PR manifest riêng, KHÔNG tự merge (Chooky merge hoặc ủy quyền từng lần).
+- GUARDRAILS thắng kế hoạch: không nới assertion, không nâng timeout/cap, không đánh dấu flaky để xanh cổng. Synthetic data only. Baseline test: -skip '^TestLiveMeta'.
+- Báo cáo Mục B: nguyên văn lỗi, SHA merge, số đo — không tóm tắt làm đẹp.
+
+## P3-2 checklist cho agent local (ghi kết quả trung thực vào Mục B; chưa đạt thì ghi chưa đạt)
+- Live UI qualification: chạy demo server bản mới nhất, đi trọn luồng quick verdict + compare + repair + inbox qua UI thật với model live; ghi: số ca chạy, kết quả từng ca, latency, lỗi gặp (kèm log). Chỉ synthetic data.
+- Screen-reader pass: NVDA + bàn phím trên các màn chính (quick, compare, evidence, inbox); ghi màn đã phủ, finding theo mức độ; không tự nhận đạt nếu chưa phủ hết.
+- Thiết bị thật: mở UI trên điện thoại của Chooky qua LAN (khi Chooky hỗ trợ), kiểm layout + thao tác cuộn/chạm ở các màn chính; ghi thiết bị + kết quả.
+- Mọi nhãn qualification phải khớp bằng chứng; phần chưa làm ghi rõ "chưa qualify".
+
+## Giao thức thẻ duyệt
+- Push/PR từ phía Chí Nhân cần Chooky chạm thẻ. Trước 22:00 Chí Nhân dồn push; sau 22:00 push xếp hàng, agent local cứ làm phần không cần push mới (cổng cho PR đã có, qualification, ma trận phát hành). Không việc gì được coi là xong nếu chưa có bằng chứng ở Mục B hoặc trên GitHub.
+
+## Điểm dừng bắt buộc (báo Chooky, không tự quyết)
+- Bất kỳ thay đổi nào đụng schema/verdict semantics ngoài đặc tả file phase 05.
+- Flake lần thứ hai của cùng một test trong 7 ngày.
+- P3-9/P3-10: chỉ bắt đầu khi Chooky quyết.
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

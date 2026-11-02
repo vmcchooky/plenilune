@@ -2,7 +2,7 @@
   "schema": "plenilune.capabilities/v1",
   "tool": {
     "name": "plenilune",
-    "version": "0.2.0-dev",
+    "version": "1.0.0",
     "commit": "snapshot-commit"
   },
   "schemas": [

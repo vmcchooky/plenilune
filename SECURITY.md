@@ -8,9 +8,18 @@ publication remain owner actions; the local workflow does not perform them.
 
 ## Supported versions
 
-There is no versioned release train. The current source tree is the only
-supported state; older snapshots and local builds are not supported. This
-section will be replaced when a release policy exists.
+| Release | Supported |
+| --- | --- |
+| 1.x — the latest release (currently 1.0.0) | Yes: security fixes land on the latest 1.x release. |
+| Pre-release development snapshots (tool version `0.2.0-dev`) | No: never an official release line; upgrade to a 1.x release. Older snapshots and local builds are not supported. |
+
+Artifact replay is supported for artifacts sealed by tool versions
+`1.0.0` and `0.2.0-dev` (the pre-release development line); artifacts
+sealed by any other tool version are rejected. The schema versions a
+build supports are the ones its capabilities document
+(`plenilune.capabilities/v1`) lists — currently evidence v1–v2,
+analysis v1–v3, bundle v1 and signature v1. The release procedure is
+documented in [RELEASING.md](RELEASING.md).
 
 ## Reporting a vulnerability
 

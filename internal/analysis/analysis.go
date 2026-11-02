@@ -1122,7 +1122,7 @@ func Replay(ctx context.Context, before, after []byte, r Result) (ReplayResult, 
 	if err != nil || sealed.SHA256 != claimed || sealed.ContentSHA256 != r.ContentSHA256 || claimed == "" {
 		return ReplayResult{}, invalid("EVIDENCE_MISMATCH", "analysis digest does not match its content")
 	}
-	if r.Schema != Schema && r.Schema != SchemaV2 && r.Schema != SchemaV1 || !supportedVersions(r.Versions) || r.Tool.Version != evidence.ToolVersion {
+	if r.Schema != Schema && r.Schema != SchemaV2 && r.Schema != SchemaV1 || !supportedVersions(r.Versions) || !evidence.SupportedToolVersion(r.Tool.Version) {
 		return ReplayResult{}, invalid("EVIDENCE_MISMATCH", "unsupported analysis schema or engine version")
 	}
 	if r.Sources["before"].SHA256 != digest(before) || r.Sources["after"].SHA256 != digest(after) {
@@ -1145,6 +1145,19 @@ func Replay(ctx context.Context, before, after []byte, r Result) (ReplayResult, 
 	}
 	if timing {
 		return ReplayResult{Status: "TIMING_SENSITIVE", SHA256: claimed, ContentSHA256: r.ContentSHA256, RecheckedWitnesses: rechecked}, nil
+	}
+	// The recompute runs in the receipt's own schema and component
+	// versions, and the tool identity is part of that shape: the tool
+	// version is a release label (provenance), the envelope digest
+	// covers it, and the producing build's stamp cannot be reproduced
+	// by a later release. Stamp the recorded tool onto the fresh result
+	// before comparing digests, so receipts sealed before a release
+	// bump stay replayable under the new build. (The recorded version
+	// itself was already gated by SupportedToolVersion above.)
+	fresh.Tool = r.Tool
+	fresh, err = Seal(fresh)
+	if err != nil {
+		return ReplayResult{}, err
 	}
 	if fresh.SHA256 != claimed || fresh.ContentSHA256 != r.ContentSHA256 {
 		return ReplayResult{}, invalid("EVIDENCE_MISMATCH", "replayed analysis differs from the receipt")

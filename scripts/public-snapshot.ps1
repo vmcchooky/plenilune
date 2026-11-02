@@ -32,7 +32,7 @@ function Copy-PublicFile {
 }
 
 $rootFiles = @(
-    'README.md', 'README.vi.md', 'LICENSE', 'NOTICE', 'SECURITY.md',
+    'README.md', 'README.vi.md', 'CHANGELOG.md', 'RELEASING.md', 'LICENSE', 'NOTICE', 'SECURITY.md',
     'THIRD_PARTY_NOTICES.md', 'AGENTS.md', 'ARCHITECTURE.md', 'CONTRACTS.md',
     'VERIFICATION_DESIGN.md', 'AI_AGENT_DESIGN.md', 'ENGINEERING_GUARDRAILS.md',
     'ROADMAP.md', 'REVIEW_NOTES.md', '.env.example', '.gitignore', '.gitattributes', 'go.mod'

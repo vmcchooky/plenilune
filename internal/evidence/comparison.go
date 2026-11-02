@@ -19,7 +19,30 @@ const ComparisonSchema = "plenilune.evidence/v2"
 // are never emitted as v1; v1 artifacts remain checkable and replayable
 // under the original single-digest rules (see CheckComparison).
 const ComparisonSchemaV1 = "plenilune.evidence/v1"
-const ToolVersion = "0.2.0-dev"
+
+// ToolVersion is the current release version of the tool. It is recorded
+// in every artifact the build seals (the CLI version command reports the
+// same value) and is a release label only: artifact semantics are pinned
+// by the schema, parser and engine versions, never by this string.
+const ToolVersion = "1.0.0"
+
+// LegacyToolVersion is the pre-release development version stamped into
+// artifacts sealed before the first official release. It was never a
+// published release line, but artifacts carrying it exist (frozen replay
+// fixtures, receipts from the public snapshot period), so the current
+// release keeps accepting them; see SupportedToolVersion.
+const LegacyToolVersion = "0.2.0-dev"
+
+// SupportedToolVersion reports whether an artifact sealed by the given
+// tool version is accepted by this build's validation and replay. The
+// accepted set is exactly the current release plus the pre-release
+// development line; any other version (older, newer or unknown) is
+// rejected. Widening this set is a release decision and must be recorded
+// in CHANGELOG.md and the supported-versions policy in SECURITY.md.
+func SupportedToolVersion(version string) bool {
+	return version == ToolVersion || version == LegacyToolVersion
+}
+
 const MaxComparisonBytes = 4 << 20
 
 type Tool struct {
@@ -251,7 +274,7 @@ func comparisonDigest(c Comparison) (string, error) {
 }
 
 func validateComparison(c Comparison) error {
-	if c.Schema != ComparisonSchema && c.Schema != ComparisonSchemaV1 || c.ParserVersion != ciscoacl.ParserVersion || !verify.SupportedEngine(c.EngineVersion) || c.Scope != intent.Scope || c.Tool.Version != ToolVersion || c.Tool.Commit == "" {
+	if c.Schema != ComparisonSchema && c.Schema != ComparisonSchemaV1 || c.ParserVersion != ciscoacl.ParserVersion || !verify.SupportedEngine(c.EngineVersion) || c.Scope != intent.Scope || !SupportedToolVersion(c.Tool.Version) || c.Tool.Commit == "" {
 		return errors.New("unsupported comparison schema or version")
 	}
 	if c.Schema == ComparisonSchemaV1 && c.ContentSHA256 != "" {

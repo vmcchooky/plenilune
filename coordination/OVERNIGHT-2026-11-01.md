@@ -167,3 +167,33 @@ lại cổng; không tự sửa code.
 - 11:22 — **Việc kế tiếp: chờ `docs/p2-7-moonstorm-spec` bản -v2** (thay #34) cắt từ main `57b85b8`, sau đó `fix/analysis-options-defaults`, cuối cùng tôi tự regen manifest trên checkout LF và **chỉ mở PR, không merge**. #34 bản cũ vẫn lineage cũ — không gate.
 - 11:41 — **Cổng #40 `docs/p2-7-moonstorm-spec-v2` @ `d8a24086`: PASS toàn bộ → ĐÃ MERGE** lúc 2026-11-02T04:40:38Z, merge SHA `657e943affbf` (main = `657e943`; `git diff d8a24086 origin/main` rỗng). Cổng: gofmt sạch · vet ok · go test **26 pkg** ok · race sạch **ngay lượt đầu** · build ok · npm ci 139 pkgs 0 vuln · npm test **17 file / 115 test** · build ok. Nghiệm thu P2-7 độc lập: 11/11 test `examples/moonstorm-client` (4 gate cũ + 7 vòng lặp mới); chạy client Go thật với binary build từ head trên fixture synthetic → exit 0, in đúng `COMPATIBLE` (evidence/v2, analysis/v3) → `OBJECT acl EDGE changed` → `SUMMARY` → cặp `DIGESTS` → `CACHE HIT` cùng `content_sha256` → `REPLAY: ANALYSIS_REPLAYED (rechecked_witnesses=2)`; kiểm quy tắc "options all-or-nothing": request chỉ có `deadline_ms` → `OPTIONS_INVALID`/validate/field=options exit 2 (đúng đặc tả §5, không clamp); snapshot trong đặc tả khớp capabilities thật (13 schema id, 10 feature, 75 error code, `acl-exact/v0.4`, `prefix-list-exact/v0.2`); 13 mục, P2-6 ghi **pending** đúng (việc pháp lý của owner, tôi không đụng); 3 tệp docs đều UTF-8 hợp lệ (0 ký tự thay thế — mojibake chỉ do console PowerShell). Docs + example — không cần cổng hình ảnh.
 - 11:41 — 9/9 hạng mục kỹ thuật đã merge. **Việc kế tiếp: chờ PR `fix/analysis-options-defaults`** (Chí Nhân mở). Sau khi merge PR đó tôi sẽ regen manifest bằng `scripts/public-snapshot.ps1` trên checkout LF (`core.autocrlf=false`) và **mở PR manifest, không merge**, rồi ghi báo cáo cuối.
+- 11:56 — **Cổng #41 `fix/analysis-options-defaults` @ `ec59a5c2`: PASS toàn bộ → ĐÃ MERGE** lúc 2026-11-02T04:55:46Z, merge SHA `5c1655c9723e` (main = `5c1655c`; `git diff ec59a5c2 origin/main` rỗng). Cổng: gofmt sạch · vet ok · 26 pkg ok · race sạch ngay lượt đầu · build ok · npm ci 139 pkgs 0 vuln · npm test 17 file / 115 test · build ok. Nghiệm thu độc lập (12 check qua CLI thật): options một phần `{deadline_ms:30000}` nay được nhận và echo điền đủ `max_classes`/`acl.max_witnesses`/`limits.*`; `{}` cho **cùng content_sha256** với profile đầy đủ + `max_analyzed` unset; partial lồng `acl.limits.max_operations:5000` giữ 5000 và điền sibling; vắng hẳn `options` vẫn echo `max_analyzed:16`; deadline 120001 / max_classes âm / limit lồng vượt trần vẫn `OPTIONS_INVALID`; artifact từ options một phần replay `ANALYSIS_REPLAYED`; 5/5 test mới `p27_options_defaults_test.go` PASS; client mẫu chạy trọn vòng exit 0 (CACHE HIT + ANALYSIS_REPLAYED); capabilities vẫn 75 code (không đổi). Bẫy all-or-nothing phía compare/repair/session **chỉ ghi STATUS, không sửa** — đúng ranh giới ngoài phạm vi, tôi xác nhận không có thay đổi nào ở các package đó.
+- 11:57 — **MANIFEST: PR #42 ĐÃ MỞ — KHÔNG MERGE (theo quy trình).** Nhánh `chore/public-manifest-regen-20261102`, chỉ chứa `docs/public-manifest.sha256` (80 dòng thêm / 46 xóa, 371 entry). Regen bằng `scripts/public-snapshot.ps1` trên checkout chính sạch tại main `5c1655c`, `core.autocrlf=false`, kiểm LF thực tế (0 CRLF) trước khi chạy; snapshot ghi vào `out/public-review-manifest-20261102` (thư mục ignored, **không push**); `scripts/secret-scan.ps1` sạch: 343 tệp, 0 mẫu chặn. **Chờ Chooky/owner merge #42.**
+
+## BÁO CÁO CUỐI CA (agent local, ca 08:00 → 11:57 ngày 02/11/2026)
+
+**Chuỗi Phase 2 + UI đã đóng ở phía cài đặt: 9/9 hạng mục merged, cộng PR manifest đang mở.**
+
+| PR | Hạng mục | Kết quả cổng | Merge SHA |
+|---|---|---|---|
+| #25 | UI lát 1 | PASS (ca trước) | `47d952a4` |
+| #28 | UI lát 2+3 (thay #26) | PASS (ca trước) | `76152b067d` |
+| #27 | P2-1 dual digest | PASS (ca trước) | `9d53df140a` |
+| #35 | P2-2 capabilities (thay #30) | PASS (ca trước) | `8f1ea5bf9f` |
+| #36 | P2-3 error taxonomy (thay #29) | PASS (ca trước, trước mốc 08:00) | `44091c63a3` |
+| #37 | P2-4 bundle (thay #31) | PASS toàn bộ + 16 check độc lập | `91834998d5` |
+| #38 | P2-8 triggers/inbox (thay #32) | PASS toàn bộ + 16 check HTTP thật | `afa8e7880f` |
+| #39 | P2-5 signing (thay #33) | PASS; **1 race flake** đã ghi rõ ở mục 11:22, sau đó 2 lượt race đầy đủ PASS | `57b85b8aad` |
+| #40 | P2-7 docs + sample client (thay #34) | PASS toàn bộ + E2E client thật | `657e943aff` |
+| #41 | P2-7-fix analysis options defaults | PASS toàn bộ + 12 check độc lập | `5c1655c972` |
+| **#42** | **Manifest regen** | **CHỈ MỞ PR — KHÔNG MERGE** | — |
+
+Các PR snapshot cũ **#26/#29/#30/#31/#32/#33/#34 đều CLOSED** (bị thay bởi bản -v2 cắt từ main mới); tôi **không gate, không merge** bất kỳ PR nào trong số đó.
+
+**Còn mở và vì sao:**
+1. **PR #42 (manifest)** — mở, chờ owner merge; quy trình đêm quy định agent cổng không tự merge PR manifest.
+2. **P2-6** — cổng pháp lý GPL/MoonStorm, `pending`; việc của owner/pháp lý, tôi không đụng (đặc tả P2-7 chỉ ghi trạng thái pending, không kết luận).
+3. **Bẫy all-or-nothing `verify.Options` phía compare/repair/session** — đã ghi chi tiết trong STATUS (kèm file:line) đúng chỉ đạo "ngoài phạm vi, không tự implement"; #41 chỉ sửa analysis.
+4. **Race flake #39** (2 test P1-2 trong `internal/analysis` chạm budget thật khi chạy song song dưới -race) — không phải lỗi PR, đã ghi nguyên văn + cách kiểm chứng; nếu tái diễn dài hạn, owner có thể cho hiệu chỉnh budget của chính test đó (tôi không sửa test để "qua cổng").
+
+**Trạng thái cuối:** main = `5c1655c9` (sạch, khớp `origin/main`); không có thay đổi local ngoài `out/` ignored; mọi evidence/cổng nằm ngoài repo hoặc trong `out/`, không push. Kênh coord đã cập nhật đầy đủ từng PR. Hết hàng — agent dừng trực.

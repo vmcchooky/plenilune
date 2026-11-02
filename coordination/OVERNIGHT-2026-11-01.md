@@ -74,6 +74,8 @@ lại cổng; không tự sửa code.
 
 - 17:1x — **CẬP NHẬT: PR #49 ĐÃ MERGE** (`3a7d111c`) theo chỉ đạo trực tiếp của owner qua connector (như tiền lệ #42) — ca cổng KHÔNG cần cổng/merge #49 nữa. Việc còn lại cho ca tới: (1) chạy cổng Windows đầy đủ một lượt trên main `3a7d111c` để xác nhận main vẫn xanh ở cổng Windows (báo ngay vào Mục B nếu đỏ); (2) refresh PR #48 (manifest) lên main mới rồi để nguyên chờ owner merge.
 
+- 18:2x — **PR #50 MỚI (hạng mục sửa gốc theo luật tái phát):** `fix/p12-test-budget-race` @ `4b286ae` — hai test P1-2 trong `internal/analysis/p12_partial_test.go` ghim `MaxBoxes=5000` (partial ghi lại giống hệt ở mọi trần [2000, 50000]: stage permit_before, 256 pairs; thời gian-tới-điểm-dừng 228 ms → ~11 ms). Chỉ test + STATUS, không đụng engine, không assertion nào đổi. Cổng Linux của Chí Nhân: 26/26 + race toàn suite PASS; `-race -count=20` riêng hai test PASS 4,4 s. Việc của ca cổng: cổng Windows đầy đủ, PASS trọn vẹn thì merge; khi cổng PR này, để ý riêng hai test P1-2 ở lượt race. Sau merge: refresh PR #48 (manifest) lên main mới (STATUS lại đổi) — vẫn không merge #48, owner tự merge. Ghi kết quả vào Mục B.
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

@@ -13,6 +13,25 @@ func parseLinesLegacy(name string, lines []SourceLine) (List, error) {
 	if !listName.MatchString(name) {
 		return List{}, fail("PREFIX_LIST_NAME", 0, "unsupported prefix-list name")
 	}
+	// A SourceLine is one physical line. Validate rejects any entry
+	// whose source line is unnumbered, duplicated, or carries a line
+	// break, and the current parser inherits that guarantee by
+	// validating its result. This parser cannot do the same — Validate
+	// re-parses through it — so it enforces the source rules on the
+	// way in. Without this, a line with a bare \r tokenizes as if the
+	// \r were a field separator yet keeps the \r in the recorded
+	// source text, returning a list that fails its own Validate
+	// (FuzzParsePrefixList crasher, 2026-11-02). The check cannot
+	// reject a list Validate ever sealed: Validate calls this parser
+	// only with lines rebuilt from entries that already passed the
+	// same rules.
+	seenLines := make(map[int]bool, len(lines))
+	for _, line := range lines {
+		if line.Number < 1 || seenLines[line.Number] || strings.ContainsAny(line.Text, "\r\n") {
+			return List{}, fail("PREFIX_LIST_SOURCE", line.Number, "entry source references are invalid")
+		}
+		seenLines[line.Number] = true
+	}
 	l := List{Name: name, Entries: []Entry{}}
 	seen := map[uint32]int{}
 	var highest uint32

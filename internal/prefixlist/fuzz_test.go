@@ -43,6 +43,9 @@ func FuzzParsePrefixList(f *testing.F) {
 	f.Add([]byte("ip prefix-list PL seq 4294967294 permit 0.0.0.0/0\nip prefix-list PL permit 10.0.0.0/8\n"))
 	f.Add([]byte(""))
 	f.Add([]byte("hostname router\nrouter bgp 64500\n"))
+	// Crasher found by fuzz-short on 2026-11-02: a bare \r inside the
+	// line made the legacy parser return a list failing its Validate.
+	f.Add([]byte("ip prefiX-list 0 denY\r0.0.0.0/0"))
 	f.Fuzz(func(t *testing.T, data []byte) {
 		name, lines := definitionLines(data)
 		if name == "" || len(lines) == 0 {

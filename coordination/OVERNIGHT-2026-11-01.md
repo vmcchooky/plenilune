@@ -236,3 +236,21 @@ Các PR snapshot cũ **#26/#29/#30/#31/#32/#33/#34 đều CLOSED** (bị thay b�
 - 16:27 — **Cổng #46 `feat/d4-external-proposals-cap` @ `26ad2b46`: PASS toàn bộ → ĐÃ MERGE** lúc 2026-11-02T09:27:04Z, merge SHA `1bf4f970c6a0` (main = `1bf4f97`; các file riêng của PR khớp merge: `git diff 26ad2b46 1bf4f97 -- <files PR>` rỗng, và vs main cuối rỗng). Worktree `gate-46-20261102` sạch đúng head. Cổng: gofmt sạch · vet ok · build ok · go test **26 pkg** ok · **race sạch ngay lượt đầu** · `TestRepairEnumerateCLIProposalCap` chạy riêng PASS · npm ci 0 vuln · npm test 17 file/115 test · build ok. Kiểm phạm vi: `grep MaxExternalProposals` xác nhận hằng số chỉ dùng tại điểm vào `internal/cli/repair.go:77`, không đặt trong `Enumerate`; 65 → `INVALID_PROPOSALS`, 64 nhận. Diff gồm đúng 4 file (2 code + test + STATUS), không đụng CONTRACTS (hành vi CLI không đổi). Log: `night-shift-20261102/gate-46.log`. Không flake.
 - 16:32 — **Cổng #47 `docs/p2-6-disposition` @ `10946c63`: PASS toàn bộ → ĐÃ MERGE** lúc 2026-11-02T09:32:25Z, merge SHA `d44bc6f702aa` (main = `d44bc6f`; file mới khớp merge và khớp main: 0 dòng lệch; STATUS khác đúng phần của #46 tích lũy). Worktree `gate-47-20261102` sạch đúng head. Cổng: gofmt sạch · vet ok · build ok · go test **26 pkg** ok · **race sạch ngay lượt đầu** · npm ci 0 vuln · npm test 17 file/115 test · build ok. Diff đúng 2 file: `docs/plan/DISPOSITION-2026-11-02-p2-6.md` mới + 2 dòng STATUS (hàng P2-6 `todo`→`done` kèm disposition, ghi chú Phase 2 cập nhật); disposition đủ 5 mục, tự ghi rõ "không phải kết luận pháp lý", vẫn chặn phân phối, 3 mốc kích hoạt + điều kiện vô hiệu. Log: `night-shift-20261102/gate-47.log`. Không flake — cả ba PR race sạch lượt đầu.
 - 16:33 — Cả ba merge xong, main = `d44bc6f`. Việc kế tiếp: regen manifest trên main mới bằng `scripts/public-snapshot.ps1` (checkout LF, `core.autocrlf=false`), secret-scan, mở PR manifest và **KHÔNG merge**.
+
+- 16:36 — **PR #48 MANIFEST ĐÃ MỞ — KHÔNG MERGE.** Nhánh `chore/public-manifest-regen-20261102b` cắt từ main `d44bc6f`, chỉ chứa `docs/public-manifest.sha256` (375 entry; 6 thêm / 5 xóa: tệp DISPOSITION mới + hash của protocol §2, STATUS, `internal/cli/repair.go`, `internal/cli/repair_enumerate_test.go`, `internal/repair/enumerate.go` đổi). Regen bằng `scripts/public-snapshot.ps1` trên worktree riêng `manifest-regen-20261102-b` (sạch, `core.autocrlf=false`, 0 file Go CRLF); snapshot `out/public-review-manifest-20261102-3` (ignored, không push); `scripts/secret-scan.ps1` sạch: 347 tệp, 0 mẫu chặn. Spot-check 3 hash (`docs/plan/DISPOSITION-2026-11-02-p2-6.md`, `docs/plan/STATUS.md`, `internal/repair/enumerate.go`) khớp `sha256sum` thực tế trên cây main cuối. **Chờ owner merge #48.** Check `fuzz-short` trên PR sẽ chạy trên nền main đã có exec bit (theo dõi và ghi kết quả ở báo cáo cuối).
+
+## BÁO CÁO CUỐI CA (agent local, ca 16:05 → 16:36 ngày 02/11/2026)
+
+**Ba PR theo đúng thứ tự chỉ đạo — cả ba PASS trọn vẹn, race sạch ngay lượt đầu, không flake:**
+
+| PR | Nội dung | Cổng | Merge SHA |
+|---|---|---|---|
+| #45 `docs/flake-gate-rule` @ `6f991404` | Luật flake 4 điều kiện vào protocol §2 (chỉ tài liệu) | PASS toàn bộ (gofmt/vet/build, 26 pkg, race lượt đầu, npm 115 test + build) | `f1d18c730af4` |
+| #46 `feat/d4-external-proposals-cap` @ `26ad2b46` | Hằng số `repair.MaxExternalProposals=64` + test 65/64 | PASS toàn bộ + test cap riêng PASS + kiểm phạm vi grep | `1bf4f970c6a0` |
+| #47 `docs/p2-6-disposition` @ `10946c63` | Disposition owner đóng P2-6 + STATUS | PASS toàn bộ | `d44bc6f702aa` |
+
+Mỗi PR: worktree riêng, sạch, đúng head trước khi chạy; sau merge xác nhận file riêng của PR khớp merge/main (0 dòng lệch). Log cổng: `night-shift-20261102/gate-45.log`, `gate-46.log`, `gate-47.log`. Không PR nào conflicting sau merge (kiểm trước mỗi cổng; #47 đụng STATUS cùng #46 nhưng khác dòng, merge sạch như đã xác nhận).
+
+**Manifest:** PR **#48** mở tại `f111278`, chỉ file manifest (375 entry), secret-scan 347 tệp sạch, **KHÔNG merge** — chờ owner.
+
+**Trạng thái cuối:** main = `d44bc6f` (local khớp `origin/main`, sạch); không push evidence/out; không mở demo server. Không có flake nào trong ca.

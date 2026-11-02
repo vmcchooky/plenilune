@@ -5,6 +5,20 @@ package analysis
 // stays "inconclusive" — the partial never upgrades it), the artifact
 // replays, and an artifact produced with the v0.3 engine pinned carries
 // no partial and still replays.
+//
+// Both tests pin MaxBoxes to 5000 via p12Options. With the default
+// 50k cap the deterministic stop takes ~228 ms of engine work — the
+// same order as the 2 s wall-clock Timeout in the same budget — so
+// under race-detector slowdown and parallel gate load the clock could
+// win the race and flip the recorded stop to a timing stop (the
+// TIMING_SENSITIVE flakes at PR #39's gate and the 2026-11-02 main
+// confirmation gate; the recurrence rule in the agent protocol made
+// this a fix-the-test item). The swapped pair crosses any live-box
+// cap in [2000, 50000] inside the same prefix pair (measured: the
+// recorded partial is identical — stage permit_before, 256 prefix
+// pairs — at every cap in that range), so a 5000 cap keeps every
+// assertion below byte-identical while cutting the time-to-stop to
+// ~11 ms, two orders of magnitude inside the wall budget.
 
 import (
 	"context"
@@ -13,8 +27,16 @@ import (
 	"strings"
 	"testing"
 
+	"plenilune/internal/packetset"
 	"plenilune/internal/verify"
 )
+
+// p12Options pins the live-box cap for the two tests in this file;
+// see the file comment for why. Every other option field is zero and
+// takes its default.
+func p12Options() *Options {
+	return &Options{ACL: verify.Options{Limits: packetset.Limits{MaxBoxes: 5000}}}
+}
 
 // p12CorpusACL mirrors the verify measurement corpus generator exactly
 // (same PCG stream), so the 512-rule swap below is the plan's motivating
@@ -75,7 +97,7 @@ func p12Swap512() (string, string) {
 
 func TestP12AnalysisCarriesPartial(t *testing.T) {
 	before, after := p12Swap512()
-	r := run(t, before, after, nil)
+	r := run(t, before, after, func(req *Request) { req.Options = p12Options() })
 	acl := object(t, r, DomainACL, "CORPUS")
 	if acl.Status != "inconclusive" || acl.ACL == nil {
 		t.Fatalf("object status %q acl %+v", acl.Status, acl.ACL)
@@ -100,7 +122,7 @@ func TestP12AnalysisPinnedV03HasNoPartialAndReplays(t *testing.T) {
 	before, after := p12Swap512()
 	versions := currentVersions()
 	versions.ACLEngine = verify.ResidualEngineVersion
-	req := Request{Schema: RequestSchema, Before: Source{Text: before}, After: Source{Text: after}}
+	req := Request{Schema: RequestSchema, Before: Source{Text: before}, After: Source{Text: after}, Options: p12Options()}
 	r, err := analyzeVersion(context.Background(), req, versions)
 	if err != nil {
 		t.Fatal(err)

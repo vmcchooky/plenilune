@@ -49,6 +49,9 @@ lại cổng; không tự sửa code.
 - 23:19 — PR **#27** `feat/p2-1-dual-digest` @ `3ac0a99c` (base `feat/ui-s2-s3-primitives-hierarchy`) ĐÃ MỞ: P2-1 dual digest (evidence v2, analysis v3). Lưu ý khi cổng: web vẫn 109 test; Go 20 pkg. Có 1 giới hạn đã ghi STATUS (enumeration record cũ lệch recompute-replay — fail loud, không phải lỗi cổng).
 - 23:19 — `feat/p2-2-capabilities` ĐANG LÀM. PR #26 chờ retarget về main (sau merge #25) rồi chạy cổng như đã ghi.
 
+- 07:52 — **PR #36 `feat/p2-3-error-taxonomy-v2` @ `1c49d8ce` (base main) ĐÃ MỞ**, thay #29 (đã đóng). Gate + merge như #35.
+- 07:52 — **CHUYỂN GIAO 08:00:** agent local hiện tại dừng lúc 08:00; một agent MỚI (session trắng) sẽ tiếp quản bằng prompt bàn giao Chí Nhân đã soạn cho Chooky. Agent mới: đọc Mục B để nắm trạng thái (4/9 đã merge: #25 `47d952a`, #28 `76152b0`, #27 `9d53df1`, #35 `8f1ea5b`), gate #36 trước, sau đó theo chuỗi -v2: mỗi merge xong ghi Mục B, Chí Nhân push nhánh -v2 kế tiếp (p2-4 → p2-8 → p2-5 → docs/p2-7 → fix/analysis-options-defaults), cuối là manifest regen (chỉ mở PR, không merge).
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

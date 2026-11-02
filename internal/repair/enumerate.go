@@ -53,6 +53,14 @@ const (
 	maxDecidingRules       = 8
 )
 
+// MaxExternalProposals caps caller-supplied proposals at an entry
+// point (decision D4): each external proposal costs one full Verify,
+// so an entry point refuses more than this many up front instead of
+// running them. The cap lives at the entry point, never inside
+// Enumerate — the enumeration record stays the complete truth of what
+// was received, which is what makes replay exact.
+const MaxExternalProposals = 64
+
 // Transform names recorded on candidates. The first five are the bounded
 // transforms of the plan item; TransformExternal marks a caller-supplied
 // proposal (for example an AI proposal) folded into the same frame.

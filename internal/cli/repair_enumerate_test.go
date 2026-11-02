@@ -2,7 +2,7 @@ package cli
 
 import (
 	"encoding/json"
-
+	"strings"
 	"testing"
 
 	"plenilune/internal/evidence"
@@ -70,6 +70,44 @@ func TestRepairEnumerateCLI(t *testing.T) {
 	code2, body2, errout2 := invoke("repair-enumerate", "--before", b, "--after", a, "--policy", policyPath, "--proposals", proposalsPath)
 	if code2 != 0 || errout2 != "" || body2 != body {
 		t.Fatalf("enumerate with proposals: %d %s (record differs: %v)", code2, errout2, body2 != body)
+	}
+}
+
+// D4 implementation: the entry-point cap on external proposals is a
+// named contract (repair.MaxExternalProposals). One past the cap is
+// refused before any enumeration runs; exactly the cap is admitted
+// (duplicates of the fixture proposal fold into the same record).
+func TestRepairEnumerateCLIProposalCap(t *testing.T) {
+	b, a, policyPath, _ := enumerateFixture(t)
+	write := func(n int) string {
+		beforeText := "ip access-list extended DEMO\n permit tcp any any eq 22\n deny ip any any\n"
+		afterText := "ip access-list extended DEMO\n deny tcp host 192.0.2.10 any eq 22\n permit tcp any any eq 22\n deny ip any any\n"
+		s := intent.Set{Schema: intent.Schema, Scope: intent.Scope, Obligations: []intent.Obligation{{ID: "OB-1", Kind: "must_permit", Match: intent.Region{Protocol: "tcp", SrcCIDR: "192.0.2.10/32", DstCIDR: "198.51.100.10/32", DstPorts: []intent.Interval{{Lo: 22, Hi: 22}}}}}}
+		_, hash, err := intent.Digest(s)
+		if err != nil {
+			t.Fatal(err)
+		}
+		afterHash := evidence.ConfigDigest([]byte(afterText))
+		q := patch.Request{Schema: patch.Schema, Scope: intent.Scope, BaseBeforeSHA256: evidence.ConfigDigest([]byte(beforeText)), BaseAfterSHA256: afterHash, ObligationsDigest: hash, Edits: []patch.Edit{{Op: "remove", Ref: &patch.RuleRef{BaseAfterSHA256: afterHash, Ordinal: 0, Line: 2}}}}
+		list := make([]patch.Request, n)
+		for i := range list {
+			list[i] = q
+		}
+		qb, err := json.Marshal(list)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return put(t, t.TempDir(), "proposals.json", string(qb))
+	}
+	over := write(repair.MaxExternalProposals + 1)
+	code, _, errout := invoke("repair-enumerate", "--before", b, "--after", a, "--policy", policyPath, "--proposals", over)
+	if code == 0 || !strings.Contains(errout, "INVALID_PROPOSALS") {
+		t.Fatalf("over-cap proposals: code=%d errout=%s, want INVALID_PROPOSALS refusal", code, errout)
+	}
+	at := write(repair.MaxExternalProposals)
+	code, _, errout = invoke("repair-enumerate", "--before", b, "--after", a, "--policy", policyPath, "--proposals", at)
+	if strings.Contains(errout, "INVALID_PROPOSALS") {
+		t.Fatalf("at-cap proposals refused: %s", errout)
 	}
 }
 

@@ -41,6 +41,20 @@ Ngày: 31/10/2026. Protocol này không thay `ENGINEERING_GUARDRAILS.md`; khi xu
    Cộng tiêu chí nghiệm thu riêng của hạng mục (trong file phase). Live test
    với provider chỉ chạy khi hạng mục yêu cầu và Chooky cho phép riêng; không
    được coi mock/fake là bằng chứng live.
+
+   **Ngoại lệ flake (Chooky duyệt 02/11/2026; tiền lệ PR #39):** một lần cổng
+   đỏ không tự động chặn merge, nhưng merge sau một lần đỏ CHỈ được phép khi
+   đủ cả bốn điều kiện: (i) test fail nằm ở package mà thay đổi không đụng
+   tới; (ii) chữ ký lỗi thuộc họ timing/budget (ví dụ `TIMING_SENSITIVE` —
+   test chạm ngân sách thật dưới tải song song); (iii) chạy riêng test đó
+   3/3 PASS và một lượt `go test -race ./...` đầy đủ PASS; (iv) toàn bộ bằng
+   chứng (lỗi nguyên văn, lệnh chạy lại, kết quả) được ghi lại TRƯỚC khi
+   merge ở kênh phối hợp hiện hành. Thiếu bất kỳ điều kiện nào: dừng, chờ
+   head mới. **Luật tái phát:** cùng một test flake lần thứ hai trong vòng
+   7 ngày thì chính flake đó trở thành hạng mục phải sửa gốc (tiền lệ: sửa
+   test ở PR #19), không được merge-nhờ-flake thêm lần nữa. Ngoại lệ này
+   không áp cho lỗi ở package bị thay đổi, lỗi semantics/evidence, hay lần
+   đỏ nào của CI fuzz.
 5. **Cập nhật tài liệu owner trong cùng lượt** nếu contract/schema/hành vi đổi
    (CONTRACTS/ARCHITECTURE/README/SECURITY tùy loại thay đổi), và cập nhật
    STATUS: trạng thái, commit/nhánh, lệnh đã chạy + kết quả, giới hạn còn lại.

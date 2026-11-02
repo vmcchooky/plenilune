@@ -86,6 +86,31 @@ trailing JSON, sai type, nesting >64. Null không thay required schema/scope,
 identity, IP, packet numeric field, decision action/implicit hoặc interval bound. Parser và scope version
 không được tự đoán khi replay. Wire change cần version/fixture/test cùng thay đổi.
 
+### Capabilities — implemented (P2-2)
+
+Schema `plenilune.capabilities/v1`. Một builder duy nhất
+(`internal/capabilities.Build`) sinh document; cả CLI
+(`plenilune capabilities [--json]`, JSON là dạng duy nhất như `version`) và
+`GET /api/capabilities` đều phục vụ đúng document đó — caller subprocess và
+caller HTTP gate trên cùng một sự thật. Document gồm: `tool` (name, version,
+commit theo VCS stamp của build, `unversioned` khi không có), `schemas`
+(id, current, supported — gồm cả version đã đóng băng còn replay được),
+`domains` (id, parser version, engine version), `limits` (mặc định + trần
+lấy từ constants/defaults của package sở hữu: packetset, parser, analysis,
+AI session), `options` (bề mặt options của analysis/compare kèm default),
+`features`, `error_codes` (các typed code caller có thể nhận; status/outcome
+không phải error code và không nằm trong danh sách).
+
+Quy tắc ổn định trong v1: chỉ cộng thêm — field, phần tử list và version hỗ
+trợ có thể thêm; không xóa, không đổi tên, không đổi nghĩa. Đổi phá vỡ phải
+bump schema capabilities. Mọi giá trị suy từ constants/defaults của code tại
+thời điểm build; hai list curated duy nhất là `features` và `error_codes`,
+được contract test đối chiếu với code (mỗi error code phải thật sự được phát
+ra ở non-test source; snapshot test ghim toàn bộ JSON). Caller kiểm
+capabilities TRƯỚC khi gửi cấu hình và từ chối sớm kèm lý do khi version/
+feature không khớp — client mẫu `examples/moonstorm-client/` (Go, stdlib)
+làm đúng việc này và là điểm mở rộng cho vòng analyze của P2-7.
+
 ## 5. Full comparison và API — implemented
 
 Schema `plenilune.evidence/v2` (P2-1; v1 đóng băng, xem đoạn dual digest dưới đây),

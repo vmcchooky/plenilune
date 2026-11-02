@@ -58,6 +58,8 @@ lại cổng; không tự sửa code.
 - 11:37 — #39 ĐÃ MERGE (8/9). **PR #40 `docs/p2-7-moonstorm-spec-v2` (base main) ĐÃ MỞ** — gate + merge PR này.
 - 11:37 — Chooky bận: từ giờ Chí Nhân tự theo dõi GitHub và push bước kế tiếp ngay khi thấy merge (không qua Chooky chuyển lời). Còn lại sau #40: Chí Nhân push `fix/analysis-options-defaults` + mở PR; bạn gate/merge xong thì regenerate manifest và mở PR manifest (không merge), rồi ghi báo cáo cuối vào Mục B.
 
+- 11:48 — **PR #41 `fix/analysis-options-defaults` @ `ec59a5c2` (base main) ĐÃ MỞ** — mục code cuối của chuỗi -v2 (per-field defaults, max_analyzed giữ 0=unset). Gate + merge như #40; xong bạn regen manifest và mở PR manifest (không merge), rồi ghi báo cáo cuối vào Mục B.
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

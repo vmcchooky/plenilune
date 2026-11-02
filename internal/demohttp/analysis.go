@@ -33,6 +33,9 @@ func handleAnalyze(w http.ResponseWriter, r *http.Request) {
 		analysisError(w, err)
 		return
 	}
+	// A completed analysis is a trigger event (P2-8): watched objects
+	// whose conditions fire land in the verdict inbox.
+	observeAnalysis(result)
 	writeJSON(w, http.StatusOK, result)
 }
 

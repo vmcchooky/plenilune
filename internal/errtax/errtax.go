@@ -91,6 +91,7 @@ var registry = map[string]classification{
 	"DUPLICATE_DEFINITION":    {StageParse, false, ""},
 	"EVIDENCE_FAILED":         {StageEngine, false, ""},
 	"EVIDENCE_MISMATCH":       {StageReplay, false, ""},
+	"INBOX_INVALID":           {StageValidate, false, "id"},
 	"INPUT_ENCODING":          {StageValidate, false, ""},
 	"INPUT_FAILED":            {StageRequest, false, ""},
 	"INPUT_INVALID":           {StageParse, false, ""},
@@ -140,6 +141,7 @@ var registry = map[string]classification{
 	"UI_NOT_BUILT":     {StageRequest, false, ""},
 	"UNSUPPORTED_KIND": {StageValidate, false, ""},
 	"USAGE":            {StageRequest, false, ""},
+	"WATCHES_INVALID":  {StageValidate, false, "watches"},
 }
 
 // Lookup classifies a published code. ok is false for codes outside

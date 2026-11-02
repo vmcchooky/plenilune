@@ -46,6 +46,7 @@ const (
 	FeaturePartialResults    = "partial_results"
 	FeatureDualDigest        = "dual_digest"
 	FeatureReviewBundle      = "review_bundle"
+	FeatureVerdictInbox      = "verdict_inbox"
 )
 
 // Features is the curated feature list for this build. Every entry
@@ -60,6 +61,7 @@ var Features = []string{
 	FeaturePartialResults,
 	FeatureRepairEnumeration,
 	FeatureReviewBundle,
+	FeatureVerdictInbox,
 }
 
 // ErrorCodes is the curated list of typed error codes a caller can
@@ -95,6 +97,7 @@ var ErrorCodes = []string{
 	"DUPLICATE_DEFINITION",
 	"EVIDENCE_FAILED",
 	"EVIDENCE_MISMATCH",
+	"INBOX_INVALID",
 	"INPUT_ENCODING",
 	"INPUT_FAILED",
 	"INPUT_INVALID",
@@ -141,6 +144,7 @@ var ErrorCodes = []string{
 	"UI_NOT_BUILT",
 	"UNSUPPORTED_KIND",
 	"USAGE",
+	"WATCHES_INVALID",
 }
 
 type ToolInfo struct {

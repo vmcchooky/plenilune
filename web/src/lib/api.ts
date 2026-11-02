@@ -4,6 +4,7 @@ import type {
   Comparison,
   CompareOptions,
   Health,
+  InboxDocument,
   NormalizeResult,
   NormalizedPolicy,
   ObligationSet,
@@ -15,6 +16,7 @@ import type {
   ReplayResult,
   Session,
   TraceResult,
+  WatchRule,
 } from './types';
 
 interface ErrorPayload {
@@ -90,6 +92,15 @@ function post(body: unknown, signal?: AbortSignal): RequestInit {
   };
 }
 
+function put(body: unknown, signal?: AbortSignal): RequestInit {
+  return {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal,
+  };
+}
+
 export const runtime = {
   health(signal?: AbortSignal) {
     return request<Health>('/api/health', { signal });
@@ -159,5 +170,20 @@ export const runtime = {
       locale,
       ai,
     }, signal));
+  },
+  // P2-8 triggers & verdict inbox: watches live on the server (it is
+  // the evaluator); the inbox lists the entries fired conditions
+  // produced, newest first.
+  listWatches(signal?: AbortSignal) {
+    return request<{ watches: WatchRule[] }>('/api/watches', { signal });
+  },
+  replaceWatches(watches: WatchRule[], signal?: AbortSignal) {
+    return request<{ watches: WatchRule[] }>('/api/watches', put({ watches }, signal));
+  },
+  listInbox(signal?: AbortSignal) {
+    return request<InboxDocument>('/api/inbox', { signal });
+  },
+  markInboxRead(id: number | 'all', signal?: AbortSignal) {
+    return request<InboxDocument>('/api/inbox/read', post(id === 'all' ? { all: true } : { id }, signal));
   },
 };

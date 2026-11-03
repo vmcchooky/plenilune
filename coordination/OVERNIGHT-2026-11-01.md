@@ -506,6 +506,14 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#59 U2 — kiểm tra gutter ĐỎ, cần chỉ đạo:** Đã sửa local chưa commit: bỏ huy hiệu cảnh báo >80, giữ max length trung tính; ruler ghi `logical col`/`cột logic` (đếm UTF-16 code units theo textarea selectionStart, không phải cột hiển thị). `npm test` PASS 23 files/185 tests; `npm run build` PASS (cảnh báo chunk). Đo bằng Brave headless, viewport 390×900, textarea 100 dòng synthetic dài 150 ký tự, đặt scrollTop tại 10%, 50%, 100%, 30%, đọc sau hai requestAnimationFrame. Nguyên văn:
+  ```text
+  wrapped [{"text":1294,"gutter":1294,"textMax":12940,"gutterMax":1775},{"text":6470,"gutter":1775,"textMax":12940,"gutterMax":1775},{"text":12940,"gutter":1775,"textMax":12940,"gutterMax":1775},{"text":3882,"gutter":1775,"textMax":12940,"gutterMax":1775}]
+  unwrapped [{"text":189,"gutter":189,"textMax":1893,"gutterMax":1775},{"text":947,"gutter":947,"textMax":1893,"gutterMax":1775},{"text":1893,"gutter":1775,"textMax":1893,"gutterMax":1775},{"text":568,"gutter":568,"textMax":1893,"gutterMax":1775}]
+  ```
+  Không thể xác nhận gutter đồng bộ; wrapped còn lệch vị trí dòng do mỗi dòng vật lý chiếm nhiều hàng hiển thị. Đây là lỗi sản phẩm, dừng thay đổi #59, không push hay nới kiểm tra. Cần chỉ đạo thiết kế/sửa gốc; không tuyên bố pass hoặc trễ khung hình (phép đo này không đủ chứng minh latency). Script local `web/tests/u2-scroll-check-temp.mjs` chưa commit. PR vẫn head `29a0068`.
+
+
 - **D9 hoàn tất:** `go test -race ./... -skip '^TestLiveMeta'` exit 1; `internal/analysis` FAIL P36 như nguyên văn đã báo; các gói khác PASS, `internal/verify` 107.023s. Log đầy đủ local `D:/Quorix/d9-race-58.log`. Không sửa hay merge #58.
 - **TRANH BIỆN UI — U4 (vòng 1):**
   1. Đồng ý bỏ menu lồng quá một cấp: inventory U1 ở 390px cho thấy quick có nhiều lớp disclosure; dùng một lớp nâng cao giảm số lần mở. Không xóa nội dung hay trạng thái đang nhập. Cần đo thao tác bàn phím và ảnh trước/sau để xác nhận.

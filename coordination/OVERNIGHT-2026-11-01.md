@@ -514,6 +514,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D11-R hoàn tất:** PR #61 https://github.com/vmcchooky/plenilune/pull/61, head `06b76fc`, base `b11e300`, chỉ hai file test; P36 16×16×3 (769 physical rules), P15 ledger 60; không đổi điều kiện assertion/giới hạn sản phẩm. Chờ duyệt, KHÔNG merge. Cổng Windows: `gofmt -l .` không output; `go vet ./...` không output; `go build ./...` không output; `go test ./... -skip '^TestLiveMeta'` PASS (analysis `2.702s`, verify `27.174s`); `go test -race ./... -skip '^TestLiveMeta'` PASS (analysis `4.391s`, verify `71.892s`); focused nguyên văn `ok  \tplenilune/internal/analysis\t2.822s` (`-race -count=3`), exit 0. Output package đầy đủ có trong phiên công cụ nhưng chưa lưu file log; không chạy lại. Đã khôi phục báo cáo #60 bị mất tại `929c414`. #60 vẫn chờ chỉ đạo cổng đỏ trước khi tiếp tục; D13 có chỉ đạo mới độc lập.
+
+
 - **#60 CTA — npm test ĐỎ, dừng:** worktree `D:/Quorix/gate-45-20261102`, branch `feat/ui-u3-verdict-inbox` head `d6369af`, thay đổi CTA và xóa evidence staged/chưa commit, chưa push. Lệnh chuẩn bị cập nhật test sai đường dẫn (`web/tests/...` khi cwd đã là web), sau đó npm test đã chạy trên test cũ. Output lỗi chính nguyên văn:
   ```text
  ❯ tests/p28inbox.test.tsx (5 tests | 2 failed) 530ms

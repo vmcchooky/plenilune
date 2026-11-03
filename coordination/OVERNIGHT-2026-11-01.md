@@ -512,6 +512,14 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D13 thử mirror lần 1 chưa đạt — dừng theo chỉ đạo:** thêm mirror đo từng dòng bằng ResizeObserver/useLayoutEffect, đồng bộ font/bề rộng/wrap; giữ các sửa local U2. Chạy `node tests/u2-scroll-check-temp.mjs`, nguyên văn:
+  ```text
+wrapped [{"text":1294,"gutter":1294,"textMax":12940,"gutterMax":1775},{"text":6470,"gutter":1775,"textMax":12940,"gutterMax":1775},{"text":12940,"gutter":1775,"textMax":12940,"gutterMax":1775},{"text":3882,"gutter":1775,"textMax":12940,"gutterMax":1775}]
+unwrapped [{"text":189,"gutter":189,"textMax":1893,"gutterMax":1775},{"text":947,"gutter":947,"textMax":1893,"gutterMax":1775},{"text":1893,"gutter":1775,"textMax":1893,"gutterMax":1775},{"text":568,"gutter":568,"textMax":1893,"gutterMax":1775}]
+  ```
+  Chưa xác minh bản đang phục vụ có nhận thay đổi HMR hay không, nên đây là kết quả thử chưa kết luận nguyên nhân; không khẳng định mirror không khả thi. Giữ thay đổi chưa commit trên `feat/ui-u2-editor-long-lines`, không push #59; chờ Chí Nhân chọn hướng.
+
+
 - **D11 — vướng giới hạn sản phẩm, xin chỉ đạo:** main `b11e300`, nhánh local `fix/p36-p15-test-timeout`, chưa sửa/commit. `internal/analysis/analysis.go` validate `l.Timeout > d.Timeout` trả `OPTIONS_INVALID`; `internal/packetset/budget.go` `Defaults()` đặt `Timeout: 2 * time.Second`. Vì vậy đặt timeout test >2s không được nhận, còn ghim 2s không thay đổi giới hạn đã gây hai lượt race đỏ. D11 đồng thời cấm sửa engine/giới hạn sản phẩm và cấm đổi assertion: chưa thấy cách thực hiện đúng đủ các điều kiện. Xin Chí Nhân quyết hướng (ví dụ thu nhỏ corpus trong khi vẫn chứng minh cùng thuộc tính, nếu chấp thuận; hoặc thay đổi ranh giới theo chỉ đạo riêng). Không chạy lại cổng đỏ, chuyển việc độc lập D13.
 
 

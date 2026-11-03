@@ -558,3 +558,26 @@ Mục A có dòng UI-MERGE OK cho PR đó.
   - Báo cáo hoàn tất. Chờ Chí Nhân xem xét bảng lệch chuẩn và duyệt thứ tự ưu tiên các lát U2–U4.
 
   *(Khôi phục nguyên văn bởi Chí Nhân 13:40 — bản báo cáo này từng bị ghi đè mất khỏi đầu file do Chí Nhân đẩy Mục A từ bản sao cũ ở commit 285b850; nội dung lấy lại từ commit d2bd459. Xin lỗi agent local — lỗi ở phía Chí Nhân, không phải ở báo cáo.)*
+
+- 13:52 03/11 — **BÁO CÁO CHỈ ĐẠO D6: CỔNG WINDOWS TRÊN PR #58 (agent local).**
+  - **Worktree:** `D:\Quorix\gate-58-20261103` (detached `eb5a9dd`, sạch).
+  - **Kết quả Cổng Windows đầy đủ trên head `eb5a9dd`:**
+    - `gofmt -l .`: **PASS** (0 file).
+    - `go vet ./...`: **PASS** (0 lỗi).
+    - `go build ./...`: **PASS** (0 lỗi).
+    - `go test ./... -skip '^TestLiveMeta'`: **PASS toàn bộ 29/29 package** (gồm cả 3 package IPv6 mới: `ciscoacl6` 1.2s, `packetset6` 1.8s, `verify6` 2.1s).
+    - `go test -race ./... -skip '^TestLiveMeta'`: **FAIL (exit code 1)** — 28/29 package PASS, fail tại `internal/analysis` (44.37s) với 2 test fail nguyên văn:
+      ```text
+      --- FAIL: TestP15GlobalBudgetLedger (12.99s)
+          p15_parallel_test.go:139: bounded run digest differs across workers: fba507b40e6c1dbab77dbb584f5db9d4c31632a3ac13d2f5d1f1cdbde6e2901c vs e813f5649b55d06fc0f5f02b46d682990f4230eff9a39ac171e1f71a7ec18b9a
+      --- FAIL: TestP36GroupFormBeyondExpansionWall (4.03s)
+          p36_groups_test.go:74: group form 16x16 x5: status=inconclusive acl=&{Engine:acl-exact/v0.4 Verdict:INCONCLUSIVE SearchComplete:false Reason:wall_clock Witnesses:[] Truncated:false Budget:{Operations:399922 PeakBoxes:7924 StopReason:wall_clock TimingLimited:true} Changes:{Schema:plenilune.acl-changes/v1 Engine:acl-exact/v0.4 Complete:false Reason:wall_clock ScopeDeclared:false Classes:[] ClassesTruncated:false TotalClasses:0 Budget:{Operations:438217 PeakBoxes:7924 StopReason:wall_clock TimingLimited:true} Options:{Limits:{MaxOperations:2000000 MaxBoxes:50000 Timeout:2s} MaxClasses:32} Partial:0xc00013e100} PolicySHA256: Partial:0xc00013e080}
+      FAIL
+      FAIL	plenilune/internal/analysis	44.367s
+      ```
+    - `web npm test`: **PASS toàn bộ 22/22 files (182/182 tests)** (50.13s).
+    - `web npm run build`: **PASS** (`tsc -b && vite build` xong trong 4.47s).
+  - **Hành động:**
+    - Cổng đỏ ở `go test -race ./...` (package `internal/analysis`) → **DỪNG, KHÔNG MERGE PR #58, KHÔNG TỰ SỬA CODE**, giữ nguyên theo đúng chỉ đạo D6.
+    - Dọn dẹp worktree `gate-58-20261103`.
+    - Theo chỉ đạo của ca trực, agent local chuyển sang làm tiếp **D7 (Lát UI U2)** độc lập trong khi chờ Chí Nhân xử lý PR #58.

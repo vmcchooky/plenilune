@@ -71,15 +71,16 @@ func TestParserVersionDispatch(t *testing.T) {
 			t.Fatalf("extended DTO changed: old=%+v current=%+v errors=%v/%v", old, current, oldErr, err)
 		}
 	}
-	if ParserVersion != "cisco-acl/v0.3" || LegacyParserVersion != "cisco-acl/v0.2" {
+	if ParserVersion != "cisco-acl/v0.4" || PreviousParserVersion != "cisco-acl/v0.3" || LegacyParserVersion != "cisco-acl/v0.2" {
 		t.Fatal("unexpected parser identity")
 	}
-	for _, version := range []string{ParserVersion, LegacyParserVersion, "unknown", ""} {
-		if SupportedParser(version) != (version == ParserVersion || version == LegacyParserVersion) {
+	for _, version := range []string{ParserVersion, PreviousParserVersion, LegacyParserVersion, "unknown", ""} {
+		if SupportedParser(version) != (version == ParserVersion || version == PreviousParserVersion || version == LegacyParserVersion) {
 			t.Fatalf("parser support: %q", version)
 		}
 		for _, kind := range []string{"standard", "named-extended", "numbered", "unknown", ""} {
-			want := (version == ParserVersion || version == LegacyParserVersion) && (kind == "named-extended" || version == ParserVersion && kind == "standard")
+			want := (version == ParserVersion || version == PreviousParserVersion || version == LegacyParserVersion) &&
+				(kind == "named-extended" || (version == ParserVersion || version == PreviousParserVersion) && kind == "standard")
 			if SupportedKind(kind, version) != want {
 				t.Fatalf("kind support: %q/%q", kind, version)
 			}

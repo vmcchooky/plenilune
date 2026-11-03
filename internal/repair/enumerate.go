@@ -643,9 +643,11 @@ func ruleKey(r ciscoacl.Rule) string {
 		Protocol *uint8              `json:"protocol"`
 		Src      ciscoacl.Address    `json:"src"`
 		Dst      ciscoacl.Address    `json:"dst"`
+		SrcSet   []ciscoacl.Address  `json:"src_set,omitempty"`
+		DstSet   []ciscoacl.Address  `json:"dst_set,omitempty"`
 		SrcPorts []ciscoacl.Interval `json:"src_ports"`
 		DstPorts []ciscoacl.Interval `json:"dst_ports"`
-	}{r.Action, r.Protocol, r.Src, r.Dst, r.SrcPorts, r.DstPorts})
+	}{r.Action, r.Protocol, r.Src, r.Dst, r.SrcSet, r.DstSet, r.SrcPorts, r.DstPorts})
 	if err != nil {
 		return ""
 	}

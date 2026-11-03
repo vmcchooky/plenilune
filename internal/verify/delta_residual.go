@@ -15,6 +15,9 @@ func semanticRuleEqual(a, b ciscoacl.Rule) bool {
 	if a.Action != b.Action || a.Src != b.Src || a.Dst != b.Dst {
 		return false
 	}
+	if !slices.Equal(a.SrcSet, b.SrcSet) || !slices.Equal(a.DstSet, b.DstSet) {
+		return false
+	}
 	if (a.Protocol == nil) != (b.Protocol == nil) {
 		return false
 	}

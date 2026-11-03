@@ -105,7 +105,7 @@
     {
       "id": "acl",
       "description": "Cisco IOS named extended IPv4 ACL",
-      "parser_version": "cisco-acl/v0.3",
+      "parser_version": "cisco-acl/v0.4",
       "engine_version": "acl-exact/v0.4"
     },
     {

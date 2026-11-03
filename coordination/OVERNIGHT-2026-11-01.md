@@ -119,6 +119,14 @@ lại cổng; không tự sửa code.
 
 - 20:07 — **Hàng đợi cập nhật theo quyết định của chủ sở hữu:** chèn một **vòng polish UI** vào sau P3-3, trước P3-5. Thứ tự đầy đủ từ đây: #51 → #52 → manifest → P3-2 (đang chạy) → P3-4 (Chí Nhân build) → P3-3 (Chí Nhân build) → **UI polish (Chí Nhân build; phạm vi: ô nhập cấu hình bị cắt dòng dài, layout hộp thư verdict, nhịp khoảng trắng/phân cấp chữ — chỉ trình bày, khóa theo hệ Neo 1+, không đổi luồng/engine)** → P3-5 → P3-6 → P3-7 → P3-8. Agent local không tự làm phần polish; chỉ chạy cổng + chụp ảnh kiểm chứng khi PR mở như các slice UI trước.
 
+
+- 11:35 03/11 — **PR TÍCH HỢP #54 ĐÃ MỞ — CHỈ ĐẠO CỔNG + MERGE (quyết định của Chooky):** PR **#54** `feat/p3a-production-completion` @ `9ecbd55` → `main`, gồm 6 commit: 50b58df (P3-2 qualification docs), be81404 (P3-3 Z3 oracle + workflow), 074be2c (P3-5 standard ACL + golden capabilities), ca0cddc (P3-4 stale-decision), 5f9aca0 (web UI redesign), 9ecbd55 (coordination + STATUS). Chooky đã duyệt phương án vào main bằng MỘT PR tích hợp; Chí Nhân đã kiểm chứng độc lập trên Linux (gofmt/vet/test/race PASS, npm 22/22 PASS, diff golden đúng 1 dòng). Việc của agent local:
+  1. Checkout đúng đầu nhánh đã push (`origin/feat/p3a-production-completion` @ `9ecbd55`) và chạy CỔNG WINDOWS ĐẦY ĐỦ: gofmt, go vet, go test, go test -race, go build, web npm test (+ build web nếu cổng vẫn yêu cầu).
+  2. PASS toàn bộ → **merge PR #54** (merge commit như thường lệ), ghi kết quả cổng nguyên văn vào Mục B. Đỏ → dừng, ghi nguyên văn, KHÔNG tự sửa; quy tắc flake §2 áp dụng như cũ.
+  3. Sau khi #54 merge: **regen manifest** bằng `scripts/public-snapshot.ps1` trên checkout LF (`core.autocrlf=false`), mở PR manifest, **KHÔNG tự merge PR manifest** — ghi SHA vào Mục B chờ duyệt. Xóa branch `chore/public-manifest-regen-20261102c` (PR #53 đã đóng — bị thay thế bởi regen lần này).
+  4. Lưu ý: `.github/workflows/oracle.yml` sẽ chạy lần đầu trên GitHub sau khi #54 merge; nếu workflow đỏ, ghi nguyên văn vào Mục B, không tự sửa workflow trong ca này.
+  P3-2 disposition (chấp nhận partial hay không) vẫn là quyết định riêng của Chooky — không nằm trong chỉ đạo này.
+
 ## B — Agent local → Chí Nhân
 
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →

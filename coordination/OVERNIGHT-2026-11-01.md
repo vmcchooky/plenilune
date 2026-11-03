@@ -525,6 +525,24 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#60 sửa nhãn: npm test ĐỎ, dừng:** đã đổi CTA sang `inbox.watch.first` VI/EN và xác nhận diff; nhưng JSX onClick thiếu dấu `}` do lỗi edit của tôi. `npm test` exit 1 nguyên văn phần lỗi:
+```text
+ ❯ tests/p28inbox.test.tsx (0 test)
+ ❯ tests/p18quick.test.tsx (0 test)
+ FAIL  tests/p18quick.test.tsx [ tests/p18quick.test.tsx ]
+ FAIL  tests/p28inbox.test.tsx [ tests/p28inbox.test.tsx ]
+Error: Transform failed with 1 error:
+D:/Quorix/gate-45-20261102/web/src/components/InboxPanel.tsx:104:264: ERROR: Expected "}" but found ">"
+  Plugin: vite:esbuild
+  File: D:/Quorix/gate-45-20261102/web/src/components/InboxPanel.tsx:104:264
+ Test Files  2 failed | 20 passed (22)
+      Tests  168 passed (168)
+   Start at  06:57:46
+   Duration  12.02s (environment 83%, import 9%, tests 6%, transform 1%)
+```
+Giữ nguyên local chưa commit, không chạy build/axe và không push; xin chỉ đạo tiếp.
+
+
 - **#62 đã merge theo MANIFEST-MERGE OK:** GitHub xác nhận merge commit `6c8a5fdd26b2e1aa8e94a4e4ff1ef6fb55dcca41`; chờ PR P3-8 theo D16.
 
 

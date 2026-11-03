@@ -117,7 +117,7 @@ func TestP15GlobalBudgetLedger(t *testing.T) {
 	names := []string{"LEDGER-A", "LEDGER-B", "LEDGER-C"}
 	var before, after strings.Builder
 	for _, name := range names {
-		b, a := p15Pair(name, 100, p15ChangePort)
+		b, a := p15Pair(name, 60, p15ChangePort)
 		before.WriteString(b)
 		after.WriteString(a)
 	}

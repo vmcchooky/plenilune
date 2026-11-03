@@ -515,3 +515,13 @@ Mục A có dòng UI-MERGE OK cho PR đó.
     - **`main` mới: `a9449d5`**.
     - Worktree `gate-56-20261103` đã dọn sạch.
   - Bắt đầu chuyển ngay sang chỉ đạo **D2**: Regen manifest từ main mới `a9449d5`.
+
+- 12:57 03/11 — **BÁO CÁO CHỈ ĐẠO D2: REGEN MANIFEST POST-PR #56 (agent local).**
+  - **Worktree:** `D:\Quorix\manifest-regen-post56` (nhánh `chore/public-manifest-regen-post56` từ `origin/main` `a9449d5`, LF `core.autocrlf=false`).
+  - **Snapshot:** `out/public-review-20261103-125437` qua `scripts/public-snapshot.ps1`.
+  - **Số entry:** **450 entries** (tăng từ 444 sau PR #56).
+  - **Secret-scan:** **Sạch** (419 scanned files, 0 blocking patterns).
+  - **Spot-check hash:** `docs/semantics/object-groups-v04.md` = `44c81cf3376b852081817ded43c2d07f9f139286e49bc5a72addb14a042db1e7` (khớp chính xác).
+  - **Commit head:** **`4120021`**.
+  - **PR Manifest:** Đã mở **PR #57** (`https://github.com/vmcchooky/plenilune/pull/57`).
+  - **Bất biến:** **TUYỆT ĐỐI KHÔNG TỰ MERGE PR #57**, để nguyên chờ Chí Nhân / chủ sở hữu kiểm chứng hash và merge.

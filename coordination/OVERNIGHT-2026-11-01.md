@@ -516,6 +516,26 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D13 lượt dist: cổng npm test ĐỎ, dừng**. Build đầu `index-DgLi3Is6.js` PASS; mirror 100 phần tử tổng 13256.25px wrapped / 2209.375px unwrapped, gutterScroll khớp textarea scroll, nhưng gutterClient 458px so với inputClient 340px, max lệch 118px. Sửa bước áp dụng chiều cao gutter bằng input.clientHeight theo D13; build `index-DYmdNd9h.js` PASS. Đo dist: wrapped textMax=gutterMax=13040; các cặp scroll 1304/1304, 6520/6520, 13040/13040, 3912/3912. Unwrapped max=1993, cặp 199/199, 997/997, 1993/1993, 598/598. Chưa có ảnh giữa cuộn. Sau đó `npm test` exit 1, nguyên văn:
+  ```text
+ ❯ tests/u2-editor.test.tsx (3 tests | 3 failed) 106ms
+   ❯ U2 — SourceEditor soft-wrap & line numbers (3)
+     × renders line numbers gutter matching content lines 79ms
+     × toggles wrap mode when wrap button is clicked 8ms
+     × shows neutral maximum line length for long lines 16ms
+ FAIL  tests/u2-editor.test.tsx > U2 — SourceEditor soft-wrap & line numbers > renders line numbers gutter matching content lines
+ FAIL  tests/u2-editor.test.tsx > U2 — SourceEditor soft-wrap & line numbers > toggles wrap mode when wrap button is clicked
+ FAIL  tests/u2-editor.test.tsx > U2 — SourceEditor soft-wrap & line numbers > shows neutral maximum line length for long lines
+ReferenceError: ResizeObserver is not defined
+ ❯ src/components/SourceInputs.tsx:44:22
+ Test Files  1 failed | 22 passed (23)
+      Tests  3 failed | 182 passed (185)
+   Start at  06:23:07
+   Duration  14.58s (environment 71%, tests 19%, import 9%, transform 1%)
+  ```
+  Cổng đỏ nên không sửa hay chạy lại; các thay đổi giữ local chưa commit, #59 chưa push. Xin chỉ đạo tiếp.
+
+
 - **D11-R hoàn tất:** PR #61 https://github.com/vmcchooky/plenilune/pull/61, head `06b76fc`, base `b11e300`, chỉ hai file test; P36 16×16×3 (769 physical rules), P15 ledger 60; không đổi điều kiện assertion/giới hạn sản phẩm. Chờ duyệt, KHÔNG merge. Cổng Windows: `gofmt -l .` không output; `go vet ./...` không output; `go build ./...` không output; `go test ./... -skip '^TestLiveMeta'` PASS (analysis `2.702s`, verify `27.174s`); `go test -race ./... -skip '^TestLiveMeta'` PASS (analysis `4.391s`, verify `71.892s`); focused nguyên văn `ok  \tplenilune/internal/analysis\t2.822s` (`-race -count=3`), exit 0. Output package đầy đủ có trong phiên công cụ nhưng chưa lưu file log; không chạy lại. Đã khôi phục báo cáo #60 bị mất tại `929c414`. #60 vẫn chờ chỉ đạo cổng đỏ trước khi tiếp tục; D13 có chỉ đạo mới độc lập.
 
 

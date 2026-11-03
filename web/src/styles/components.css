@@ -86,6 +86,7 @@
 
 .source-editor__frame {
   display: flex;
+  position: relative;
   min-height: var(--editor-height);
   max-height: 460px;
   background: var(--code-bg);
@@ -159,6 +160,18 @@
 .source-editor__input:focus {
   outline: none;
 }
+
+.source-editor__mirror {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  tab-size: 2;
+}
+.is-wrapped .source-editor__mirror { white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; }
+.is-unwrapped .source-editor__mirror { white-space: pre; }
 
 .source-editor__ruler {
   display: flex;

@@ -52,7 +52,7 @@ describe('U2 — SourceEditor soft-wrap & line numbers', () => {
     expect(textarea.getAttribute('wrap')).toBe('soft');
   });
 
-  it('shows ruler with max line length and warns for lines over 80 characters', () => {
+  it('shows neutral maximum line length for long lines', () => {
     const longLine = 'ip access-list extended VERY_LONG_RULE_NAME permit tcp 192.168.100.0 0.0.0.255 host 10.0.0.1 eq 443';
     renderEditor(
       <SourceEditor
@@ -65,6 +65,7 @@ describe('U2 — SourceEditor soft-wrap & line numbers', () => {
       />
     );
 
-    expect(screen.getByText(/vượt 80|exceeds 80/i)).toBeTruthy();
+    expect(screen.getByText(new RegExp(`(Dài nhất|Max): ${longLine.length}`))).toBeTruthy();
+    expect(document.querySelector('.source-editor__long-badge')).toBeNull();
   });
 });

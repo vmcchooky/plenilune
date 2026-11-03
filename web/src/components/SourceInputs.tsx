@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useI18n } from '../i18n';
 import type { Review } from '../hooks/useReview';
 import { logicalLineCount } from '../lib/conditions';
@@ -27,15 +27,33 @@ export function SourceEditor({
   const [isWrap, setIsWrap] = useState(true);
   const [cursorPos, setCursorPos] = useState<{ line: number; col: number } | null>(null);
   const gutterRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const mirrorRef = useRef<HTMLDivElement>(null);
+  const [lineHeights, setLineHeights] = useState<number[]>([]);
+
+  useLayoutEffect(() => {
+    const input = inputRef.current;
+    const mirror = mirrorRef.current;
+    if (!input || !mirror) return;
+    const measure = () => {
+      const style = getComputedStyle(input);
+      mirror.style.width = `${input.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)}px`;
+      if (gutterRef.current) gutterRef.current.style.height = `${input.clientHeight}px`;
+      setLineHeights(Array.from(mirror.children, node => node.getBoundingClientRect().height));
+    };
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(input);
+    return () => observer.disconnect();
+  }, [value, isWrap]);
 
   const lines = value.split('\n');
   const lineCount = lines.length;
   let maxLineLen = 0;
-  let longestLineIdx = -1;
-  lines.forEach((l, idx) => {
+  lines.forEach((l) => {
     if (l.length > maxLineLen) {
       maxLineLen = l.length;
-      longestLineIdx = idx + 1;
     }
   });
 
@@ -98,10 +116,11 @@ export function SourceEditor({
       <div className={`source-editor__frame ${isWrap ? 'is-wrapped' : 'is-unwrapped'}`}>
         <div className="source-editor__gutter" ref={gutterRef} aria-hidden="true">
           {lines.map((_, idx) => (
-            <div key={idx} className="source-editor__line-no">{idx + 1}</div>
+            <div key={idx} className="source-editor__line-no" style={{ height: lineHeights[idx] }}>{idx + 1}</div>
           ))}
         </div>
         <textarea
+          ref={inputRef}
           id={`${id}-acl`}
           className="source-editor__input"
           value={value}
@@ -120,6 +139,9 @@ export function SourceEditor({
           onKeyUp={(event) => updateCursor(event.currentTarget)}
           onScroll={handleScroll}
         />
+        <div ref={mirrorRef} className="source-editor__mirror" aria-hidden="true">
+          {lines.map((line, idx) => <div key={idx}>{line || '\u00a0'}</div>)}
+        </div>
       </div>
       <div className="source-editor__ruler" aria-live="polite">
         <span className="source-editor__cursor">
@@ -129,11 +151,7 @@ export function SourceEditor({
         </span>
         <span className="source-editor__maxlen">
           {t('source.editor.maxLine', { max: maxLineLen })}
-          {maxLineLen > 80 && (
-            <span className="badge badge--warn source-editor__long-badge">
-              {t('source.editor.overLimit', { line: longestLineIdx, len: maxLineLen })}
-            </span>
-          )}
+
         </span>
       </div>
       <p className="field-hint" id={`${id}-acl-help`}>{help}</p>

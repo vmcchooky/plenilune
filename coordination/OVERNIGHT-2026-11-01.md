@@ -458,7 +458,7 @@ local KHÔNG sửa Mục A, KHÔNG sửa STATUS.md (Chí Nhân sở hữu, trán
 Chí Nhân; PR UI không đụng `internal/` hay `docs/plan/`; merge PR UI chỉ khi
 Mục A có dòng UI-MERGE OK cho PR đó.
 
-### 3. Bảng trạng thái (2026-11-04 06:15, cập nhật bởi Chí Nhân)
+### 3. Bảng trạng thái (2026-11-04 06:25, cập nhật bởi Chí Nhân)
 
 | Hạng mục | Trạng thái |
 |---|---|
@@ -481,6 +481,8 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 - **PR #60 — 2 điều kiện trước UI-MERGE OK:** (1) Gỡ thư mục `web/tests/u3-evidence/` (PNG/JSON) khỏi nhánh — bằng chứng để ở PR body và `out/`, KHÔNG commit vào repo (quy ước evidence local-only); giữ `u3-browser.mjs`. (2) Thêm CTA rõ ràng trong **empty state** của inbox để mở form watch (đây là trả lời luận điểm 6 của chính bạn trong tranh biện), kèm ảnh empty state + chạy lại axe. Xong 2 điểm → báo Mục B, Chí Nhân soát diff → UI-MERGE OK, bạn tự merge #60.
 - **TRANH BIỆN UI — TRẢ LỜI VÒNG 1 + CHỐT SPEC U4:** Điểm 2 của bạn ĐÚNG và được chấp nhận: verdict-first là THỨ TỰ ƯU TIÊN, obligations là hành động inline có nhãn rõ, không chặn verdict. Điểm 5 CHỐT: inbox giữ dạng THẺ ở hiện tại; xét lại dạng bảng khi inbox thường xuyên >20 mục hoặc đo thấy nhu cầu sắp xếp/lọc. Điểm 6 thành điều kiện merge #60 (CTA ở trên). Điểm 1+3+4 thành spec U4: quick mode tối đa 1 cấp disclosure; disclosure nâng cao có heading nội bộ, không lồng, giữ trạng thái khi kết quả cập nhật; sửa heading-order ở deep-evidence; target chạm ≥44×44 tính cả khoảng cách, kiểm cả thao tác bàn phím; bằng chứng trước/sau ở 360/390 + desktop, cả VI/EN.
 - **D14 — LOCAL (sau D13 và #60):** triển khai **U4** theo spec đã chốt ở trên. PR web-only, bằng chứng như thường lệ (ảnh trước/sau, axe, overflow, npm). Không tự merge — chờ UI-MERGE OK.
+- **D11-R — THAY THẾ D11 (đọc kỹ):** Chí Nhân CHẤP NHẬN phát hiện của bạn: options bị validate chặn `Timeout` vượt mặc định 2s (`OPTIONS_INVALID`) — chỉ đạo ghim Timeout lớn hơn là bất khả, bạn dừng và hỏi là ĐÚNG. Phương án mới: **THU NHỎ TẢI CỦA TEST, giữ nguyên thuộc tính và mọi assertion.** (1) `TestP36GroupFormBeyondExpansionWall`: đổi case `p36GroupForm(16, 16, 5, ...)` thành **(16, 16, 3, ...)** và sửa comment thành 769 physical rules (768 permit + 1 deny) — vẫn vượt MaxRules 512 đúng 1.5 lần. Số đo của Chí Nhân (Linux, -race, ép tải 8 nhân bận): case ×5 = 531k ops, chạm tường, không complete; case **×3 = 192k ops, complete, tổng 1.1s**; các hình học lệch (64×2×5, 128×2×3) đều INCONCLUSIVE vì đắt hơn — giữ nguyên hình học 16×16, chỉ giảm số rule logic. (2) `TestP15GlobalBudgetLedger`: đổi `p15Pair(name, 100, ...)` thành **60** trong riêng test này (số đo: n=100 → 280k ops/1.9s dưới tải; n=60 → 41k ops/0.32s; không hạ dưới 60 vì corpus phải còn rule `eq 443` cho `p15ChangePort`). Không đụng `TestP36GroupFormMatchesExpansion`, test deadline của P15, hay bất kỳ file non-test nào. Phần còn lại của D11 giữ nguyên: PR riêng + cổng Windows đầy đủ + cô lập 2 test đã sửa `-race -count=3`, báo nguyên văn, KHÔNG tự merge.
+- **D13 — QUYẾT ĐỊNH CỦA CHÍ NHÂN (lượt gương có kiểm soát, cũng là lượt cuối trước dự phòng):** Lượt đo vừa rồi chưa kết luận được (số đo y hệt bản cũ, chưa xác minh bản được phục vụ). Làm lại đúng một lượt: (1) `npm run build` và phục vụ bản **dist**, không dùng dev server/HMR; (2) script đo in thêm **tổng chiều cao mirror đo được** và một dấu hiệu nhận diện build mới, để chứng minh đang đo đúng bản; (3) nếu mirror total ≈ textMax mà gutterMax vẫn kẹt → lỗi nằm ở bước ÁP chiều cao vào gutter: sửa đúng bước đó (gutter inner phải đạt tổng chiều cao của mirror, từng ô đúng offset/chiều cao đã đo) rồi đo lại ngay trong cùng lượt; (4) nếu mirror total ≈ 1775 (gương tự đo sai) → dừng và báo, Chí Nhân chốt dự phòng B (bỏ gutter ở chế độ wrapped). Thứ tự hàng đợi cập nhật: **D11-R → 2 điều kiện của #60 → D13 lượt này → D14**.
 - **TRẢ LỜI D8 — 23:50 (đọc kỹ, làm ngay):** Lỗi `web\web\tests` là lỗi HARNESS của chính agent (cwd đã ở `web/` mà còn ghi `web/tests/u3-browser.mjs`), **KHÔNG phải cổng sản phẩm đỏ**. Sửa đường dẫn thành `tests/u3-browser.mjs` (tính từ `web/`) hoặc đường dẫn tuyệt đối, chạy tiếp kiểm tra Playwright + axe cho U3. **Quy tắc phân biệt từ nay:** (a) cổng SẢN PHẨM đỏ (test/build/axe/overflow của repo) → dừng + báo nguyên văn; (b) lỗi THIẾT LẬP/HARNESS do agent tự gây (sai đường dẫn, typo ở script tạm, lệnh gõ sai) → **tự sửa và chạy tiếp**, ghi chú ngắn trong báo cáo. Hoàn tất bằng chứng U3 → commit → mở PR; bổ sung/chỉnh test cho phần inbox đã đổi theo mẫu U2 (tối thiểu giữ toàn bộ test hiện có xanh và ghi rõ độ phủ trong báo cáo).
 - **D9 — LOCAL** (ngay sau D8): Cổng tập trung cho PR **#58** khi máy local rảnh tải: `go test -race -run 'TestP15GlobalBudgetLedger|TestP36GroupFormBeyondExpansionWall' -count=3 ./internal/analysis/` rồi `go test -race ./... -skip '^TestLiveMeta'` đúng 1 lần. Bối cảnh: Chí Nhân đã chẩn đoán — cả 2 fail ở D6 là chữ ký wall-clock (Timeout 2s/stage) dưới -race + tải máy; P36 đã tái hiện được trên Linux khi ép tải CPU (dừng ở wall_clock tại 528k/2M operations); ledger theo mã nguồn là tất định (lắp ráp tuần tự canonical, charge là hàm thuần). Báo nguyên văn vào Mục B; **KHÔNG merge, KHÔNG sửa code**.
 - **D10 — CHẾ ĐỘ ĐÊM (chỉ đạo của chủ sở hữu 23:44):** Ca chạy **XUYÊN ĐÊM tới sáng**; Chí Nhân cũng trực phía Mục A suốt đêm và trả lời theo từng vòng poll. Gặp câu hỏi/điểm chưa rõ → ghi vào Mục B rồi **CHUYỂN NGAY sang chỉ đạo độc lập kế tiếp, KHÔNG dừng ca chờ trả lời**. Chỉ dừng khi Mục A có **STAND-DOWN**, hoặc hết hàng VÀ Chí Nhân xác nhận kết ca tại Mục A.
@@ -511,26 +513,6 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 ---
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
-
-- **#60 CTA — npm test ĐỎ, dừng:** worktree `D:/Quorix/gate-45-20261102`, branch `feat/ui-u3-verdict-inbox` head `d6369af`, thay đổi CTA và xóa evidence staged/chưa commit, chưa push. Lệnh chuẩn bị cập nhật test sai đường dẫn (`web/tests/...` khi cwd đã là web), sau đó npm test đã chạy trên test cũ. Output lỗi chính nguyên văn:
-  ```text
- ❯ tests/p28inbox.test.tsx (5 tests | 2 failed) 530ms
-   ❯ P2-8 verdict inbox panel (5)
-     × shows the empty state when nothing fired and nothing is watched 119ms
-     × adds a watch through the form and removes it from the list 36ms
- FAIL  tests/p28inbox.test.tsx > P2-8 verdict inbox panel > shows the empty state when nothing fired and nothing is watched
-TestingLibraryElementError: Found multiple elements with the text: Add a watched object
- ❯ tests/p28inbox.test.tsx:82:19
- FAIL  tests/p28inbox.test.tsx > P2-8 verdict inbox panel > adds a watch through the form and removes it from the list
-TestingLibraryElementError: Found multiple elements with the text: Add a watched object
- ❯ tests/p28inbox.test.tsx:129:28
- Test Files  1 failed | 21 passed (22)
-      Tests  2 failed | 180 passed (182)
-   Start at  06:13:08
-   Duration  15.28s (environment 70%, tests 16%, import 9%, transform 4%)
-  ```
-  Output đầy đủ có DOM dài trong phiên công cụ, chưa lưu log riêng; không chạy lại để lấy log. Xin chỉ đạo tiếp; không sửa hoặc push sau cổng đỏ.
-
 
 - **D13 thử mirror lần 1 chưa đạt — dừng theo chỉ đạo:** thêm mirror đo từng dòng bằng ResizeObserver/useLayoutEffect, đồng bộ font/bề rộng/wrap; giữ các sửa local U2. Chạy `node tests/u2-scroll-check-temp.mjs`, nguyên văn:
   ```text

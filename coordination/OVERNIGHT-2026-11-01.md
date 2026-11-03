@@ -516,6 +516,44 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#61 đã merge theo FIX-MERGE OK:** merge `b5252fcd4acab34cfd58cdfd18ac60f31eecfd5c`. **D12:** rebase #58 lên main mới, head `ab57872995ca0a4c924b45e68416a9c89e3a94c4`, push force-with-lease, cổng Windows exit 0; gofmt/vet/build không output, test và race PASS (một số package cached), npm test 182/182, build PASS; KHÔNG merge #58. Transcript nguyên văn:
+```text
+**********************
+PowerShell transcript start
+Start time: 20261104062413
+Username: DESKTOP-J8U7DI4\vmcch
+RunAs User: DESKTOP-J8U7DI4\vmcch
+Configuration Name: 
+Machine: DESKTOP-J8U7DI4 (Microsoft Windows NT 10.0.26300.0)
+Host Application: C:\Program Files\WindowsApps\Microsoft.PowerShell_7.6.9.0_x64__8wekyb3d8bbwe\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path 'D:\Quorix\d12-gate-ab57872.log' -Force; $fmt = gofmt -l .; $fmt; if ($fmt) { Stop-Transcript; exit 1 }; go vet ./...; if ($LASTEXITCODE -ne 0) { Stop-Transcript; exit 1 }; go build ./...; if ($LASTEXITCODE -ne 0) { Stop-Transcript; exit 1 }; go test ./... -skip '^TestLiveMeta'; if ($LASTEXITCODE -ne 0) { Stop-Transcript; exit 1 }; go test -race ./... -skip '^TestLiveMeta'; if ($LASTEXITCODE -ne 0) { Stop-Transcript; exit 1 }; Push-Location web; npm ci; if ($LASTEXITCODE -ne 0) { Pop-Location; Stop-Transcript; exit 1 }; npm test; if ($LASTEXITCODE -ne 0) { Pop-Location; Stop-Transcript; exit 1 }; npm run build; $result = $LASTEXITCODE; Pop-Location; Stop-Transcript; exit $result
+Process ID: 21336
+PSVersion: 7.6.9
+PSEdition: Core
+GitCommitId: 7.6.9
+OS: Microsoft Windows 10.0.26300
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is D:\Quorix\d12-gate-ab57872.log
+
+
+
+
+
+
+
+**********************
+PowerShell transcript end
+End time: 20261104062517
+**********************
+
+```
+
+
 - **D13 lượt dist: cổng npm test ĐỎ, dừng**. Build đầu `index-DgLi3Is6.js` PASS; mirror 100 phần tử tổng 13256.25px wrapped / 2209.375px unwrapped, gutterScroll khớp textarea scroll, nhưng gutterClient 458px so với inputClient 340px, max lệch 118px. Sửa bước áp dụng chiều cao gutter bằng input.clientHeight theo D13; build `index-DYmdNd9h.js` PASS. Đo dist: wrapped textMax=gutterMax=13040; các cặp scroll 1304/1304, 6520/6520, 13040/13040, 3912/3912. Unwrapped max=1993, cặp 199/199, 997/997, 1993/1993, 598/598. Chưa có ảnh giữa cuộn. Sau đó `npm test` exit 1, nguyên văn:
   ```text
  ❯ tests/u2-editor.test.tsx (3 tests | 3 failed) 106ms

@@ -1,3 +1,7 @@
+> Visual update 02/11/2026: see [review desk](art-direction.md), [flows](ux-flows.md),
+> and [QA](qa/review-desk.md). The older implementation-status observations below
+> remain historical; current contracts and hooks own behavior.
+
 # Plenilune — từ thay đổi ACL đến quyết định nhận bản sửa
 
 > Snapshot thiết kế trước triển khai; D0–D4 đã được thực hiện sau đó. Trạng thái và kiểm tra hiện hành: [README](../../README.md) / [handoff](../handoff/contributor-runtime.md).
@@ -142,6 +146,14 @@ xác định; thiếu universe không freeze. Schema-valid không chứng minh i
 | Edit draft/chọn candidate khác | Receipt chỉ đúng revision cũ | Abort verify/replay, tăng candidate revision, bỏ current receipt/replay/decision. |
 | Budget/options/parser/engine version | Artifact lịch sử giữ nguyên | New run/new artifact; replay dùng original options/version, không tự migrate. |
 | VI↔EN/mở details/chọn witness | Không đổi validity | Chỉ view, zero engine/AI requests; bytes/hash giữ nguyên. |
+
+P3-4 implementation: quyết định nhận/giữ/từ chối giữ choice và receipt hash để
+giải thích lịch sử, đồng thời chuyển `status` sang `stale` khi invalidation xảy
+ra. Invalidation là sticky: sửa rồi hoàn tác, chọn A→B→A hoặc verify lại trả
+cùng hash không tự khôi phục quyết định. Lỗi/hủy verify cũng không renew. UI và
+Markdown VI/EN hiện cảnh báo; chỉ một quyết định mới tường minh có thể đặt lại
+`current`. Quyền nhận mới vẫn do receipt VERIFIED, binding và disputed guard
+quyết định, không dựa vào lựa chọn stale. Không đổi wire hay hash.
 
 Giữ một last sealed snapshot trong memory để thấy “kết quả phiên P1; đang sửa P2”.
 Stale không có nút nhận cho draft hiện tại; export stale phải mang nhãn nguồn cũ.

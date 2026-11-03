@@ -3,6 +3,7 @@ import type { MessageKey } from '../i18n/messages.en';
 import type { BackendState } from '../hooks/useReview';
 import type { AIResult } from '../lib/types';
 import { Icon } from './Icon';
+import { MoonMark } from './MoonMark';
 
 type BadgeTone = 'neutral' | 'info' | 'warn';
 
@@ -34,20 +35,25 @@ export function TopBar({
   return (
     <header className="topbar">
       <div className="wordmark">
-        <span className="wordmark__mark" aria-hidden="true"><Icon name="moon" size={24} /></span>
+        <span className="wordmark__mark" aria-hidden="true"><MoonMark size={20} /></span>
         <span className="wordmark__text">
           <strong>Plenilune</strong>
           <span>{t('app.tagline')}</span>
         </span>
       </div>
       <div className="topbar__right">
-        <span className={`runtime-indicator runtime-indicator--${backend}`}>
+        <span
+          className={`runtime-indicator runtime-indicator--${backend}`}
+          title={backend === 'online' ? t('runtime.online') : backend === 'offline' ? t('runtime.offline') : t('runtime.checking')}
+        >
           <span className="runtime-indicator__dot" aria-hidden="true" />
-          {backend === 'online' ? t('runtime.online') : backend === 'offline' ? t('runtime.offline') : t('runtime.checking')}
+          <span className="runtime-indicator__text">
+            {backend === 'online' ? t('runtime.online') : backend === 'offline' ? t('runtime.offline') : t('runtime.checking')}
+          </span>
         </span>
         <span className={`ai-indicator ai-indicator--${badge.tone}`} title={t('ai.badge.tooltip')}>
           <Icon name={aiBusy ? 'clock' : 'lock'} size={14} />
-          {aiBusy ? t('common.loading') : t(badge.key)}
+          <span className="ai-indicator__text">{aiBusy ? t('common.loading') : t(badge.key)}</span>
         </span>
         <div className="language-switch" role="group" aria-label={t('lang.group')}>
           <button

@@ -7,18 +7,15 @@ import {
   obligationStatusList,
   outcomeLabel,
   scopeStatusLabel,
-  verdictBody,
-  verdictTitle,
 } from '../lib/labels';
 import { readReviewFile } from '../lib/reviewArtifacts';
-import type { ObligationStatus, Verdict } from '../lib/types';
-import { collectWitnesses } from '../lib/witnesses';
+import type { ObligationStatus } from '../lib/types';
 import { ChatPanel } from './ChatPanel';
 import { ConditionEditorList, ScopeEditor, draftCanAccept } from './ConditionEditor';
 import { ConfigOverview } from './ConfigOverview';
 import { Icon } from './Icon';
 import { ObjectDetail } from './PrefixListDetail';
-import { PartialNotice } from './PartialNotice';
+import { QuickOutcome } from './QuickOutcome';
 import { QuickEvidence } from './QuickEvidence';
 import { RepairStep } from './RepairStep';
 import { SampleBand, SourceEditor } from './SourceInputs';
@@ -29,64 +26,12 @@ import {
   ProvenanceTag,
   SectionHeading,
   StatusMark,
-  StepHeader,
   TechnicalDetails,
-  TermNote,
 } from './Ui';
 import type { Tone } from './Ui';
 
 function outcomeTone(status: ObligationStatus): Tone {
   return status === 'HOLDS' ? 'good' : status === 'VIOLATED' ? 'bad' : 'warn';
-}
-
-// The verdict plate of the quick screen. It prefers the exact comparison
-// when one exists; while obligations are being edited inline (which clears
-// the comparison by design) it falls back to the verdict recorded in the
-// analysis artifact for the opened ACL object, labeled as unchecked against
-// obligations. It never invents a configuration-level verdict: with several
-// objects and none opened, the overview headline below is the summary.
-function QuickVerdictBanner({ review }: { review: Review }) {
-  const { t } = useI18n();
-  const report = review.comparison?.comparison.report ?? null;
-  const object = review.selectedObject;
-  const fromAnalysis = !report && object?.domain === 'acl' ? object.acl ?? null : null;
-  const verdict: Verdict | null = report?.verdict ?? fromAnalysis?.verdict ?? null;
-  if (!verdict) return null;
-  const tone: Tone = verdict === 'DIFFERENT' ? 'bad' : verdict === 'EQUIVALENT' ? 'neutral' : 'warn';
-  const reason = report ? report.reason : fromAnalysis?.budget.stop_reason;
-  const witnessCount = report
-    ? collectWitnesses(t, report).length
-    : fromAnalysis?.witnesses.length ?? 0;
-  const searchComplete = report ? report.search_complete : fromAnalysis?.search_complete;
-  const partial = report?.partial ?? fromAnalysis?.partial ?? null;
-  return (
-    <>
-      <section className={`card verdict-plate verdict-plate--${verdict.toLowerCase()}`} aria-labelledby="quick-verdict-title">
-        <div className="verdict-plate__head">
-          <ProvenanceTag tone={tone === 'bad' ? 'info' : tone} icon="shield">{t('result.runtime')}</ProvenanceTag>
-          <code className="badge">{verdict}</code>
-          {partial && <span className="field-label">{t('partial.badge')}</span>}
-          {report?.witnesses_truncated && <span className="field-label">{t('result.truncated')}</span>}
-        </div>
-        <h2 id="quick-verdict-title">{verdictTitle(t, verdict)}</h2>
-        <p>{verdictBody(t, verdict, reason)}</p>
-        <div className="verdict-plate__facts">
-          {report ? (
-            <span>{review.accepted ? obligationStatusList(t, report.obligations) : t('result.noPolicy')}</span>
-          ) : (
-            <span>{t('quick.unevaluated')}</span>
-          )}
-          <span>{t('result.witnessCount', { count: witnessCount })}</span>
-          {searchComplete !== undefined && (
-            <span>{t('result.searchComplete')}: {searchComplete ? t('result.yes') : t('result.no')}</span>
-          )}
-        </div>
-        <p className="verdict-plate__limits">{t('quick.scopeNote')}</p>
-      </section>
-      {partial && <PartialNotice partial={partial} />}
-      {verdict === 'INCONCLUSIVE' && <TermNote>{t('result.noWitness.inconclusive')}</TermNote>}
-    </>
-  );
 }
 
 // Obligations live on the verdict screen: the same draft editor as the deep
@@ -221,6 +166,16 @@ export function QuickScreen({ review }: { review: Review }) {
   const attemptedRef = useRef<string | null>(null);
   const exploreRef = useRef(review.exploreSource);
   exploreRef.current = review.exploreSource;
+  const toolsRef = useRef<HTMLDetailsElement>(null);
+  const sourceRef = useRef<HTMLDetailsElement>(null);
+  const policyRef = useRef<HTMLDetailsElement>(null);
+  function reveal(ref: { current: HTMLDetailsElement | null }) {
+    if (!ref.current) return;
+    if (toolsRef.current) toolsRef.current.open = true;
+    ref.current.open = true;
+    ref.current.querySelector('summary')?.focus();
+    ref.current.scrollIntoView?.({ block: 'start' });
+  }
   const [dragOver, setDragOver] = useState(false);
   const [dropError, setDropError] = useState(false);
 
@@ -229,7 +184,15 @@ export function QuickScreen({ review }: { review: Review }) {
   // A short debounce keeps typing in an editor from re-analyzing per
   // keystroke; each attempted input pair is recorded so a cancel or an
   // error never loops — the manual button below is the retry path.
+  // Switching samples is an explicit request even when the configuration
+  // text is identical (a budget scenario reuses the same ACLs), so a sample
+  // change always grants one fresh auto-run attempt (audit F11).
+  const sampleIdRef = useRef(review.sampleId);
   useEffect(() => {
+    if (sampleIdRef.current !== review.sampleId) {
+      sampleIdRef.current = review.sampleId;
+      attemptedRef.current = null;
+    }
     if (!bothPresent || review.analysis || review.busy || review.error) return;
     if (attemptedRef.current === signature) return;
     const timer = setTimeout(() => {
@@ -237,7 +200,7 @@ export function QuickScreen({ review }: { review: Review }) {
       void exploreRef.current();
     }, 400);
     return () => clearTimeout(timer);
-  }, [bothPresent, signature, review.analysis, review.busy, review.error]);
+  }, [bothPresent, signature, review.analysis, review.busy, review.error, review.sampleId]);
 
   function runNow() {
     attemptedRef.current = signature;
@@ -278,11 +241,23 @@ export function QuickScreen({ review }: { review: Review }) {
 
   return (
     <div className="step quick-screen">
-      <StepHeader kicker={t('quick.kicker')} title={t('quick.title')} lede={t('quick.lede')}>
+      <header className="quick-header">
+        <h1 id="step-heading" tabIndex={-1}>{t('quick.title')}</h1>
         {review.pristine && <ProvenanceTag icon="file">{t('source.sample.pristine')}</ProvenanceTag>}
         {review.sample && !review.pristine && <ProvenanceTag icon="file">{t('source.sample.modified')}</ProvenanceTag>}
-      </StepHeader>
+      </header>
 
+      <QuickOutcome review={review} onPolicy={() => reveal(policyRef)} onSource={() => reveal(sourceRef)} />
+      <details className="review-disclosure quick-tools" ref={toolsRef} open={!review.analysis || !review.selectedObject || !review.selectedObject.acl || review.analysis.result.summary.objects > 1 || review.analysis.result.summary.unsupported > 0}>
+        <summary>{t('quick.tools')}</summary>
+      {review.analysis && (
+        <details className="review-disclosure quick-overview" open={review.analysis.result.summary.objects !== 1 || review.analysis.result.summary.unsupported > 0 || !review.selectedObject || (!review.comparison && !review.selectedObject.acl)}>
+          <summary>{t('quick.objects')}</summary>
+          <ConfigOverview review={review} />
+        </details>
+      )}
+      <details className="review-disclosure quick-sources" ref={sourceRef} open={!review.analysis}>
+        <summary>{t('quick.sources')}</summary>
       <div
         className={`quick-dropzone ${dragOver ? 'quick-dropzone--over' : ''}`}
         onDragOver={(event) => { event.preventDefault(); if (!busy) setDragOver(true); }}
@@ -312,6 +287,8 @@ export function QuickScreen({ review }: { review: Review }) {
         {dropError && <p className="field-error" role="alert">{t('source.importError')}</p>}
       </div>
 
+      </details>
+
       {review.busy === 'parse' && !review.analysis && (
         <BusyPanel label={t('source.busy')} onCancel={review.cancel} />
       )}
@@ -330,12 +307,13 @@ export function QuickScreen({ review }: { review: Review }) {
         </div>
       )}
 
-      <QuickVerdictBanner review={review} />
-      {review.analysis && <ConfigOverview review={review} />}
       {!review.comparison && review.selectedObject && (
         <ObjectDetail object={review.selectedObject} />
       )}
-      <QuickObligations review={review} />
+      <details className="review-disclosure quick-policy" ref={policyRef}>
+        <summary>{t('quick.obligations.title')}</summary>
+        <QuickObligations review={review} />
+      </details>
       {showRepair && (
         <section className="quick-repair" aria-labelledby="quick-repair-title">
           <SectionHeading id="quick-repair-title" title={t('quick.repair.title')} />
@@ -343,7 +321,11 @@ export function QuickScreen({ review }: { review: Review }) {
         </section>
       )}
       <QuickEvidence review={review} />
-      <ChatPanel comparison={review.comparison?.comparison ?? null} analysis={review.analysis?.result ?? null} />
+      {review.analysis && <details className="review-disclosure quick-questions">
+        <summary>{t('chat.title')}</summary>
+        <ChatPanel comparison={review.comparison?.comparison ?? null} analysis={review.analysis?.result ?? null} />
+      </details>}
+      </details>
     </div>
   );
 }

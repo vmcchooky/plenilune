@@ -17,10 +17,12 @@ export function App() {
   const review = useReview();
   // The quick verdict screen is the default entry; the five-stage flow
   // remains fully available as deep review mode over the same review state.
+  const [unread, setUnread] = useState(0);
   const [mode, setMode] = useState<'quick' | 'deep'>('quick');
   const parsed = review.parsed?.parsed ?? null;
   const aiBusy = review.busy === 'aiProposal' || review.busy === 'aiRepair';
   const initialStage = useRef(true);
+  const inboxRef = useRef<HTMLDetailsElement>(null);
 
   useEffect(() => {
     if (initialStage.current) {
@@ -32,11 +34,26 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [review.stage, mode]);
 
+  const watchDrawer = (
+    <details className="watch-drawer" ref={inboxRef} key="watch-drawer">
+      <summary>{t('inbox.title')}{unread > 0 && <span className="badge badge--warn watch-drawer__count">{t('inbox.unread', { count: unread })}</span>}</summary>
+      <InboxPanel onUnreadChange={setUnread} refreshKey={review.comparison?.comparison.sha256 ?? review.analysis?.result.sha256 ?? null} />
+    </details>
+  );
+
   return (
     <div className="app">
       <a className="skip-link" href="#main">{t('app.skip')}</a>
       <TopBar backend={review.backend} lastAi={review.lastAi} aiBusy={aiBusy} />
-      <div className="mode-bar">
+      <div className={`mode-bar ${mode === 'quick' ? 'mode-bar--quick' : ''}`} role="region" aria-label={t('quick.workspace')}>
+        <p className="workspace-label">{t('quick.workspace')}</p>
+        <div className="workspace-actions">
+          {unread > 0 && <div role="status"><button type="button" className="button button--quiet" onClick={() => {
+            if (!inboxRef.current) return;
+            inboxRef.current.open = true;
+            inboxRef.current.querySelector('summary')?.focus();
+            inboxRef.current.scrollIntoView?.({ block: 'start' });
+          }}>{t('inbox.unread', { count: unread })}</button></div>}
         <div className="mode-switch" role="group" aria-label={t('quick.modeLabel')}>
           <button
             type="button"
@@ -55,6 +72,7 @@ export function App() {
             {t('quick.mode.deep')}
           </button>
         </div>
+        </div>
       </div>
       <div className={`workspace ${mode === 'quick' ? 'workspace--quick' : ''}`}>
         {mode === 'deep' && <StepRail
@@ -69,14 +87,15 @@ export function App() {
           busy={review.busy !== null}
           onNavigate={review.navigate}
         />}
-        <main className="main" id="main">
+        <main className="main" id="main" tabIndex={-1}>
+          {review.decision?.status === 'stale' && <p className="banner banner--warn" role="status">{t('decision.stale')}</p>}
           {review.error && (
-            <InlineError error={review.error} onDismiss={review.clearError} />
+            <InlineError error={review.error} onRetry={review.retryCompare} onDismiss={review.clearError} />
           )}
-          {/* Tier 0 of the fast flow (P2-8): fired triggers surface
-              above both modes; the key changes with each completed
-              artifact so a just-finished run refreshes the inbox. */}
-          <InboxPanel refreshKey={review.comparison?.comparison.sha256 ?? review.analysis?.result.sha256 ?? null} />
+          {/* Keep the drawer mounted as unread changes: moving it between
+              parents erased the watch draft and focus. The explicit unread
+              action above surfaces new notifications without reordering work. */}
+          {mode === 'deep' && watchDrawer}
           {mode === 'quick' ? (
             <QuickScreen review={review} />
           ) : (
@@ -88,6 +107,7 @@ export function App() {
               {review.stage === 'evidence' && <EvidenceStep review={review} />}
             </>
           )}
+          {mode === 'quick' && watchDrawer}
         </main>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { useI18n } from '../i18n';
 import type { Review } from '../hooks/useReview';
 import { actionLabel, sourceLine } from '../lib/conditions';
 import { stopReasonLabel } from '../lib/labels';
+import { originalSourceLine } from '../lib/sourceMapping';
 import type { BoxText, ChangeClass, DecidingRule, Packet } from '../lib/types';
 import { PartialNotice } from './PartialNotice';
 import { BusyPanel, SectionHeading, StatusMark, TechnicalDetails } from './Ui';
@@ -24,11 +25,11 @@ function boxText(b: BoxText, any: string): string {
   return `${b.protocol} ${src} → ${dst}${ports}`;
 }
 
-function RuleLine({ rule, source, firstLine }: { rule: DecidingRule; source: string; firstLine: number }) {
+function RuleLine({ rule, source, firstLine, sourceLines }: { rule: DecidingRule; source: string; firstLine: number; sourceLines?: number[] }) {
   const { t } = useI18n();
   if (rule.implicit) return <span>{actionLabel(t, 'deny')} · {t('changes.implicit')}</span>;
   const text = sourceLine(source, rule.line)?.trim();
-  const configLine = (rule.line ?? 0) + firstLine - 1;
+  const configLine = originalSourceLine(rule.line, sourceLines, firstLine) ?? '—';
   return (
     <span>
       {actionLabel(t, rule.action)} · {t('changes.rule', { line: configLine })}
@@ -41,7 +42,8 @@ function ClassRow({ c, review, onProbe }: { c: ChangeClass; review: Review; onPr
   const { t } = useI18n();
   const source = review.accepted ?? review.parsed;
   if (!source) return null;
-  const first = review.parsed?.firstLine ?? { before: 1, after: 1 };
+  const first = source.firstLine ?? review.parsed?.firstLine ?? { before: 1, after: 1 };
+  const mapped = source.sourceLines ?? review.parsed?.sourceLines;
   return (
     <li className={`card change-class change-class--${c.effect}`}>
       <div className="change-class__head">
@@ -50,8 +52,8 @@ function ClassRow({ c, review, onProbe }: { c: ChangeClass; review: Review; onPr
         {c.scope !== 'undeclared' && <StatusMark tone={c.scope === 'inside_allowed' ? 'good' : 'bad'} label={t(`changes.scope.${c.scope}`)} />}
       </div>
       <dl className="change-class__rules">
-        <div><dt>{t('changes.before')}</dt><dd><RuleLine rule={c.before} source={source.before} firstLine={first.before} /></dd></div>
-        <div><dt>{t('changes.after')}</dt><dd><RuleLine rule={c.after} source={source.after} firstLine={first.after} /></dd></div>
+        <div><dt>{t('changes.before')}</dt><dd><RuleLine rule={c.before} source={source.before} firstLine={first.before} sourceLines={mapped?.before} /></dd></div>
+        <div><dt>{t('changes.after')}</dt><dd><RuleLine rule={c.after} source={source.after} firstLine={first.after} sourceLines={mapped?.after} /></dd></div>
         <div><dt>{t('changes.example')}</dt><dd><code>{packetText(c.witness.packet)}</code>
           <button type="button" className="button button--quiet button--small" onClick={() => onProbe(c.witness.packet)}>{t('changes.probe')}</button></dd></div>
         {c.outside_witness && <div><dt>{t('changes.outside')}</dt><dd><code>{packetText(c.outside_witness.packet)}</code></dd></div>}
@@ -136,7 +138,8 @@ export function PacketProbe({ review, seed, requested = 0 }: { review: Review; s
   }, [requested]);
   const source = review.accepted ?? review.parsed;
   if (!source) return null;
-  const first = review.parsed?.firstLine ?? { before: 1, after: 1 };
+  const first = source.firstLine ?? review.parsed?.firstLine ?? { before: 1, after: 1 };
+  const mapped = source.sourceLines ?? review.parsed?.sourceLines;
   const result = review.probeResult;
 
   function run() {
@@ -151,10 +154,10 @@ export function PacketProbe({ review, seed, requested = 0 }: { review: Review; s
     if (ok) void review.probe({ protocol, src_ip: form.src.trim(), dst_ip: form.dst.trim(), src_port: sport, dst_port: dport });
   }
 
-  const row = (label: string, d: NonNullable<typeof result>['before'], text: string, firstLine: number) => (
+  const row = (label: string, d: NonNullable<typeof result>['before'], text: string, firstLine: number, lines?: number[]) => (
     <div><dt>{label}</dt><dd>
       <StatusMark tone={d.action === 'permit' ? 'good' : 'bad'} label={actionLabel(t, d.action)} />
-      {d.implicit ? <span> · {t('changes.implicit')}</span> : <span> · {t('changes.rule', { line: (d.line ?? 0) + firstLine - 1 })} — <code>{sourceLine(text, d.line)?.trim()}</code></span>}
+      {d.implicit ? <span> · {t('changes.implicit')}</span> : <span> · {t('changes.rule', { line: originalSourceLine(d.line, lines, firstLine) ?? '—' })} — <code>{sourceLine(text, d.line)?.trim()}</code></span>}
     </dd></div>
   );
 
@@ -177,8 +180,8 @@ export function PacketProbe({ review, seed, requested = 0 }: { review: Review; s
       {result && (
         <dl className="probe-result" aria-live="polite">
           <div><dt>{t('changes.example')}</dt><dd><code>{packetText(result.packet)}</code></dd></div>
-          {row(t('changes.before'), result.before, source.before, first.before)}
-          {row(t('changes.after'), result.after, source.after, first.after)}
+          {row(t('changes.before'), result.before, source.before, first.before, mapped?.before)}
+          {row(t('changes.after'), result.after, source.after, first.after, mapped?.after)}
           {result.candidate && review.repair?.receipt.candidate && row(t('probe.candidate'), result.candidate, review.repair.receipt.candidate, 1)}
         </dl>
       )}

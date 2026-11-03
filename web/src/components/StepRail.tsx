@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../i18n';
 import type { Analysis, ObjectSelection, ParseResult, Stage } from '../lib/types';
 import { shortHash } from '../lib/format';
+import { Icon } from './Icon';
 
 interface RailProps {
   stage: Stage;
@@ -20,6 +21,13 @@ export function StepRail(props: RailProps) {
   const { t } = useI18n();
   const navRef = useRef<HTMLElement>(null);
   const activeRef = useRef<HTMLButtonElement>(null);
+  const [cues, setCues] = useState({ left: false, right: false });
+  const syncCues = () => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const max = nav.scrollWidth - nav.clientWidth;
+    setCues({ left: max > 0 && nav.scrollLeft > 4, right: max > 0 && nav.scrollLeft < max - 4 });
+  };
 
   useEffect(() => {
     const nav = navRef.current;
@@ -34,7 +42,8 @@ export function StepRail(props: RailProps) {
       nav.scrollTo({ left: Math.max(0, left), behavior: 'auto' });
     };
     reveal();
-    const observer = new ResizeObserver(reveal);
+    syncCues();
+    const observer = new ResizeObserver(() => { reveal(); syncCues(); });
     observer.observe(nav);
     return () => observer.disconnect();
   }, [props.stage]);
@@ -54,7 +63,9 @@ export function StepRail(props: RailProps) {
   const ticketHash = selectedObject?.after?.sha256 ?? selectedObject?.before?.sha256 ?? props.analysis?.sha256 ?? '';
 
   return (
-    <nav className="step-rail" aria-label={t('nav.aria')} ref={navRef}>
+    <nav className="step-rail" aria-label={t('nav.aria')} ref={navRef} onScroll={syncCues}>
+      {cues.left && <span className="step-rail__cue step-rail__cue--left" aria-hidden="true"><Icon name="chevron" size={14} /></span>}
+      {cues.right && <span className="step-rail__cue step-rail__cue--right" aria-hidden="true"><Icon name="chevron" size={14} /></span>}
       <div className="ticket">
         <p className="ticket__label">{t('nav.ticket')}</p>
         {acl ? (

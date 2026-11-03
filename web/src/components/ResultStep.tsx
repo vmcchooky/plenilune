@@ -3,9 +3,10 @@ import { useI18n } from '../i18n';
 import type { Review } from '../hooks/useReview';
 import { actionLabel, kindLabel, obligationSentence, sourceLine, sourceLines } from '../lib/conditions';
 import { changedLines } from '../lib/lineDiff';
+import { originalSourceLine } from '../lib/sourceMapping';
 import { downloadText } from '../lib/download';
 import { fileStamp, prettyJson, shortHash } from '../lib/format';
-import { obligationStatusList, outcomeLabel, decisionRefLabel, resultNextKey, stopReasonLabel, verdictBody, verdictTitle } from '../lib/labels';
+import { obligationStatusList, outcomeLabel, decisionRefLabel, resultNextKey, stopReasonLabel, verdictBody, verdictTitle, verdictBadge } from '../lib/labels';
 import type { ObligationResult, Packet } from '../lib/types';
 import { collectWitnesses } from '../lib/witnesses';
 import { ChangeClasses } from './ChangeClasses';
@@ -69,7 +70,8 @@ export function ResultStep({ review }: { review: Review }) {
   const source = accepted ?? review.parsed;
   if (!snapshot || !source) return review.analysis ? <AnalysisOnly review={review} /> : null;
   const showOverview = Boolean(review.analysis && (review.analysis.result.objects.length > 1 || review.analysis.result.summary.unanalyzed_changes > 0));
-  const firstLine = review.parsed?.firstLine ?? { before: 1, after: 1 };
+  const firstLine = source.firstLine ?? review.parsed?.firstLine ?? { before: 1, after: 1 };
+  const sourceLineMap = source.sourceLines ?? review.parsed?.sourceLines;
   const acceptedConditions = accepted?.conditions;
   const comparison = snapshot.comparison;
   const report = comparison.report;
@@ -102,8 +104,8 @@ export function ResultStep({ review }: { review: Review }) {
   const primaryIsEvidence = !review.canRepair && !canRetryDefault && !inconclusive;
   const why = changedPacket && changedPacket.before.action !== changedPacket.after.action
     ? t('result.why', {
-      after: decisionRefLabel(t, changedPacket.after, sourceLine(source.after, changedPacket.after.line)),
-      before: decisionRefLabel(t, changedPacket.before, sourceLine(source.before, changedPacket.before.line)),
+      after: decisionRefLabel(t, { ...changedPacket.after, line: originalSourceLine(changedPacket.after.line, sourceLineMap?.after, firstLine.after) }, sourceLine(source.after, changedPacket.after.line)),
+      before: decisionRefLabel(t, { ...changedPacket.before, line: originalSourceLine(changedPacket.before.line, sourceLineMap?.before, firstLine.before) }, sourceLine(source.before, changedPacket.before.line)),
     })
     : null;
   const nextKey = resultNextKey({
@@ -132,7 +134,7 @@ export function ResultStep({ review }: { review: Review }) {
       <section className={`card verdict-plate verdict-plate--${report.verdict.toLowerCase()}`} aria-labelledby="verdict-title">
         <div className="verdict-plate__head">
           <ProvenanceTag tone={verdictTone === 'bad' ? 'info' : verdictTone} icon="shield">{t('result.runtime')}</ProvenanceTag>
-          <code className="badge">{report.verdict}</code>
+          <code className={`badge badge--${verdictTone}`}>{verdictBadge(t, report.verdict)}</code>
           {report.partial && <span className="field-label">{t('partial.badge')}</span>}
           {report.witnesses_truncated && <span className="field-label">{t('result.truncated')}</span>}
         </div>
@@ -232,6 +234,8 @@ export function ResultStep({ review }: { review: Review }) {
                 after={source.after}
                 changedBefore={changed.before}
                 changedAfter={changed.after}
+                sourceLineMap={sourceLineMap}
+                firstLine={firstLine}
               />
             </div>
           </div>

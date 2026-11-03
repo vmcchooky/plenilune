@@ -1,31 +1,28 @@
-/*
- * Plenilune design tokens — "Pastel Flow / Neo 1+" (owner-locked, slice 1).
- * See web/DESIGN.md for the system and the mapping rules.
- *
- * Single color backbone: one anchor gradient. Every surface tint below is
- * sampled from it; semantic verdict colors keep their established meaning.
- *   linear-gradient(135deg, #E8F5FD 0%, #F2ECF5 50%, #FCEBE1 100%)
- * The 50% stop #F2ECF5 is a HAND-TUNED midpoint, chosen by eye — it is NOT
- * the linear RGB interpolation of the two ends (that would be #F2F0EF).
- * The quarter stops #EDF3F6 (25%) and #F7EEE8 (75%) ARE true linear stops.
- */
+/* Cream review desk: light by default, independent of OS appearance.
+   Canonical tokens; design-system/tokens.css forwards here. */
 :root {
-  color-scheme: light;
-  --font-display: "Iowan Old Style", "Palatino Linotype", Cambria, Georgia, serif;
-  --font-ui: "Aptos", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
-  --font-mono: "Cascadia Code", "Cascadia Mono", Consolas, "Courier New", monospace;
-
-  /* Type scale — 6 steps only: 12 / 13 / 14 / 16 / 20 / 28 px.
-     --text-md and --text-display are legacy names kept for compatibility;
-     they resolve to scale steps (16 and 28). */
+  color-scheme: only light;
+  --font-ui: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-ui);
+  --font-mono: "Cascadia Code", Consolas, monospace;
+  /* Type scale: 12 / 13 / 14 / 16 / 20 / 24 / 32 px. */
   --text-xs: 0.75rem;    /* 12 */
   --text-sm: 0.8125rem;  /* 13 */
   --text-body: 0.875rem; /* 14 */
   --text-base: 1rem;     /* 16 */
   --text-md: 1rem;       /* 16 (legacy alias of the base step) */
   --text-lg: 1.25rem;    /* 20 */
-  --text-xl: 1.75rem;    /* 28 */
-  --text-display: 1.75rem; /* 28 (legacy alias of the xl step) */
+  --text-xl: 1.5rem;    /* 24 */
+  --text-display: 2rem; /* 32 */
+  --track-display: -0.022em;
+  --track-tight: -0.01em;
+  --leading-display: 1.2;
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --chip-pad-block: 0.125rem;
+  --chip-pad-inline: var(--space-2);
+  --chip-line-height: 1.4;
+  --chip-weight: 500;
 
   /* Spacing — 4/8 grid only: 4 / 8 / 12 / 16 / 24 / 32 / 48 px.
      --space-5, --space-10 and --space-16 are legacy names kept for
@@ -41,115 +38,57 @@
   --space-12: 3rem;    /* 48 */
   --space-16: 3rem;    /* 48 (legacy; was 64, nearest grid step) */
 
-  /* Anchor gradient family — the single color backbone. */
-  --anchor-cool: #E8F5FD;
-  --anchor-q1: #EDF3F6; /* true linear 25% stop */
-  --anchor-mid: #F2ECF5; /* hand-tuned 50% stop (not the linear #F2F0EF) */
-  --anchor-q3: #F7EEE8; /* true linear 75% stop */
-  --anchor-warm: #FCEBE1;
-  --wash: linear-gradient(135deg, #E8F5FD 0%, #F2ECF5 50%, #FCEBE1 100%);
 
-  /* Surfaces — tints sampled from the anchor; cards stay white. */
-  --bg: #EDF3F6;
-  --bg-deep: #E8F5FD;
-  --surface: #ffffff;
-  --surface-2: #F7EEE8;
-  --surface-3: #F2ECF5;
-  --code-bg: #F7EEE8;
-
-  /* Neutrals — slate derived by darkening the anchor's cool family.
-     Text values keep at least the contrast of the palette they replace. */
-  --ink: #1b2732;
-  --ink-2: #3a4653;
-  --muted: #54626e;
-  --faint: #6c7885;
-  --code-ink: #26313b;
-  --line: #d9d2de;
-  --line-strong: #9aa5b1;
-
-  /* Accent — deepened from the anchor's cool end (#E8F5FD → #2E6484). */
-  --accent: #2e6484;
-  --accent-strong: #245269;
-  --accent-soft: #E8F5FD;
-
-  /* Semantic colors — unchanged meaning (verdicts, obligations, states). */
-  --rust: #9c4a32;
-  --rust-soft: #f3e1d9;
-  --good: #216044;
-  --good-soft: #e0eee5;
-  --warn: #765310;
-  --warn-soft: #f4e9cf;
-  --bad: #963c2b;
-  --bad-soft: #f5e0d9;
-  --focus: #1c5a9c;
-  --stamp: #765f38;
-
-  --overlay: rgb(27 39 50 / 5%);
-  --overlay-strong: rgb(27 39 50 / 9%);
-
-  /* Elevation — two soft shadows. --shadow is the legacy name for level 2. */
-  --shadow-1: 0 6px 18px rgb(27 39 50 / 7%);
-  --shadow-2: 0 22px 52px rgb(27 39 50 / 10%);
-  --shadow: 0 22px 52px rgb(27 39 50 / 10%);
-
+  --bg: #f5f1e8;
+  --bg-deep: #e9e2d4;
+  --surface: #fffdf8;
+  --surface-2: #eee8dc;
+  --surface-3: #e4dccb;
+  --code-bg: #f8f4ec;
+  --code-ink: #454137;
+  --ink: #302e28;
+  --ink-2: #504c43;
+  --muted: #625c50;
+  --faint: #6b6559;
+  --line: #dfd7c8;
+  --line-strong: #b5aa95;
+  --accent: #526247;
+  --accent-strong: #414e38;
+  --accent-soft: #e7ebdf;
+  --rust: #8b5145;
+  --rust-soft: #f3e5de;
+  --good: #526247;
+  --good-soft: #e7ebdf;
+  --warn: #77603a;
+  --warn-soft: #f0e6d1;
+  --bad: #8b5145;
+  --bad-soft: #f3e5de;
+  --focus: #526247;
+  --stamp: #77603a;
+  --wash: none;
+  --overlay: rgb(48 46 40 / 4%);
+  --overlay-strong: rgb(48 46 40 / 7%);
+  --shadow-1: none;
+  --shadow-2: none;
+  --shadow: none;
   --border-thin: 1px;
   --border-thick: 2px;
-
-  /* Radius — 8 / 12 / 16 px + pill. --radius-sm/--radius-md keep their
-     names; their values move onto the new scale. */
   --radius-none: 0;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
   --radius-pill: 999px;
-
-  /* Motion — tokens defined in slice 1; component application is slice 2. */
   --ease: cubic-bezier(0.2, 0, 0, 1);
-  --dur-1: 160ms;
-  --dur-2: 240ms;
-
-  --max-main: 1080px;
+  --dur-1: 120ms;
+  --dur-2: 120ms;
+  --max-main: 1184px;
+  --editor-height: 208px;
+  --text-hero: 2rem;
+  --study-record-width: 58rem;
+  --study-aside-width: 20rem;
+  --study-queue-width: 16rem;
+  --study-aside-narrow: 12rem;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    /* The pastel wash is a light-scheme surface; dark stays flat. */
-    --wash: none;
-    --bg: #0f1513;
-    --bg-deep: #0b100e;
-    --surface: #18211d;
-    --surface-2: #1d2923;
-    --surface-3: #26332c;
-    --ink: #ece6d8;
-    --ink-2: #c9c9bc;
-    --muted: #a6b0a7;
-    --faint: #89958c;
-    --line: #33423a;
-    --line-strong: #586b5f;
-    --accent: #d8bb78;
-    --accent-strong: #e8ce92;
-    --accent-soft: #2c3324;
-    --rust: #e0a07f;
-    --rust-soft: #3a251e;
-    --good: #93cba8;
-    --good-soft: #1c3527;
-    --warn: #e4c077;
-    --warn-soft: #3a2f1b;
-    --bad: #eda28f;
-    --bad-soft: #3d251f;
-    --focus: #9cc2ff;
-    --code-bg: #0c1210;
-    --code-ink: #e3ddcf;
-    --stamp: #d8bb78;
-    --overlay: rgb(236 230 216 / 5%);
-    --overlay-strong: rgb(236 230 216 / 9%);
-    --shadow-1: 0 6px 18px rgb(0 0 0 / 28%);
-    --shadow-2: 0 22px 52px rgb(0 0 0 / 32%);
-    --shadow: 0 22px 52px rgb(0 0 0 / 32%);
-  }
-}
-
 /* Reduced motion — neutralizes transitions and animations globally. */
 @media (prefers-reduced-motion: reduce) {
   *,

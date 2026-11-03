@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useI18n } from '../i18n';
 import type { Review } from '../hooks/useReview';
 import { actionLabel, kindLabel, sourceLine, sourceLines } from '../lib/conditions';
+import { originalSourceLine } from '../lib/sourceMapping';
 import { downloadText } from '../lib/download';
 import { fileStamp, prettyJson, shortHash } from '../lib/format';
 import {
@@ -93,6 +94,8 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
   if (!accepted || !comparison) return null;
   const busy = review.busy !== null;
   const rules = accepted.parsed.after.acl.rules;
+  const sourceLineMap = accepted.sourceLines ?? review.parsed?.sourceLines;
+  const firstLine = accepted.firstLine ?? review.parsed?.firstLine ?? { before: 1, after: 1 };
   const ai = aiSession?.session.ai ?? null;
   const aiRepairs = aiSession?.session.repairs ?? [];
   const manualEdits = new Set(review.edits.map((edit) => edit.edit.ref?.line).filter((line): line is number => line !== undefined));
@@ -147,7 +150,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
   }
 
   function editLabel(edit: { op: string; ref?: { line: number }; content?: string }): string {
-    const line = edit.ref?.line ?? 0;
+    const line = originalSourceLine(edit.ref?.line, sourceLineMap?.after, firstLine.after) ?? '—';
     switch (edit.op) {
       case 'remove': return t('repair.manual.edit.remove', { line });
       case 'replace': return t('repair.manual.edit.replace', { line });
@@ -280,7 +283,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
               return (
                 <div className={`rule-builder__row ${inDraft ? 'rule-builder__row--in-draft' : ''}`} key={`${rule.ordinal}-${rule.line}`}>
                   <div className="rule-builder__line">
-                    <span className="source-pane__number">{rule.line}</span>
+                    <span className="source-pane__number">{originalSourceLine(rule.line, sourceLineMap?.after, firstLine.after) ?? '—'}</span>
                     <span className="rule-builder__action">
                       <code>{rule.action}</code>
                       <span>{actionLabel(t, rule.action)}</span>
@@ -441,6 +444,8 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
                 after={receipt.receipt.candidate ?? accepted.after}
                 changedBefore={collateralChanged.before}
                 changedAfter={collateralChanged.after}
+                sourceLineMap={{ before: sourceLineMap?.before }}
+                firstLine={{ before: firstLine.before }}
               />
             </div>
           )}
@@ -522,7 +527,7 @@ export function RepairStep({ review, embedded = false }: { review: Review; embed
           <p className="field-hint">{t('decision.afterReceipt')}</p>
           {review.disputed && <p className="banner banner--warn" role="alert">{t('decision.disputed')}</p>}
           {review.decision
-            ? <p role="status">{t(`decision.${review.decision.choice}`)}</p>
+            ? <p role="status">{t(review.decision.status === 'stale' ? 'decision.stale' : `decision.${review.decision.choice}`)}</p>
             : !review.canReceive && !review.disputed && <p className="banner banner--neutral">{t('decision.blocked')}</p>}
           <div className="raw-actions">
             <button type="button" className="button button--primary" disabled={busy || !review.canReceive} onClick={() => review.decideRepair('received')}>{t('decision.receive')}</button>

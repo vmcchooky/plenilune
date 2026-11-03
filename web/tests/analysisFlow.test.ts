@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError, runtime } from '../src/lib/api';
 import type { Artifact } from '../src/lib/api';
 import { useReview } from '../src/hooks/useReview';
-import { parsedResult, scenario, standaloneAnalysis } from './fixtures';
+import { comparison, parsedResult, scenario, standaloneAnalysis } from './fixtures';
 import type { Analysis, AnalysisObject, ReplayResult, TraceResult } from '../src/lib/types';
 
 vi.mock('../src/lib/api', async (importOriginal) => {
@@ -93,6 +93,31 @@ describe('configuration review flow', () => {
     await act(async () => { await result.current.exploreSource(); });
     expect(result.current.error?.code).toBe('SOURCE_SLICE_MISMATCH');
     expect(result.current.comparison).toBeNull();
+  });
+
+  it('opens a discontiguous numbered standard ACL on exact CRLF bytes with original line maps', async () => {
+    const before = 'access-list 42 deny any\r\naccess-list 42 permit host 192.0.2.7\r\n';
+    const after = 'access-list 42 deny any\r\naccess-list 42 permit host 192.0.2.8\r\n';
+    const full = (text: string) => `! café\r\n${text.split('\r\n')[0]}\r\nip prefix-list OTHER permit 203.0.113.0/24\r\n${text.split('\r\n')[1]}\r\n`;
+    const analysis = await standaloneAnalysis(before, after);
+    const object = analysis.objects[0];
+    object.name = '42'; object.kind = 'standard';
+    for (const side of ['before', 'after'] as const) {
+      object[side]!.lines = [[2, 2], [4, 4]];
+      delete object[side]!.byte_start; delete object[side]!.byte_end;
+    }
+    vi.mocked(runtime.analyze).mockResolvedValueOnce(artifact(analysis));
+    vi.mocked(runtime.compare).mockResolvedValueOnce(artifact(comparison));
+    const { result } = renderHook(() => useReview());
+    await act(async () => {});
+    act(() => { result.current.updateSource('before', full(before)); result.current.updateSource('after', full(after)); });
+    await act(async () => { await result.current.exploreSource(); });
+    expect(result.current.error).toBeNull();
+    expect(runtime.parse).toHaveBeenCalledWith(before, after, expect.any(AbortSignal));
+    expect(runtime.compare).toHaveBeenCalledWith(before, after, null, undefined, expect.any(AbortSignal));
+    expect(result.current.parsed?.sourceLines).toEqual({ before: [2, 4], after: [2, 4] });
+    expect(result.current.selection).toEqual({ domain: 'acl', name: '42' });
+    expect(runtime.agentSession).not.toHaveBeenCalled();
   });
 
   it('probes a packet on before, after and the candidate', async () => {

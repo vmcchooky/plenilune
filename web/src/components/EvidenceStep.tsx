@@ -194,7 +194,7 @@ export function EvidenceStep({ review }: { review: Review }) {
 
       <section className="replay-tools">
         <h2>{copy.decision}</h2>
-        <p>{review.disputed ? copy.disputed : review.decision && review.decision.receiptSha256 === repair?.receipt.sha256
+        <p>{review.disputed ? copy.disputed : review.decision?.status === 'stale' ? copy.stale : review.decision && review.decision.receiptSha256 === repair?.receipt.sha256
           ? copy[review.decision.choice] : copy.undecided}</p>
         <p className="field-hint">{copy.decisionNote}</p>
       </section>

@@ -1,11 +1,11 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../src/App';
 import { LocaleProvider } from '../src/i18n';
 import viMessages from '../src/i18n/messages.vi';
 import { runtime } from '../src/lib/api';
 import type { Artifact } from '../src/lib/api';
-import type { Comparison } from '../src/lib/types';
+import type { Comparison, InboxDocument } from '../src/lib/types';
 import {
   candidateComparison,
   comparison,
@@ -88,7 +88,7 @@ function renderApp() {
 }
 
 async function awaitVerdict() {
-  return screen.findByText('DIFFERENT', undefined, { timeout: 5000 });
+  return screen.findByText('Khác biệt', undefined, { timeout: 5000 });
 }
 
 async function evaluateObligations() {
@@ -104,6 +104,55 @@ async function evaluateObligations() {
 }
 
 describe('P1-8 quick verdict path', () => {
+  it('preserves the open watch draft and focus when unread notifications arrive', async () => {
+    let finishInbox!: (doc: Artifact<InboxDocument>) => void;
+    vi.mocked(runtime.listInbox).mockImplementation(() => new Promise(resolve => { finishInbox = resolve; }));
+    renderApp();
+    fireEvent.change(document.querySelector('#sample-select')!, { target: { value: 'blank' } });
+    const drawer = document.querySelector<HTMLDetailsElement>('.watch-drawer')!;
+    drawer.open = true;
+    const name = screen.getByLabelText(text('inbox.watch.name')) as HTMLInputElement;
+    fireEvent.change(name, { target: { value: 'DRAFT-ACL' } });
+    name.focus();
+    await act(async () => { finishInbox(artifact({ entries: [], unread: 1 })); });
+    expect(document.querySelector('.watch-drawer')).toBe(drawer);
+    expect(drawer.open).toBe(true);
+    expect(screen.getByLabelText(text('inbox.watch.name'))).toBe(name);
+    expect(name.value).toBe('DRAFT-ACL');
+    expect(document.activeElement).toBe(name);
+    expect(vi.mocked(runtime.listInbox)).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('button', { name: '1 chưa đọc' }));
+    expect(drawer.open).toBe(true);
+    expect(document.activeElement).toBe(drawer.querySelector('summary'));
+    expect(name.value).toBe('DRAFT-ACL');
+  });
+
+  it('keeps the initial quick result short and reveals editors only on request', async () => {
+    renderApp();
+    await awaitVerdict();
+    const sources = document.querySelector<HTMLDetailsElement>('.quick-sources')!;
+    const policy = document.querySelector<HTMLDetailsElement>('.quick-policy')!;
+    expect(sources.open).toBe(false);
+    expect(policy.open).toBe(false);
+    expect(document.querySelector<HTMLDetailsElement>('.quick-questions')!.open).toBe(false);
+    expect(document.querySelector('.quick-outcome__example')?.textContent).toContain('192.0.2.10');
+    fireEvent.click(screen.getByRole('button', { name: text('quick.sources') }));
+    expect(sources.open).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: text('quick.checkIntent') }));
+    expect(policy.open).toBe(true);
+  });
+
+  it('keeps incomplete-result warnings outside collapsed details', async () => {
+    vi.mocked(runtime.compare).mockResolvedValue(artifact({ ...comparison, report: {
+      ...comparison.report, verdict: 'INCONCLUSIVE', search_complete: false, reason: 'operation_limit',
+    } }));
+    renderApp();
+    await screen.findByText('Chưa kết luận', { selector: 'code.badge' }, { timeout: 5000 });
+    expect(document.querySelector('.quick-outcome > [role="status"]')).toBeTruthy();
+    expect(document.querySelector<HTMLDetailsElement>('.quick-outcome__details')!.open).toBe(false);
+    expect(screen.queryByText('Tương đương')).toBeNull();
+  });
+
   it('(a) auto-runs on the default sample and shows the verdict with zero clicks', async () => {
     renderApp();
     await awaitVerdict();
@@ -111,7 +160,7 @@ describe('P1-8 quick verdict path', () => {
     // The verdict is a behavior-only verdict until obligations are accepted.
     expect(screen.getByText(text('result.noPolicy'))).toBeTruthy();
     // The object list with its status chip is on the same screen.
-    expect(screen.getByText('MGMT')).toBeTruthy();
+    expect(document.querySelector('.quick-outcome__identity')?.textContent).toContain('MGMT');
     // The limitations line stays on the verdict screen.
     expect(screen.getByText(text('quick.scopeNote'))).toBeTruthy();
     // Quick mode is the entry: no step rail.
@@ -160,7 +209,7 @@ describe('P1-8 quick verdict path', () => {
     await waitFor(() => {
       expect(listingText()).toBeNull();
     }, { timeout: 5000 });
-    expect(screen.getByText('DIFFERENT')).toBeTruthy();
+    expect(screen.getByText('Khác biệt')).toBeTruthy();
 
     // Re-evaluating in place re-renders the listing without OB-3.
     await evaluateObligations();
@@ -180,7 +229,7 @@ describe('P1-8 quick verdict path', () => {
     await waitFor(() => {
       expect(listingText()).toContain('OB-1');
     }, { timeout: 5000 });
-    expect(screen.getByText('EQUIVALENT')).toBeTruthy();
+    expect(screen.getByText('Tương đương')).toBeTruthy();
     expect(screen.queryByText(text('quick.repair.title'))).toBeNull();
     expect(screen.queryByText(text('repair.manual.title'))).toBeNull();
   });
@@ -209,6 +258,6 @@ describe('P1-8 quick verdict path', () => {
     await waitFor(() => {
       expect(screen.queryByRole('navigation', { name: text('nav.aria') })).toBeNull();
     }, { timeout: 5000 });
-    expect(screen.getByText('DIFFERENT')).toBeTruthy();
+    expect(screen.getByText('Khác biệt')).toBeTruthy();
   });
 });

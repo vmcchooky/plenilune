@@ -4,7 +4,6 @@ import type { MessageKey } from '../i18n/messages.en';
 import { runtime } from '../lib/api';
 import { shortHash } from '../lib/format';
 import type { InboxEntry, TriggerCondition, Verdict, WatchRule } from '../lib/types';
-import { SectionHeading } from './Ui';
 
 // P2-8 verdict inbox: the event-driven entry of the fast flow. The
 // server evaluates every completed analysis/comparison against the
@@ -26,10 +25,11 @@ function verdictTone(verdict?: Verdict): string {
   }
 }
 
-export function InboxPanel({ refreshKey }: { refreshKey: string | null }) {
+export function InboxPanel({ refreshKey, onUnreadChange }: { refreshKey: string | null; onUnreadChange?: (count: number) => void }) {
   const { t } = useI18n();
   const [entries, setEntries] = useState<InboxEntry[]>([]);
   const [unread, setUnread] = useState(0);
+  useEffect(() => { onUnreadChange?.(unread); }, [unread, onUnreadChange]);
   const [watches, setWatches] = useState<WatchRule[]>([]);
   const [failed, setFailed] = useState(false);
   const [watchFailed, setWatchFailed] = useState(false);
@@ -85,12 +85,9 @@ export function InboxPanel({ refreshKey }: { refreshKey: string | null }) {
 
   return (
     <section className="inbox-panel card" aria-labelledby="inbox-title">
-      <SectionHeading
-        id="inbox-title"
-        title={t('inbox.title')}
-        note={t('inbox.help')}
-        aside={unread > 0 ? <span className="badge badge--warn">{t('inbox.unread', { count: unread })}</span> : undefined}
-      />
+      <h2 id="inbox-title" className="sr-only">{t('inbox.title')}</h2>
+      <p className="field-hint">{t('inbox.help')}</p>
+      {unread > 0 && <p className="field-hint"><span className="badge badge--warn">{t('inbox.unread', { count: unread })}</span></p>}
       {failed && <p className="banner banner--warn" role="alert">{t('inbox.error')}</p>}
       <div className="inbox-panel__actions">
         <button type="button" className="button button--quiet button--small" onClick={() => void load()}>
@@ -162,6 +159,7 @@ export function InboxPanel({ refreshKey }: { refreshKey: string | null }) {
         )}
         <form
           className="inbox-watch__form"
+          aria-label={t('inbox.watch.formLegend')}
           onSubmit={(event) => {
             event.preventDefault();
             void addWatch();

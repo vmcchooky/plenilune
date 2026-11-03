@@ -16,7 +16,7 @@ export function PacketRoute({ packet }: { packet: Packet }) {
       <div className="packet-endpoint">
         <span>{t('packet.src')}</span>
         <strong>{packet.src_ip}</strong>
-        <code>{srcPort ? `:${srcPort}` : t('packet.notTcp')}</code>
+        <code>{srcPort === null ? t('packet.notTcp') : `:${srcPort}`}</code>
       </div>
       <div className="packet-route__middle">
         <span className="packet-protocol" title={t('packet.rawProtocol', { n: packet.protocol })}>
@@ -28,7 +28,7 @@ export function PacketRoute({ packet }: { packet: Packet }) {
       <div className="packet-endpoint">
         <span>{t('packet.dst')}</span>
         <strong>{packet.dst_ip}</strong>
-        <code>{dstPort ? `:${dstPort}` : t('packet.notTcp')}</code>
+        <code>{dstPort === null ? t('packet.notTcp') : `:${dstPort}`}</code>
       </div>
     </div>
   );

@@ -142,6 +142,21 @@ export function verdictBody(t: Translate, verdict: Verdict, reason?: string): st
   }
 }
 
+// Owner-facing clause for an object error row; the raw parser message stays
+// in the technical disclosure, the code stays on the row for correlation.
+export function objectErrorClause(t: Translate, code: string): string {
+  return t(code === 'PARSE_INVALID_IP' ? 'overview.errParseIp' : 'overview.errGeneric');
+}
+
+// Short localized badge noun for the verdict chip; the enum stays the wire value.
+export function verdictBadge(t: Translate, verdict: Verdict): string {
+  switch (verdict) {
+    case 'DIFFERENT': return t('result.verdict.different.badge');
+    case 'EQUIVALENT': return t('result.verdict.equivalent.badge');
+    default: return t('result.verdict.inconclusive.badge');
+  }
+}
+
 // The verdict plate names the deciding rule in each version. It carries no
 // proof claim beyond the witness itself.
 export function decisionRefLabel(t: Translate, decision: Decision, rule?: string | null): string {

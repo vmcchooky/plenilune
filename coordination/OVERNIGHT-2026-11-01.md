@@ -415,3 +415,75 @@ Không sửa code/thiết kế nào (ngoài phạm vi được giao); các findi
     - Commit `3f75181` trên branch `chore/public-manifest-regen-20261103`.
     - Mở PR **#55** (`https://github.com/vmcchooky/plenilune/pull/55`), chỉ chứa duy nhất `docs/public-manifest.sha256`.
     - **TUYỆT ĐỐI KHÔNG TỰ MERGE PR #55**, để nguyên chờ chủ sở hữu duyệt.
+
+---
+
+## MỤC A — Chí Nhân · 2026-11-03 12:40 · ỦY QUYỀN + GIAO THỨC LÀM VIỆC LIÊN TỤC v2 + HÀNG ĐỢI CHỈ ĐẠO
+
+### 1. Ủy quyền của chủ sở hữu (ghi nguyên quyết định)
+
+2026-11-03 12:33, Chooky ủy quyền cho Chí Nhân điều phối tới nơi: **làm xong
+toàn bộ hàng đợi Phase 3 tới hết P3-8, và mở luồng cải tiến giao diện theo
+chuẩn thế giới**. Trong phạm vi ủy quyền này:
+
+- Chí Nhân merge được PR (kể cả PR manifest) sau khi đã kiểm chứng độc lập,
+  khi agent local không trong ca; agent local merge theo chỉ đạo dưới đây khi
+  trong ca. Thẻ duyệt GitHub vẫn nảy cho Chooky theo cơ chế runtime — anh ấy
+  đã biết và chấp nhận.
+- P3-2 đóng theo phương án **PARTIAL** (giới hạn ghi nguyên văn vào tài liệu
+  qualification): live UI + NVDA đạt trong phạm vi đã ghi; AI-proposed
+  conditions 0/3 usable và real-device chưa qualify là giới hạn đã biết,
+  không chặn phần còn lại của Phase 3.
+- Ngoài phạm vi: gắn tag/release v1.0.0 và nộp bài hackathon vẫn là việc của
+  Chooky; mọi thay đổi phạm vi (mở lại P3-9/P3-10, nâng cap/timeout, đổi
+  khóa thiết kế Neo 1+) quay về hỏi Chooky.
+
+### 2. Giao thức liên tục (áp dụng từ ca này)
+
+File này là máy trạng thái chung. Agent local làm việc theo VÒNG LẶP trong
+phiên của mình:
+
+1. `git fetch` branch coord này, đọc bảng trạng thái mới nhất ở cuối Mục A.
+2. Làm chỉ đạo kế tiếp ghi "NGƯỜI LÀM: LOCAL" chưa có báo cáo ở Mục B.
+3. Cổng đúng như chỉ đạo ghi; PASS mới thực hiện hành động (merge/mở PR).
+4. Báo cáo nguyên văn vào Mục B (lệnh, kết quả, SHA), commit + push coord.
+5. Quay lại bước 1 ngay trong cùng phiên. Hết chỉ đạo thì chờ ~5 phút rồi
+   fetch lại. Chỉ dừng khi thấy mốc **STAND-DOWN** ở Mục A hoặc phiên kết thúc.
+6. Phiên mới (agent mới) tự giới thiệu ở Mục B (tên + model) rồi tiếp tục từ
+   bảng trạng thái — không cần ai nhắc lại bối cảnh.
+
+Bất biến: GUARDRAILS thắng; luật flake §2 (protocol 01) nguyên vẹn; agent
+local KHÔNG sửa Mục A, KHÔNG sửa STATUS.md (Chí Nhân sở hữu, tránh xung
+đột), KHÔNG tự merge PR manifest trừ khi Mục A có dòng MANIFEST-MERGE OK của
+Chí Nhân; PR UI không đụng `internal/` hay `docs/plan/`; merge PR UI chỉ khi
+Mục A có dòng UI-MERGE OK cho PR đó.
+
+### 3. Bảng trạng thái (2026-11-03 12:40)
+
+| Hạng mục | Trạng thái |
+|---|---|
+| main | `f0ba154` (PR #55 manifest đã merge theo ủy quyền — Chí Nhân kiểm chứng 444/444 hash trước đó) |
+| P3-6 | PR **#56** OPEN, head `271aedb`, chờ cổng Windows (chỉ đạo D1) |
+| P3-7 IPv6 | Chí Nhân bắt đầu thiết kế/build ở phía mình (D4) |
+| P3-2 | Đóng PARTIAL theo ủy quyền; Chí Nhân chuẩn bị PR tài liệu (D5) |
+| UI | Brief tại `coordination/UI-WORLDCLASS-BRIEF.md`; lát U1 audit giao LOCAL (D3) |
+
+### 4. Chỉ đạo
+
+- **D1 — LOCAL**: Cổng Windows đầy đủ trên PR #56 (head `271aedb`): gofmt,
+  go vet, go build, go test ./..., go test -race ./... -skip '^TestLiveMeta',
+  web npm test + npm run build. PASS toàn bộ → **merge #56** (merge commit),
+  báo SHA main mới vào Mục B. Đỏ ở bất kỳ cổng nào → báo nguyên văn, DỪNG,
+  không merge, không tự sửa.
+- **D2 — LOCAL** (sau D1): Regen manifest trên checkout LF sạch từ main mới
+  (`scripts/public-snapshot.ps1`), mở PR manifest, **không tự merge**; báo
+  Mục B: số entry, secret-scan, SHA head. Chí Nhân kiểm chứng hash rồi merge.
+- **D3 — LOCAL** (song song với D4, không xung đột): Lát **U1 AUDIT** của
+  brief UI: chỉ đo và chụp inventory, không sửa code. Báo cáo bảng lệch chuẩn
+  + screenshot vào Mục B (hoặc link trong PR mô tả nếu mở PR tài liệu), chờ
+  Chí Nhân duyệt ưu tiên U2–U4.
+- **D4 — CHÍ NHÂN**: Thiết kế + build P3-7 (IPv6 ACL) trong clone riêng;
+  PR mở xong sẽ có chỉ đạo cổng riêng ở Mục A.
+- **D5 — CHÍ NHÂN**: Chuẩn bị PR tài liệu đóng P3-2 PARTIAL (STATUS +
+  qualification note); LOCAL cổng tài liệu + merge khi PR xuất hiện và Mục A
+  có chỉ đạo.

@@ -110,6 +110,16 @@ displayed, received and exported only when their input pins, obligation digest
 and full accepted policy hash match the accepted snapshot; foreign receipts fail
 closed before a conclusion is offered. Export/import preserves original source
 bytes; standalone offline replay does not need current UI state or Meta.
+Human review annotations retain their choice and receipt hash with a separate
+`current`/`stale` state. Source, intent, condition, scope or candidate changes and
+new repair verification/proposal attempts invalidate the annotation immediately. Undoing an edit,
+returning to an earlier candidate, or receiving identical receipt bytes never
+restores it. Failure/cancellation of those attempts also leaves it stale; only an explicit new human
+decision renews it. A new receive action still requires the existing bound,
+verified, undisputed receipt checks. This is local session metadata, outside
+artifact schemas and digest projections.
+Navigation and successful or canceled replay preserve its validity; replay mismatch
+still disputes the receipt and invalidates the annotation.
 Provider transport is stateless Responses with encrypted reasoning replay only
 in bounded process memory. See [current handoff](docs/handoff/contributor-runtime.md).
 

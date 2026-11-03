@@ -603,6 +603,16 @@ validation (`JSON_INVALID`), transport và cancel không đặt disputed.
 xác nhận lại; không map thành lỗi server generic. Đây là guard UI, không đổi wire
 v1 hay hash projection.
 
+Human-decision invalidation (P3-4): annotation trong phiên UI lưu choice và receipt
+hash cùng trạng thái `current`/`stale`. Sửa nguồn, ý định, obligation, scope hoặc
+candidate, hay bắt đầu repair-verify/đề xuất bản sửa mới, làm quyết định cũ thành stale ngay. Hoàn tác
+về bytes/hash cũ, trả lại cùng receipt, lỗi hoặc hủy verify không phục hồi quyết
+định. Replay thành công hoặc bị hủy giữ validity cũ; mismatch vẫn invalidate.
+Chỉ thao tác quyết định mới tường minh mới renew; nhận candidate vẫn qua
+guard receipt binding/VERIFIED/disputed hiện hành. UI và báo cáo VI/EN ghi rõ
+stale, không trình bày lựa chọn cũ như quyết định hiện tại. Đây không phải wire
+enum, reviewer authentication hay thành phần mới của hash artifact.
+
 ## 7. Full-policy preview — implemented
 
 Phục vụ [thiết kế sản phẩm](docs/design/product-ux.md), không thay nghĩa

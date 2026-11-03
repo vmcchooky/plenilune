@@ -13,6 +13,8 @@ import type { ConditionDraft, RegionDraft } from '../lib/conditions';
 import { toReviewError } from '../lib/errors';
 import type { ReviewError } from '../lib/errors';
 import { bindingFromAccepted, receiptBindingIssue } from '../lib/receiptBinding';
+import { extractObjectSource } from '../lib/sourceMapping';
+import type { FirstSourceLine, SourceLineMap } from '../lib/sourceMapping';
 import { blankSample, findSample, isPristineSample, samples } from '../lib/samples';
 import type {
   AIResult,
@@ -69,7 +71,8 @@ interface ParseSnapshot {
   after: string;
   intent: string;
   // First source line of the analyzed block in each configuration version.
-  firstLine: { before: number; after: number };
+  firstLine: FirstSourceLine;
+  sourceLines?: SourceLineMap;
 }
 
 export interface AnalysisSnapshot {
@@ -84,19 +87,6 @@ export interface ProbeResult {
   before: TraceResult['decision'];
   after: TraceResult['decision'];
   candidate?: TraceResult['decision'];
-}
-
-// Engine input for an ACL object is the exact byte slice the server hashed.
-async function sliceObject(source: string, start: number | undefined, end: number | undefined, sha256: string): Promise<string> {
-  const bytes = new TextEncoder().encode(source);
-  if (start === undefined || end === undefined || start < 0 || end > bytes.length || start > end) {
-    throw new ApiError('Object location is outside the configuration.', 'SOURCE_SLICE_MISMATCH');
-  }
-  const slice = bytes.slice(start, end);
-  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', slice));
-  const hex = Array.from(digest, (b) => b.toString(16).padStart(2, '0')).join('');
-  if (hex !== sha256) throw new ApiError('Extracted object bytes do not match the analysis digest.', 'SOURCE_SLICE_MISMATCH');
-  return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(slice);
 }
 
 function analyzable(o: AnalysisObject): boolean {
@@ -119,6 +109,8 @@ export interface AcceptedSnapshot {
   after: string;
   intent: string;
   parsed: ParseResult;
+  firstLine?: FirstSourceLine;
+  sourceLines?: SourceLineMap;
   options?: CompareOptions;
   scopeMode: 'undeclared' | 'none' | 'regions';
   allowedChanges: RegionDraft[];
@@ -156,6 +148,7 @@ interface PolicyPreview {
 export interface ReviewDecision {
   choice: 'received' | 'held' | 'rejected';
   receiptSha256: string;
+  status: 'current' | 'stale';
 }
 
 type EditSource = 'manual' | 'ai';
@@ -334,10 +327,16 @@ export function useReview() {
     }
   }
 
+  // Invalidation is sticky, including when an edit is later undone or a
+  // byte-identical receipt is reverified. Only an explicit new decision renews it.
+  function invalidateDecision() {
+    setDecision((current) => current ? { ...current, status: 'stale' } : null);
+  }
+
   function clearProofArtifacts() {
     setPolicyPreview(null);
     policyPreviewRef.current = null;
-    setDecision(null);
+    invalidateDecision();
     setDisputed(false);
     setAccepted(null);
     setComparison(null);
@@ -443,12 +442,16 @@ export function useReview() {
       setStage('result');
       return;
     }
-    const before = await sliceObject(snapshot.before, object.before.byte_start, object.before.byte_end, object.before.sha256);
-    const after = await sliceObject(snapshot.after, object.after.byte_start, object.after.byte_end, object.after.sha256);
+    const beforeObject = await extractObjectSource(snapshot.before, object.before);
+    const afterObject = await extractObjectSource(snapshot.after, object.after);
+    const before = beforeObject.source;
+    const after = afterObject.source;
     if (generationRef.current !== generation) return;
     const source = await watch(runtime.parse(before, after, signal));
     if (generationRef.current !== generation) return;
-    setParsed({ parsed: source.data, before, after, intent: draft.intent, firstLine: { before: object.before.lines[0][0], after: object.after.lines[0][0] } });
+    setParsed({ parsed: source.data, before, after, intent: draft.intent,
+      firstLine: { before: beforeObject.sourceLines[0], after: afterObject.sourceLines[0] },
+      sourceLines: { before: beforeObject.sourceLines, after: afterObject.sourceLines } });
     const result = await watch(runtime.compare(before, after, null, draft.options, signal));
     if (generationRef.current !== generation) return;
     setSelection(target);
@@ -741,6 +744,7 @@ export function useReview() {
         policySha256: normalized.policy_sha256,
         before: parsed.before, after: parsed.after, intent: parsed.intent,
         parsed: parsed.parsed, options: draft.options,
+        firstLine: parsed.firstLine, sourceLines: parsed.sourceLines,
         scopeMode: draft.scopeMode,
         allowedChanges: (normalized.policy.allowed_changes ?? []).map(regionDraft),
         acceptedAt: new Date().toISOString(),
@@ -781,6 +785,7 @@ export function useReview() {
       return;
     }
     const { generation, controller } = begin('compare');
+    invalidateDecision();
     const nextSnapshot: AcceptedSnapshot = { ...accepted, options: undefined };
     try {
       const result = await watch(runtime.compare(nextSnapshot.before, nextSnapshot.after, nextSnapshot.conditions, undefined, controller.signal));
@@ -829,7 +834,7 @@ export function useReview() {
 
   function invalidateCandidate() {
     abortCurrent();
-    setDecision(null);
+    invalidateDecision();
     setDisputed(false);
     setCanceled(null);
     setError(null);
@@ -838,7 +843,7 @@ export function useReview() {
 
   function decideRepair(choice: ReviewDecision['choice']) {
     if (!repair?.receipt.sha256 || (choice === 'received' && !canReceive)) return;
-    setDecision({ choice, receiptSha256: repair.receipt.sha256 });
+    setDecision({ choice, receiptSha256: repair.receipt.sha256, status: 'current' });
   }
 
   function newEditId(): string {
@@ -893,7 +898,7 @@ export function useReview() {
       scope: accepted.conditions.scope,
       edits: edits.map((draftEdit) => draftEdit.edit),
     };
-    setDecision(null);
+    invalidateDecision();
     setDisputed(false);
     const { generation, controller } = begin('repair');
     try {
@@ -923,7 +928,7 @@ export function useReview() {
 
   async function proposeRepair() {
     if (!accepted || !accepted.intent.trim()) return;
-    setDecision(null);
+    invalidateDecision();
     setDisputed(false);
     const { generation, controller } = begin('aiRepair');
     try {
@@ -994,7 +999,7 @@ export function useReview() {
       if (result.data.sha256 !== repair.receipt.sha256) {
         if (repair.receipt.sha256) disputedHashesRef.current.add(repair.receipt.sha256);
         setDisputed(true);
-        setDecision(null);
+        invalidateDecision();
         throw new ApiError('Replay did not match the selected receipt.', 'REPLAY_RECEIPT_MISMATCH');
       }
       if (result.data.status === 'REPAIR_REPLAYED') {
@@ -1008,7 +1013,7 @@ export function useReview() {
         && (cause.code === 'REPLAY_RECEIPT_MISMATCH' || cause.code === 'EVIDENCE_MISMATCH')) {
         if (repair.receipt.sha256) disputedHashesRef.current.add(repair.receipt.sha256);
         setDisputed(true);
-        setDecision(null);
+        invalidateDecision();
         setRepairReplay(null);
       }
       fail(cause, generation, 'replayRepair');

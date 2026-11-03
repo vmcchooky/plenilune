@@ -525,6 +525,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#62 đã merge theo MANIFEST-MERGE OK:** GitHub xác nhận merge commit `6c8a5fdd26b2e1aa8e94a4e4ff1ef6fb55dcca41`; chờ PR P3-8 theo D16.
+
+
 - **#58 đã merge bởi Chí Nhân:** GitHub xác nhận main `b489720c858098aa550d1dc924027e304f0128ee`. Theo D12 đã regen manifest trên checkout sạch `D:/Quorix/gate-46-20261102`, `core.autocrlf=false`, script `scripts/public-snapshot.ps1`: `Manifest entries: 461 (manifest file itself is not listed)`; scan snapshot nguyên văn `Secret scan clean: 430 scanned files; no blocking patterns.` PR #62 https://github.com/vmcchooky/plenilune/pull/62 head `1842c34`; chỉ manifest; thay đổi thứ tự dòng do sort script local, xin soát hash/ordering; KHÔNG merge.
 
 

@@ -79,6 +79,7 @@ describe('P2-8 verdict inbox panel', () => {
     await waitFor(() => expect(screen.getByText(text('inbox.empty'))).toBeTruthy());
     expect(screen.getByText(text('inbox.watch.none'))).toBeTruthy();
     expect(vi.mocked(runtime.listInbox)).toHaveBeenCalled();
+    expect(screen.getByText(text('inbox.watch.formLegend')).closest('details')?.open).toBe(false);
   });
 
   it('renders fired entries with verdict badges, the change line and the artifact digest', async () => {
@@ -96,6 +97,7 @@ describe('P2-8 verdict inbox panel', () => {
     expect(different?.className).toContain('badge--bad');
     expect(within(list).getByText(text('inbox.condition.verdict_changed'))).toBeTruthy();
     expect(within(list).getByText('EQUIVALENT → DIFFERENT')).toBeTruthy();
+    expect(within(list).getAllByText(text('inbox.watch.domain.acl'))).toHaveLength(2);
     expect(within(list).getByText(text('inbox.condition.obligation_failed'))).toBeTruthy();
     expect(within(list).getByText('Violated: OB-1')).toBeTruthy();
     expect(within(list).getByText(text('inbox.stale'))).toBeTruthy();
@@ -124,6 +126,7 @@ describe('P2-8 verdict inbox panel', () => {
     vi.mocked(runtime.replaceWatches).mockImplementation(async (watches) => artifact({ watches }));
     renderPanel();
     await waitFor(() => expect(screen.getByText(text('inbox.watch.none'))).toBeTruthy());
+    fireEvent.click(screen.getByText(text('inbox.watch.formLegend')));
     fireEvent.change(screen.getByLabelText(text('inbox.watch.name')), { target: { value: 'EDGE-IN' } });
     fireEvent.click(screen.getByRole('button', { name: text('inbox.watch.add') }));
     await waitFor(() => expect(vi.mocked(runtime.replaceWatches)).toHaveBeenCalledWith([

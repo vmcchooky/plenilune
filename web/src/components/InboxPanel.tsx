@@ -107,6 +107,7 @@ export function InboxPanel({ refreshKey, onUnreadChange }: { refreshKey: string 
             <li key={entry.id} className={`inbox-entry${entry.read ? '' : ' inbox-entry--unread'}`}>
               <div className="inbox-entry__head">
                 <strong className="inbox-entry__name">{entry.name}</strong>
+                <span className="badge">{t(`inbox.watch.domain.${entry.domain}` as MessageKey)}</span>
                 <span className="badge">{t(`inbox.condition.${entry.condition}` as MessageKey)}</span>
                 {entry.verdict && <code className={verdictTone(entry.verdict)}>{entry.verdict}</code>}
                 {entry.stale && <span className="badge badge--warn">{t('inbox.stale')}</span>}
@@ -157,6 +158,8 @@ export function InboxPanel({ refreshKey, onUnreadChange }: { refreshKey: string 
             ))}
           </ul>
         )}
+        <details className="inbox-watch__add">
+          <summary>{t('inbox.watch.formLegend')}</summary>
         <form
           className="inbox-watch__form"
           aria-label={t('inbox.watch.formLegend')}
@@ -194,6 +197,7 @@ export function InboxPanel({ refreshKey, onUnreadChange }: { refreshKey: string 
             {t('inbox.watch.add')}
           </button>
         </form>
+        </details>
       </div>
     </section>
   );

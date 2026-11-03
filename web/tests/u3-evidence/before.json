@@ -1,0 +1,42 @@
+[
+  {
+    "width": 360,
+    "overflow": 83,
+    "violations": []
+  },
+  {
+    "width": 390,
+    "overflow": 53,
+    "violations": []
+  },
+  {
+    "width": 480,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "width": 768,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "width": 1024,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "width": 1280,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "width": 1920,
+    "overflow": 0,
+    "violations": []
+  }
+]

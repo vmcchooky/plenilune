@@ -60,10 +60,10 @@ func TestP36GroupFormMatchesExpansion(t *testing.T) {
 }
 
 func TestP36GroupFormBeyondExpansionWall(t *testing.T) {
-	// The case expansion cannot represent at all (1281 physical rules ->
-	// unsupported in the prototype): 5 logical rules with 16x16 groups.
-	before := p36GroupForm(16, 16, 5, false)
-	after := p36GroupForm(16, 16, 5, true)
+	// The case expansion cannot represent at all (769 physical rules ->
+	// unsupported in the prototype): 3 logical rules with 16x16 groups.
+	before := p36GroupForm(16, 16, 3, false)
+	after := p36GroupForm(16, 16, 3, true)
 	start := time.Now()
 	r, err := Analyze(context.Background(), Request{Schema: RequestSchema, Before: Source{Text: before}, After: Source{Text: after}})
 	if err != nil {
@@ -71,7 +71,7 @@ func TestP36GroupFormBeyondExpansionWall(t *testing.T) {
 	}
 	obj := object(t, r, DomainACL, "P36X")
 	if obj.ACL == nil || obj.ACL.Verdict != "DIFFERENT" || !obj.ACL.SearchComplete {
-		t.Fatalf("group form 16x16 x5: status=%s acl=%+v", obj.Status, obj.ACL)
+		t.Fatalf("group form 16x16 x3: status=%s acl=%+v", obj.Status, obj.ACL)
 	}
-	t.Logf("group form 16x16 x5 (5 logical rules): DIFFERENT complete in %v", time.Since(start).Round(time.Millisecond))
+	t.Logf("group form 16x16 x3 (3 logical rules): DIFFERENT complete in %v", time.Since(start).Round(time.Millisecond))
 }

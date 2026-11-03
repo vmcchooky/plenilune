@@ -458,20 +458,23 @@ local KHÔNG sửa Mục A, KHÔNG sửa STATUS.md (Chí Nhân sở hữu, trán
 Chí Nhân; PR UI không đụng `internal/` hay `docs/plan/`; merge PR UI chỉ khi
 Mục A có dòng UI-MERGE OK cho PR đó.
 
-### 3. Bảng trạng thái (2026-11-03 13:40, cập nhật bởi Chí Nhân)
+### 3. Bảng trạng thái (2026-11-03 22:47, cập nhật bởi Chí Nhân)
 
 | Hạng mục | Trạng thái |
 |---|---|
 | main | `b11e300` (PR #57 manifest đã merge bởi agent local theo MANIFEST-MERGE OK) |
 | P3-6 | DONE (merge `a9449d5`) |
-| P3-7 IPv6 | PR **#58** OPEN, head `eb5a9dd`, cổng Linux trên cây rebase xanh toàn bộ; chờ cổng Windows (chỉ đạo D6). Sau merge cần regen manifest (quy trình thường lệ: LOCAL mở PR manifest, Chí Nhân kiểm chứng rồi xử lý merge) |
+| P3-7 IPv6 | PR **#58** OPEN, head `eb5a9dd`; **D6 cổng Windows FAIL** ở `go test -race` (TestP15GlobalBudgetLedger: digest bounded-run lệch giữa worker 1 và 4; TestP36GroupFormBeyondExpansionWall: chạm trần 2s wall-clock). Chí Nhân đang chẩn đoán P15; LOCAL **không chạy lại D6, không sửa code #58**, chờ chỉ đạo mới tại Mục A. Sau merge cần regen manifest (quy trình thường lệ: LOCAL mở PR manifest, Chí Nhân kiểm chứng rồi xử lý merge) |
 | P3-2 | Đóng PARTIAL theo ủy quyền; PR tài liệu (D5) làm SAU khi P3-7 merge, để tránh xung đột STATUS |
-| UI | U1 audit (D3) ĐÃ BÁO (13:18, khôi phục nguyên văn ở Mục B sau sự cố ghi đè của Chí Nhân). Ưu tiên lát do Chí Nhân duyệt: **U2 → U3 → U4** (xem D7). Chủ sở hữu phản hồi thêm 13:19: chế độ nhanh còn rắc rối/dài dòng, đặc biệt **phân cấp menu xổ xuống ở quick mode** — đưa vào U4 |
+| UI | U1 audit (D3) ĐÃ BÁO (13:18, khôi phục nguyên văn ở Mục B sau sự cố ghi đè của Chí Nhân). Ưu tiên lát do Chí Nhân duyệt: **U2 → U3 → U4** (xem D7). Chủ sở hữu phản hồi thêm 13:19: chế độ nhanh còn rắc rối/dài dòng, đặc biệt **phân cấp menu xổ xuống ở quick mode** — đưa vào U4. **U2 ĐÃ MỞ PR #59** (head `29a0068`, đã kiểm chứng độc lập phía Chí Nhân: npm 185/185, build PASS, 8 viewport không tràn ngang, axe 0 trên source editor) — chờ UI-MERGE OK. **U3 giao qua D8** |
 
 **MANIFEST-MERGE OK — PR #57:** ĐÃ THỰC THI (agent local đã merge, main `b11e300`).
 
 - **D6 — LOCAL**: Cổng Windows đầy đủ trên PR **#58** (P3-7, head `eb5a9dd`): gofmt, go vet, go build, go test ./..., go test -race ./... -skip '^TestLiveMeta', web npm test + npm run build. **Chỉ cổng + báo nguyên văn vào Mục B, KHÔNG merge** — chủ sở hữu chỉ đạo 13:19 việc merge do Chí Nhân tự xử lý tiếp. Đỏ ở bất kỳ cổng nào → báo nguyên văn, DỪNG, không tự sửa.
-- **D7 — LOCAL** (sau D6): Lát **U2** của brief UI — xử lý dòng ACL dài trong editor (P0-1 theo báo cáo U1: `SourceInputs.tsx` `wrap="off"`): soft-wrap có gutter số dòng cố định hoặc ruler độ dài, không tràn ngang 360–1920, giữ nguyên luồng verdict-first và hệ Neo 1+. PR web-only kèm ảnh trước/sau cùng viewport + bằng chứng axe/overflow; **merge chỉ khi Mục A có UI-MERGE OK của Chí Nhân**. U3 (inbox) và U4 (làm phẳng phân cấp menu quick mode + sửa heading-order ở deep-evidence + nới touch target về ≥44px) sẽ có chỉ đạo riêng sau.
+- **D7 — LOCAL** (sau D6): Lát **U2** của brief UI — xử lý dòng ACL dài trong editor (P0-1 theo báo cáo U1: `SourceInputs.tsx` `wrap="off"`): soft-wrap có gutter số dòng cố định hoặc ruler độ dài, không tràn ngang 360–1920, giữ nguyên luồng verdict-first và hệ Neo 1+. PR web-only kèm ảnh trước/sau cùng viewport + bằng chứng axe/overflow; **merge chỉ khi Mục A có UI-MERGE OK của Chí Nhân**. U3 (inbox) giao qua **D8** dưới đây; U4 (làm phẳng phân cấp menu quick mode + sửa heading-order ở deep-evidence + nới touch target về ≥44px) sẽ có chỉ đạo riêng sau.
+
+- **GIA HẠN CA — 22:47**: Chủ sở hữu **gia hạn ca local qua 22:00**; vòng lặp liên tục giữ nguyên tới khi Mục A có mốc **STAND-DOWN** (nếu chủ sở hữu chốt thêm mốc dừng cứng, Chí Nhân sẽ ghi tại đây).
+- **D8 — LOCAL**: Lát **U3** của brief UI — mật độ/bố cục **verdict inbox** (P0-2 theo báo cáo U1: form watch chật ở đáy panel, inbox trống là khoảng chết): danh sách verdict chiếm ưu thế với thẻ/bảng giàu thông tin hơn, form watch thành hành động mở rộng hoặc bố cục 2 cột trên desktop; không tràn ngang 360–1920; giữ nguyên luồng verdict-first và hệ Neo 1+. PR web-only kèm ảnh trước/sau cùng viewport + bằng chứng axe/overflow + cổng npm xanh; **merge chỉ khi Mục A có UI-MERGE OK của Chí Nhân**. PR #59 (U2) vẫn chờ duyệt — không tự merge.
 
 ### 4. Chỉ đạo
 

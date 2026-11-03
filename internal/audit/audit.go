@@ -25,7 +25,8 @@ import (
 // engine; the engine version is pinned in the record and replay
 // dispatches on it like every other engine-bound artifact.
 const Schema = "plenilune.audit/v1"
-const Version = "acl-audit/v1"
+const Version = "acl-audit/v2"
+const LegacyVersion = "acl-audit/v1"
 
 // MaxAuditBytes bounds the sealed audit record on decode. A record
 // carries one small witness per finding or relation and no
@@ -39,25 +40,48 @@ const MaxAuditBytes = 64 << 20
 // stage and rule where the budget stopped and claims nothing about
 // the unexamined rules.
 type Record struct {
-	Schema       string             `json:"schema"`
-	Version      string             `json:"version"`
-	Engine       string             `json:"engine"`
-	Scope        string             `json:"scope"`
-	ConfigSHA256 string             `json:"config_sha256"`
-	Name         string             `json:"name"`
-	Kind         string             `json:"kind"`
-	Report       verify.AuditReport `json:"report"`
-	SHA256       string             `json:"sha256,omitempty"`
+	Schema        string             `json:"schema"`
+	Version       string             `json:"version"`
+	Engine        string             `json:"engine"`
+	ParserVersion string             `json:"parser_version,omitempty"`
+	Scope         string             `json:"scope"`
+	ConfigSHA256  string             `json:"config_sha256"`
+	Name          string             `json:"name"`
+	Kind          string             `json:"kind"`
+	Report        verify.AuditReport `json:"report"`
+	SHA256        string             `json:"sha256,omitempty"`
 }
 
 // Audit parses one ACL-only configuration and returns its sealed
 // audit record. A budget-stopped audit is a record, not an error: the
 // report inside carries Complete=false with the stop stage and rule.
 func Audit(ctx context.Context, config []byte, opts verify.Options) (Record, error) {
+	return auditVersion(ctx, config, opts, Version)
+}
+
+func parserForAudit(version, parser string) (string, error) {
+	if version == LegacyVersion && parser == "" {
+		return ciscoacl.LegacyParserVersion, nil
+	}
+	if version == Version && parser == ciscoacl.ParserVersion {
+		return parser, nil
+	}
+	return "", errors.New("unsupported audit parser/version binding")
+}
+
+func auditVersion(ctx context.Context, config []byte, opts verify.Options, version string) (Record, error) {
+	parserPin := ciscoacl.ParserVersion
+	if version == LegacyVersion {
+		parserPin = ""
+	}
+	parser, err := parserForAudit(version, parserPin)
+	if err != nil {
+		return Record{}, err
+	}
 	if len(config) > ciscoacl.MaxInputBytes {
 		return Record{}, errors.New("ACL input exceeds limit")
 	}
-	acl, err := ciscoacl.Parse(config)
+	acl, err := ciscoacl.ParseVersion(config, parser)
 	if err != nil {
 		return Record{}, err
 	}
@@ -65,7 +89,7 @@ func Audit(ctx context.Context, config []byte, opts verify.Options) (Record, err
 	if err != nil {
 		return Record{}, err
 	}
-	rec := Record{Schema: Schema, Version: Version, Engine: verify.EngineVersion, Scope: intent.Scope, ConfigSHA256: evidence.ConfigDigest(config), Name: acl.Name, Kind: acl.Kind, Report: rep}
+	rec := Record{Schema: Schema, Version: version, Engine: verify.EngineVersion, ParserVersion: parserPin, Scope: intent.Scope, ConfigSHA256: evidence.ConfigDigest(config), Name: acl.Name, Kind: acl.Kind, Report: rep}
 	return seal(rec)
 }
 
@@ -114,8 +138,15 @@ func Check(r Record) error {
 }
 
 func validate(r Record) error {
-	if r.Schema != Schema || r.Version != Version {
+	if r.Schema != Schema {
 		return errors.New("unsupported audit schema/version")
+	}
+	parser, err := parserForAudit(r.Version, r.ParserVersion)
+	if err != nil {
+		return err
+	}
+	if !ciscoacl.SupportedKind(r.Kind, parser) {
+		return errors.New("unsupported audit ACL kind for parser")
 	}
 	if r.Engine != verify.EngineVersion || !verify.SupportedEngine(r.Engine) {
 		return errors.New("unsupported audit engine version")
@@ -226,14 +257,18 @@ func Replay(ctx context.Context, config []byte, r Record) (workflow.ReplayResult
 	if evidence.ConfigDigest(config) != r.ConfigSHA256 {
 		return workflow.ReplayResult{}, errors.New("audit original input mismatch")
 	}
-	acl, err := ciscoacl.Parse(config)
+	parser, err := parserForAudit(r.Version, r.ParserVersion)
+	if err != nil {
+		return workflow.ReplayResult{}, err
+	}
+	acl, err := ciscoacl.ParseVersion(config, parser)
 	if err != nil {
 		return workflow.ReplayResult{}, err
 	}
 	if acl.Name != r.Name || acl.Kind != r.Kind {
 		return workflow.ReplayResult{}, errors.New("audit ACL identity mismatch")
 	}
-	fresh, err := Audit(ctx, config, r.Report.Options)
+	fresh, err := auditVersion(ctx, config, r.Report.Options, r.Version)
 	if err != nil {
 		return workflow.ReplayResult{}, err
 	}

@@ -24,6 +24,11 @@ Current checks and QA handoff: [backend-prefix-v02](docs/handoff/backend-prefix-
 The following UI/demo pass is recorded in
 [demo-ui-public](docs/handoff/demo-ui-public.md).
 
+UI update 2 November: the local review desk now prioritizes available results,
+uses a light cream/beige system with muted olive accents, and folds optional watches and policy
+editing. See [design and QA](docs/design/qa/review-desk.md) for checks and open
+visual approval criteria. Historical walkthrough screenshots below predate this pass.
+
 ## What it does
 
 - Reads one full configuration (running-config/backup) or a standalone ACL,

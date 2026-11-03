@@ -507,7 +507,7 @@ describe('runtime review flow', () => {
     vi.mocked(runtime.repairReplay).mockRejectedValueOnce(new ApiError('mismatch', 'EVIDENCE_MISMATCH', undefined, undefined, 400));
     await act(async () => { await result.current.replayRepair(); });
     expect(result.current.disputed).toBe(true);
-    expect(result.current.decision).toBeNull();
+    expect(result.current.decision?.status).toBe('stale');
     expect(result.current.canReceive).toBe(false);
     act(() => result.current.selectAiRepair(1));
     expect(result.current.canReceive).toBe(true);
@@ -617,4 +617,153 @@ describe('runtime review flow', () => {
     await act(async () => { await result.current.proposeConditions(); });
     expect(vi.mocked(runtime.agentSession).mock.calls[0][2]).toBe('Preserve SSH access.');
   });
+});
+
+
+describe('P3-4 stale human decisions', () => {
+  async function manuallyDecided() {
+    const view = await renderReview();
+    await prepare(view.result.current);
+    await acceptAll(view.result.current);
+    act(() => view.result.current.addEdit(repairReceipt.request.edits[0]));
+    await act(async () => { await view.result.current.verifyManualRepair(); });
+    act(() => view.result.current.decideRepair('received'));
+    expect(view.result.current.decision?.status).toBe('current');
+    return view;
+  }
+
+  async function decided(choice: 'received' | 'held' | 'rejected') {
+    const view = await renderReview();
+    await prepare(view.result.current);
+    await acceptAll(view.result.current);
+    vi.mocked(runtime.agentSession).mockResolvedValueOnce(artifact({ ...sessionProposal, repairs: [repairReceipt] }));
+    await act(async () => { await view.result.current.proposeRepair(); });
+    act(() => view.result.current.decideRepair(choice));
+    expect(view.result.current.decision?.status).toBe('current');
+    return view;
+  }
+
+  for (const choice of ['received', 'held', 'rejected'] as const) {
+    for (const change of ['before', 'after', 'condition', 'scope', 'intent', 'candidate'] as const) {
+      it(`${choice} becomes stale after ${change} changes`, async () => {
+        const { result } = await decided(choice);
+        const receiptHash = result.current.decision!.receiptSha256;
+        act(() => {
+          const r = result.current;
+          if (change === 'before' || change === 'after') r.updateSource(change, r.draft[change] + '\n');
+          if (change === 'condition') r.removeCondition(r.draft.conditions[0].id);
+          if (change === 'scope') r.setScopeMode('none');
+          if (change === 'intent') r.updateIntent('Changed review intent');
+          if (change === 'candidate') r.addEdit({ op: 'append', content: 'deny ip any any' });
+        });
+        expect(result.current.decision).toEqual({ choice, receiptSha256: receiptHash, status: 'stale' });
+        expect(result.current.canReceive).toBe(false);
+        act(() => result.current.decideRepair('received'));
+        expect(result.current.decision?.status).toBe('stale');
+      });
+    }
+  }
+
+  it('does not revive a decision when identical receipt bytes return', async () => {
+    const { result } = await decided('received');
+    vi.mocked(runtime.agentSession).mockResolvedValueOnce(artifact({ ...sessionProposal, repairs: [repairReceipt] }));
+    await act(async () => { await result.current.proposeRepair(); });
+    expect(result.current.repair?.receipt.sha256).toBe(repairReceipt.sha256);
+    expect(result.current.decision?.status).toBe('stale');
+    act(() => result.current.decideRepair('received'));
+    expect(result.current.decision?.status).toBe('current');
+  });
+
+  it('navigation and successful replay preserve a current decision', async () => {
+    const { result } = await decided('held');
+    act(() => result.current.navigate('evidence'));
+    await act(async () => { await result.current.replayRepair(); });
+    expect(result.current.decision?.status).toBe('current');
+  });
+
+  for (const side of ['before', 'after'] as const) {
+    it(`restoring ${side} bytes and the original verified receipt does not revive approval`, async () => {
+      const { result } = await manuallyDecided();
+      const source = result.current.draft[side];
+      const previous = result.current.decision!;
+      act(() => result.current.updateSource(side, source + '\n'));
+      act(() => result.current.updateSource(side, source));
+      await prepare(result.current);
+      await acceptAll(result.current);
+      act(() => result.current.addEdit(repairReceipt.request.edits[0]));
+      await act(async () => { await result.current.verifyManualRepair(); });
+      expect(result.current.repair?.receipt.sha256).toBe(previous.receiptSha256);
+      expect(result.current.decision).toEqual({ ...previous, status: 'stale' });
+      act(() => result.current.decideRepair('received'));
+      expect(result.current.decision?.status).toBe('current');
+    });
+  }
+
+  for (const change of ['condition', 'scope'] as const) {
+    it(`restoring the accepted ${change} keeps the prior decision stale`, async () => {
+      const { result } = await manuallyDecided();
+      const previous = result.current.decision!;
+      const condition = result.current.draft.conditions[0];
+      const scope = result.current.draft.scopeMode;
+      act(() => {
+        if (change === 'condition') result.current.updateCondition(condition.id, { ...condition, kind: condition.kind === 'must_deny' ? 'must_permit' : 'must_deny' });
+        else result.current.setScopeMode(scope === 'none' ? 'undeclared' : 'none');
+      });
+      act(() => {
+        if (change === 'condition') result.current.updateCondition(condition.id, condition);
+        else result.current.setScopeMode(scope);
+      });
+      await acceptAll(result.current);
+      act(() => result.current.addEdit(repairReceipt.request.edits[0]));
+      await act(async () => { await result.current.verifyManualRepair(); });
+      expect(result.current.repair?.receipt.sha256).toBe(previous.receiptSha256);
+      expect(result.current.decision).toEqual({ ...previous, status: 'stale' });
+    });
+  }
+
+  it('candidate A to B to A needs a fresh decision even with A’s original digest', async () => {
+    const { result } = await manuallyDecided();
+    const other = { ...repairReceipt, sha256: '9'.repeat(64) };
+    vi.mocked(runtime.agentSession).mockResolvedValueOnce(artifact({ ...sessionProposal, repairs: [repairReceipt, other] }));
+    await act(async () => { await result.current.proposeRepair(); });
+    act(() => result.current.decideRepair('received'));
+    const previous = result.current.decision!;
+    act(() => result.current.selectAiRepair(1));
+    act(() => result.current.selectAiRepair(0));
+    expect(result.current.repair?.receipt.sha256).toBe(previous.receiptSha256);
+    expect(result.current.decision).toEqual({ ...previous, status: 'stale' });
+  });
+
+  it('manual reverify invalidates a decision even when the returned receipt is identical', async () => {
+    const { result } = await manuallyDecided();
+    const previous = result.current.decision!;
+    await act(async () => { await result.current.verifyManualRepair(); });
+    expect(result.current.repair?.receipt.sha256).toBe(previous.receiptSha256);
+    expect(result.current.decision).toEqual({ ...previous, status: 'stale' });
+    expect(result.current.canReceive).toBe(true); // valid proof still permits a new explicit choice
+    act(() => result.current.decideRepair('received'));
+    expect(result.current.decision?.status).toBe('current');
+  });
+
+  for (const outcome of ['failure', 'cancel'] as const) {
+    it(`a ${outcome} during reverify cannot restore a prior decision`, async () => {
+      const { result } = await manuallyDecided();
+      const previous = result.current.decision!;
+      const pending = deferred<Artifact<RepairResult>>();
+      vi.mocked(runtime.repairVerify).mockReturnValueOnce(pending.promise);
+      let run!: Promise<void>;
+      act(() => { run = result.current.verifyManualRepair(); });
+      expect(result.current.decision?.status).toBe('stale');
+      if (outcome === 'cancel') {
+        act(() => result.current.cancel());
+        expect(vi.mocked(runtime.repairVerify).mock.calls.at(-1)![5]?.aborted).toBe(true);
+        pending.resolve(artifact(repairReceipt)); // transport ignores abort and replies late
+      } else pending.reject(new ApiError('Synthetic failure', 'RUNTIME_UNAVAILABLE'));
+      await act(async () => { await run; });
+      expect(result.current.decision).toEqual({ ...previous, status: 'stale' });
+      expect(result.current.busy).toBeNull();
+      if (outcome === 'cancel') expect(result.current.canceled).toBe('repair');
+      else expect(result.current.error?.code).toBe('RUNTIME_UNAVAILABLE');
+    });
+  }
 });

@@ -1,0 +1,30 @@
+name: independent-acl-oracle
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  z3-differential:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r scripts/oracle/requirements.txt
+      - run: python -m unittest discover -s scripts/oracle -p 'test_*.py'
+      - run: go build -o bin/plenilune ./cmd/plenilune
+      - run: python scripts/oracle/differential.py --binary bin/plenilune
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: oracle-disagreement
+          path: out/oracle-failure/
+          if-no-files-found: ignore

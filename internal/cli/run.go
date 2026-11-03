@@ -260,6 +260,10 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		if t.ConfigSHA256 != evidence.ConfigDigest(config) {
 			return fail(stderr, "EVIDENCE_MISMATCH", "configuration bytes do not match trace")
 		}
+		acl, err = ciscoacl.ParseVersion(config, t.ParserVersion)
+		if err != nil {
+			return fail(stderr, "EVIDENCE_MISMATCH", "configuration is outside the recorded parser profile")
+		}
 		d, err := acl.Evaluate(t.Packet)
 		if err != nil || !reflect.DeepEqual(d, t.Decision) {
 			return fail(stderr, "EVIDENCE_MISMATCH", "replayed decision does not match trace")

@@ -240,10 +240,10 @@ export function buildMarkdownReport(input: ReportInput): string {
   push(`- ${t('evidence.limit.scope')}`);
   push('');
   const copy = reviewCopy[locale];
-  const decision = input.reviewDecision?.receiptSha256 === repair?.receipt.sha256 ? input.reviewDecision : null;
+  const decision = input.reviewDecision?.status === 'current' && input.reviewDecision?.receiptSha256 === repair?.receipt.sha256 ? input.reviewDecision : null;
   push(`## ${copy.decision}`);
   push('');
-  push(input.disputed ? copy.disputed : decision ? copy[decision.choice] : copy.undecided);
+  push(input.disputed ? copy.disputed : input.reviewDecision?.status === 'stale' ? copy.stale : decision ? copy[decision.choice] : copy.undecided);
   if (decision) push(`${copy.hash}: \`${decision.receiptSha256}\``);
   push(copy.decisionNote);
   push('');

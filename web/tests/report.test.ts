@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { translate } from '../src/i18n';
 import { buildMarkdownReport } from '../src/lib/report';
+import { reviewCopy } from '../src/lib/reviewArtifacts';
 import type { ReportInput } from '../src/lib/report';
 import {
   accepted,
@@ -87,14 +88,36 @@ describe('translated Markdown report', () => {
   });
 
   it('keeps a human decision bound to its receipt and records disputes without upgrading the engine result', () => {
-    const stale = buildMarkdownReport(input({ reviewDecision: { choice: 'received', receiptSha256: '0'.repeat(64) } }));
+    const stale = buildMarkdownReport(input({ reviewDecision: { choice: 'received', status: 'current', receiptSha256: '0'.repeat(64) } }));
     expect(stale).toContain('Chưa có quyết định');
     expect(stale).not.toContain('Đã nhận để review');
     const disputed = buildMarkdownReport(input({
-      reviewDecision: { choice: 'received', receiptSha256: repairSnapshot.receipt.sha256! }, disputed: true,
+      reviewDecision: { choice: 'received', status: 'current', receiptSha256: repairSnapshot.receipt.sha256! }, disputed: true,
     }));
     expect(disputed).toContain('Bằng chứng đang có sai lệch; chưa được nhận candidate');
     expect(disputed).toContain('không xác thực danh tính người duyệt');
     expect(disputed).toContain('replay --before before.acl --after after.acl --evidence comparison.json');
   });
 });
+
+
+it('P3-4 exports a stale warning even if the receipt digest is unchanged', () => {
+  const markdown = buildMarkdownReport(input({ reviewDecision: {
+    choice: 'received', status: 'stale', receiptSha256: repairSnapshot.receipt.sha256!,
+  } }));
+  expect(markdown).toContain('Quyết định trước đã hết hiệu lực');
+  expect(markdown).not.toContain('Đã nhận để review');
+});
+
+for (const locale of ['vi', 'en'] as const) {
+  for (const choice of ['received', 'held', 'rejected'] as const) {
+    it(`P3-4 ${locale} reports stale ${choice} without presenting it as current`, () => {
+      const markdown = buildMarkdownReport(input({ locale, t: (key, vars) => translate(locale, key, vars),
+        reviewDecision: { choice, status: 'stale', receiptSha256: repairSnapshot.receipt.sha256! },
+      }));
+      expect(markdown).toContain(reviewCopy[locale].stale);
+      expect(markdown).not.toContain(`\n${reviewCopy[locale][choice]}\n`);
+      expect(markdown).toContain(reviewCopy[locale].decisionNote);
+    });
+  }
+}

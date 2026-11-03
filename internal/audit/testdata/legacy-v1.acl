@@ -1,0 +1,5 @@
+ip access-list extended DEMO
+ permit tcp host 192.0.2.10 any eq 22
+ deny tcp 192.0.2.0 0.0.0.255 any eq 22
+ permit tcp any any eq 22
+ deny ip any any

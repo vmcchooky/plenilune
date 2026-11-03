@@ -11,9 +11,8 @@ import (
 
 var aclName = regexp.MustCompile(`^[A-Za-z0-9_.:-]{1,128}$`)
 
-// Parse accepts an ACL-only document, not an arbitrary running-config. Every
-// non-comment line must belong to exactly one supported ACL block.
-func Parse(input []byte) (ACL, error) {
+// parseLegacy preserves the cisco-acl/v0.2 extended grammar and DTO exactly.
+func parseLegacy(input []byte) (ACL, error) {
 	var zero ACL
 	if len(input) > MaxInputBytes {
 		return zero, fail("INPUT_TOO_LARGE", 0, "ACL exceeds byte limit")

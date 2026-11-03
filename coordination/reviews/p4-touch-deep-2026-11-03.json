@@ -1,0 +1,114 @@
+{
+  "320": {
+    "small": [
+      {
+        "tag": "BUTTON",
+        "text": "Thử gói này",
+        "aria": null,
+        "cls": "button button--quiet button--small",
+        "w": 96,
+        "h": 40
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Thử một gói tin",
+        "aria": null,
+        "cls": "",
+        "w": 115,
+        "h": 21
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Toàn bộ cấu hình trước/sau",
+        "aria": null,
+        "cls": "",
+        "w": 184,
+        "h": 21
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Chi tiết gói tin minh chứng",
+        "aria": null,
+        "cls": "",
+        "w": 182,
+        "h": 21
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Chi tiết bằng chứng so sánh",
+        "aria": null,
+        "cls": "",
+        "w": 188,
+        "h": 21
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "aria": null,
+        "cls": "",
+        "w": 16,
+        "h": 16
+      }
+    ],
+    "overflow": {
+      "sw": 320,
+      "cw": 320
+    }
+  },
+  "390": {
+    "small": [
+      {
+        "tag": "BUTTON",
+        "text": "Thử gói này",
+        "aria": null,
+        "cls": "button button--quiet button--small",
+        "w": 96,
+        "h": 40
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Thử một gói tin",
+        "aria": null,
+        "cls": "",
+        "w": 115,
+        "h": 21
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Toàn bộ cấu hình trước/sau",
+        "aria": null,
+        "cls": "",
+        "w": 184,
+        "h": 21
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Chi tiết gói tin minh chứng",
+        "aria": null,
+        "cls": "",
+        "w": 182,
+        "h": 21
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Chi tiết bằng chứng so sánh",
+        "aria": null,
+        "cls": "",
+        "w": 188,
+        "h": 21
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "aria": null,
+        "cls": "",
+        "w": 16,
+        "h": 16
+      }
+    ],
+    "overflow": {
+      "sw": 390,
+      "cw": 390
+    }
+  }
+}

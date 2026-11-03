@@ -1,0 +1,113 @@
+/* Layout unique to the review desk; shared primitives stay in app/components. */
+.workspace-label { margin: 0; color: var(--muted); font-size: var(--text-sm); }
+.workspace-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-2) var(--space-4); }
+.mode-bar { flex-wrap: wrap; }
+.watch-drawer {
+  max-width: var(--max-main);
+  margin: 0 auto var(--space-4);
+  border-bottom: var(--border-thin) solid var(--line);
+}
+.watch-drawer > summary {
+  padding: var(--space-3) 0;
+  color: var(--muted);
+  font-size: var(--text-body);
+  cursor: pointer;
+  min-height: 44px;
+}
+.watch-drawer__count { margin-left: var(--space-3); }
+.watch-drawer[open] > summary { color: var(--ink); }
+.review-disclosure { border-top: var(--border-thin) solid var(--line); padding-top: var(--space-2); }
+.review-disclosure > summary { min-height: 44px; padding: var(--space-3) 0; font-weight: 600; cursor: pointer; }
+.review-disclosure > summary span { display: block; margin: var(--space-2) 0 0; font-size: var(--text-sm); font-weight: 400; color: var(--muted); }
+input[type="checkbox"], input[type="radio"] {
+  width: var(--space-4);
+  height: var(--space-4);
+  min-height: 0;
+  flex: 0 0 var(--space-4);
+  accent-color: var(--accent);
+}
+.inbox-watch__condition, .chat-panel__ai { min-height: 44px; }
+.quick-screen .step-header { position: relative; padding-bottom: 0; }
+.quick-screen .step-header__meta { margin-top: var(--space-3); }
+.quick-screen .source-spread { overflow: hidden; }
+.quick-screen .verdict-plate h2 { font-size: var(--text-xl); letter-spacing: -0.022em; }
+.quick-screen .verdict-plate__facts { gap: var(--space-2) var(--space-4); }
+.source-editor__input { scrollbar-color: var(--line-strong) var(--code-bg); }
+.quick-evidence__toggle { min-height: 44px; padding: var(--space-3) 0; }
+button.badge { min-height: 32px; padding-inline: var(--space-3); }
+@media (pointer: coarse) { button.badge { min-height: 44px; } }
+@media (min-width: 1100px) {
+  .quick-screen .step-header { padding-right: var(--space-12); }
+  .quick-screen .step-lede { max-width: none; }
+}
+@media (max-width: 560px) {
+  .workspace-label { display: none; }
+  .workspace-actions { column-gap: var(--space-2); }
+  .workspace-actions .mode-switch button { padding-inline: var(--space-2); }
+  .mode-bar { justify-content: flex-start; padding-inline: 0; }
+  .quick-screen h1 { font-size: var(--text-xl); }
+  .wordmark__text span { display: none; }
+  .source-editor__head { align-items: center; }
+  .source-editor__head span { order: 3; width: 100%; }
+  .chat-exchange__fact { flex-direction: column; }
+}
+@media print {
+  .watch-drawer, .mode-bar { display: none; }
+}
+
+/* The quick entry answers one question before offering optional review tools. */
+.quick-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-2) var(--space-4); }
+.quick-header h1 { margin: 0; font-size: var(--text-lg); }
+.quick-screen > .review-disclosure { padding-top: 0; }
+.quick-screen > .review-disclosure > summary { font-size: var(--text-body); font-weight: 500; }
+.quick-screen { gap: var(--space-3); }
+.quick-header { margin-bottom: var(--space-3); }
+.quick-screen .quick-evidence__toggle { font-weight: 500; }
+.quick-sources > .quick-dropzone, .quick-questions > .chat-panel { padding-block: var(--space-4); }
+
+.quick-tools > .review-disclosure { border-top: var(--border-thin) solid var(--line); }
+.quick-tools > .review-disclosure > summary { min-height: 44px; padding-block: var(--space-3); cursor: pointer; }
+.quick-tools > .quick-overview > .config-overview { margin-block: var(--space-4); }
+.quick-tools > .review-disclosure > .quick-obligations { padding-bottom: var(--space-6); }
+
+.workspace--quick .watch-drawer, .mode-bar--quick { max-width: var(--study-record-width); }
+
+/* F14 (audit 02/11): the quick record shares the page's left axis with the
+   workspace title instead of floating centered in the 928px column. It is a
+   flex item, so width:100% must come before the 720px cap (shrink-to-fit). */
+.quick-outcome.record-refined { width: 100%; max-width: 720px; margin-inline: 0 auto; }
+
+.workspace--quick .error-panel { max-width: var(--study-record-width); margin-inline: auto; }
+
+/* F9: visible horizontal-scroll cue at the rail edges (mobile only). */
+.step-rail__cue { display: none; }
+@media (max-width: 960px) {
+  .step-rail { position: relative; }
+  .step-rail__cue {
+    display: inline-flex;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    padding: var(--space-1);
+    border-radius: var(--radius-pill);
+    background: var(--surface-3);
+    color: var(--ink-2);
+    pointer-events: none;
+  }
+  .step-rail__cue--left { left: var(--space-2); }
+  .step-rail__cue--right { right: var(--space-2); }
+  .step-rail__cue--left svg { transform: rotate(180deg); }
+}
+
+/* F4: touch targets on coarse pointers keep the 44px floor; desktop keeps
+   its tighter 40px controls. Same pattern as button.badge above. */
+@media (pointer: coarse) {
+  .skip-link { display: inline-flex; align-items: center; min-height: 44px; }
+  .mode-switch button { min-height: 44px; }
+  .technical-details > summary { min-height: 44px; }
+  .button--small { min-height: 44px; }
+  /* Compromise: 24px visual control under touch; still below the 44px floor
+     and recorded as such in the QA notes. */
+  input[type="checkbox"], input[type="radio"] { width: var(--space-6); height: var(--space-6); }
+}

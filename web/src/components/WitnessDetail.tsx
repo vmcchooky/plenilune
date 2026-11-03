@@ -1,6 +1,8 @@
 import { useI18n } from '../i18n';
 import { actionLabel, sourceLine, sourceLines } from '../lib/conditions';
 import type { Decision, Witness } from '../lib/types';
+import { originalSourceLine } from '../lib/sourceMapping';
+import type { FirstSourceLine, SourceLineMap } from '../lib/sourceMapping';
 import { Icon } from './Icon';
 import { PacketRoute } from './PacketRoute';
 import { HashLine, ProvenanceTag, StatusMark, TechnicalDetails } from './Ui';
@@ -11,12 +13,16 @@ function DecisionBlock({
   source,
   changed,
   tag,
+  originalLines,
+  firstLine = 1,
 }: {
   label: string;
   decision: Decision;
   source: string;
   changed: Set<number>;
   tag: string;
+  originalLines?: number[];
+  firstLine?: number;
 }) {
   const { t } = useI18n();
   const text = sourceLine(source, decision.line);
@@ -31,7 +37,7 @@ function DecisionBlock({
           label={actionLabel(t, decision.action)}
         />
       </div>
-      <p className="decision-block__raw"><code>{decision.action}</code>{!decision.implicit && decision.line !== undefined && <span>{t('result.ruleLine', { line: decision.line })}</span>}</p>
+      <p className="decision-block__raw"><code>{decision.action}</code>{!decision.implicit && decision.line !== undefined && <span>{t('result.ruleLine', { line: originalSourceLine(decision.line, originalLines, firstLine) ?? '—' })}</span>}</p>
       {decision.implicit ? (
         <p className="decision-block__rule decision-block__rule--implicit">{t('result.implicit')}</p>
       ) : (
@@ -50,11 +56,15 @@ export function SourceLines({
   lines,
   changed,
   matchedLine,
+  originalLines,
+  firstLine = 1,
 }: {
   title: string;
   lines: string[];
   changed: Set<number>;
   matchedLine?: number;
+  originalLines?: number[];
+  firstLine?: number;
 }) {
   const { t } = useI18n();
   return (
@@ -71,7 +81,7 @@ export function SourceLines({
             const isChanged = changed.has(number);
             return (
               <li key={number} className={`${isChanged ? 'is-changed' : ''} ${matched ? 'is-matched' : ''}`.trim()}>
-                <span className="source-pane__number">{number}</span>
+                <span className="source-pane__number">{originalSourceLine(number, originalLines, firstLine) ?? '—'}</span>
                 <code>{line === '' ? ' ' : line}</code>
                 {matched && <span className="source-pane__label">{t('result.decisionLine')}</span>}
                 {isChanged && !matched && <span className="source-pane__label source-pane__label--change">{t('result.changedLine')}</span>}
@@ -91,6 +101,8 @@ export function WitnessDetail({
   after,
   changedBefore,
   changedAfter,
+  sourceLineMap,
+  firstLine,
 }: {
   witness: Witness;
   title: string;
@@ -98,6 +110,8 @@ export function WitnessDetail({
   after: string;
   changedBefore: Set<number>;
   changedAfter: Set<number>;
+  sourceLineMap?: Partial<SourceLineMap>;
+  firstLine?: Partial<FirstSourceLine>;
 }) {
   const { t } = useI18n();
   const beforeLines = sourceLines(before);
@@ -108,7 +122,7 @@ export function WitnessDetail({
       <div className="witness-detail__head">
         <div>
           <p className="kicker">{title}</p>
-          <h2 id="witness-detail-title">{t('result.witnessTitle')}</h2>
+          <h3 id="witness-detail-title">{t('result.witnessTitle')}</h3>
         </div>
         <ProvenanceTag tone="info" icon="shield">{t('result.runtime')}</ProvenanceTag>
       </div>
@@ -124,6 +138,8 @@ export function WitnessDetail({
           source={before}
           changed={changedBefore}
           tag={t('result.changedLine')}
+          originalLines={sourceLineMap?.before}
+          firstLine={firstLine?.before}
         />
         <div className="decision-path__between" aria-hidden="true">
           <Icon name="arrow" size={18} />
@@ -134,6 +150,8 @@ export function WitnessDetail({
           source={after}
           changed={changedAfter}
           tag={t('result.newLine')}
+          originalLines={sourceLineMap?.after}
+          firstLine={firstLine?.after}
         />
       </div>
       {actionsDiffer && (
@@ -149,8 +167,8 @@ export function WitnessDetail({
       <TechnicalDetails title={t('result.fullSource')}>
         <p className="field-hint">{t('result.sourceCompare')}</p>
         <div className="source-panes">
-          <SourceLines title={t('common.before')} lines={beforeLines} changed={changedBefore} matchedLine={witness.before.line} />
-          <SourceLines title={t('common.after')} lines={afterLines} changed={changedAfter} matchedLine={witness.after.line} />
+          <SourceLines title={t('common.before')} lines={beforeLines} changed={changedBefore} matchedLine={witness.before.line} originalLines={sourceLineMap?.before} firstLine={firstLine?.before} />
+          <SourceLines title={t('common.after')} lines={afterLines} changed={changedAfter} matchedLine={witness.after.line} originalLines={sourceLineMap?.after} firstLine={firstLine?.after} />
         </div>
       </TechnicalDetails>
 

@@ -59,7 +59,7 @@ func CheckIntegrity(t Trace) error {
 }
 
 func validate(t Trace) error {
-	if t.Schema != TraceSchema || t.Scope != intent.Scope || t.ParserVersion != ciscoacl.ParserVersion {
+	if t.Schema != TraceSchema || t.Scope != intent.Scope || !ciscoacl.SupportedParser(t.ParserVersion) {
 		return errors.New("unsupported trace schema, scope or parser")
 	}
 	h, err := hex.DecodeString(t.ConfigSHA256)

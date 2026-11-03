@@ -1,0 +1,128 @@
+{
+  "F3": {
+    "rawVisibleCount": 0,
+    "rawVisible": [],
+    "fixAction": {
+      "text": "Xem / sửa cấu hình",
+      "cls": "",
+      "tag": "SUMMARY"
+    },
+    "liveRegions": [
+      "Cấu hình Sau, dòng 5: địa chỉ hoặc mặt nạ IPv4 không hợp lệ (PARSE_INVALID_IP)"
+    ],
+    "notices": [
+      {
+        "cls": "",
+        "text": "Bỏ qua điều hướngPleniluneKiểm chứng thay đổi cấu hìnhMáy chủ cục bộAI tắtVIENKhông gian duyệt thay đổiKết luận nhanhDuyệt sâuDuyệt thay đổi cấu hìnhĐang dùng dữ liệu mẫuĐiều kiện, bằng chứng & công cụ khácĐối tượng & ph"
+      },
+      {
+        "cls": "app",
+        "text": "Bỏ qua điều hướngPleniluneKiểm chứng thay đổi cấu hìnhMáy chủ cục bộAI tắtVIENKhông gian duyệt thay đổiKết luận nhanhDuyệt sâuDuyệt thay đổi cấu hìnhĐang dùng dữ liệu mẫuĐiều kiện, bằng chứng & công cụ khácĐối tượng & ph"
+      },
+      {
+        "cls": "workspace workspace--quick",
+        "text": "Duyệt thay đổi cấu hìnhĐang dùng dữ liệu mẫuĐiều kiện, bằng chứng & công cụ khácĐối tượng & phạm vi phân tíchTổng quan thay đổi cấu hìnhChưa kết luận: có đối tượng ngoài phạm vi hỗ trợCác phần ngoài phạm vi phân tích khô"
+      },
+      {
+        "cls": "step quick-screen",
+        "text": "Duyệt thay đổi cấu hìnhĐang dùng dữ liệu mẫuĐiều kiện, bằng chứng & công cụ khácĐối tượng & phạm vi phân tíchTổng quan thay đổi cấu hìnhChưa kết luận: có đối tượng ngoài phạm vi hỗ trợCác phần ngoài phạm vi phân tích khô"
+      }
+    ],
+    "buttons": [
+      "A:Bỏ qua điều hướng",
+      "BUTTON:VI",
+      "BUTTON:EN",
+      "BUTTON:Kết luận nhanh",
+      "BUTTON:Duyệt sâu",
+      "SUMMARY:Điều kiện, bằng chứng & công cụ khác",
+      "SUMMARY:Đối tượng & phạm vi phân tích",
+      "BUTTON:Xem chi tiết",
+      "SUMMARY:Phần cấu hình ngoài phạm vi phân tích",
+      "SUMMARY:Xem / sửa cấu hình",
+      "SUMMARY:Điều kiện & trạng thái",
+      "BUTTON:Bằng chứng & chia sẻTóm tắt ticket (.md)"
+    ],
+    "focusAfter": {
+      "tag": "SUMMARY",
+      "id": "",
+      "cls": ""
+    },
+    "status": "PASS",
+    "pass": true
+  },
+  "F5": {
+    "h1BeforeWatch": true,
+    "order": 4,
+    "h1Y": 138,
+    "watchY": 844,
+    "watchTitles": [
+      {
+        "tag": "H2",
+        "text": "Theo dõi & thông báo",
+        "y": 906
+      }
+    ],
+    "duplicateCount": 1,
+    "status": "PASS",
+    "pass": true
+  },
+  "F9": {
+    "steps": [
+      {
+        "text": "01Nguồn & ý địnhCấu hình trước, sau và đ",
+        "x": -194,
+        "w": 144
+      },
+      {
+        "text": "02Điều kiện & phạm viDuyệt điều kiện trư",
+        "x": -46,
+        "w": 169
+      },
+      {
+        "text": "03Kết quảKết luận, đối tượng và bằng chứ",
+        "x": 127,
+        "w": 136
+      },
+      {
+        "text": "04Bản sửaBản sửa ứng viên và ảnh hưởng",
+        "x": 267,
+        "w": 136
+      },
+      {
+        "text": "05Bằng chứngBáo cáo dịch và JSON gốc",
+        "x": 407,
+        "w": 136
+      }
+    ],
+    "firstX": -194,
+    "scroll": {
+      "sw": 769,
+      "cw": 390,
+      "left": 210
+    },
+    "snap": "x",
+    "affordances": [],
+    "status": "PARTIAL",
+    "pass": false
+  },
+  "F16": {
+    "panel": {
+      "visible": true,
+      "w": 928,
+      "x": 256,
+      "text": "Máy chủ cục bộ không phản hồiTrình duyệt không kết nối được API Plenilune cục bộ.Máy phân tích cục bộ không phản hồi. Kiểm tra tiến trình demo còn chạy rồi bấm Thử lại; kết quả cũ không được giữ làm hiện tại.Chi tiết kỹ thuậtMã lỗiRUNTIME_UNAVAILABLEThông điệp gốc từ máy chủThe local Plenilune runtime is unavailable.Thử lạiĐóng"
+    },
+    "retry": {
+      "text": "Thử lại",
+      "cls": "button button--secondary button--small"
+    },
+    "mentionsDevPackage": false,
+    "retryWorked": {
+      "errorVisible": false,
+      "hasOutcome": true
+    },
+    "aligned": true,
+    "status": "PASS",
+    "pass": true
+  }
+}

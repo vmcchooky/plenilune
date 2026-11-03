@@ -37,6 +37,8 @@ func fuzzPacket(data []byte, i int) Packet {
 // codebase). A round trip must preserve the DTO exactly and keep every
 // packet decision identical.
 func FuzzACLJSONRoundTrip(f *testing.F) {
+	f.Add([]byte("ip access-list standard X\n 30 permit any\n 10 deny 192.0.2.0 0.0.0.255\n 20 permit host 192.0.2.7\n"))
+	f.Add([]byte("access-list 1300 deny any\naccess-list 1300 permit 192.0.2.7\n"))
 	f.Add([]byte("ip access-list extended MGMT\n 10 permit tcp 192.0.2.0 0.0.0.255 host 198.51.100.10 eq 22\n 20 deny ip any any\n"))
 	f.Add([]byte("ip access-list extended MGMT\n 20 deny tcp host 192.0.2.10 any eq 22 log\n 30 permit tcp 192.0.2.0 0.0.0.255 host 198.51.100.10 eq 22\n 40 deny ip any any\n!\n"))
 	f.Add([]byte("ip access-list extended X\n permit tcp any any neq 23\n permit udp any any range 8000 8099\n deny ip any any log-input\n"))

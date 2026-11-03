@@ -68,6 +68,11 @@ func fail(code, message string) error { return &Error{Code: code, Message: messa
 // Apply resolves every reference against baseAfter before rendering any edit.
 // It returns no candidate on error and never modifies the supplied bytes.
 func Apply(baseAfter []byte, req Request) ([]byte, error) {
+	return ApplyVersion(baseAfter, req, ciscoacl.ParserVersion)
+}
+
+// ApplyVersion keeps replay rendering bound to the recorded parser grammar.
+func ApplyVersion(baseAfter []byte, req Request, parser string) ([]byte, error) {
 	if req.Schema != Schema || req.Scope != intent.Scope {
 		return nil, fail("PATCH_METADATA_INVALID", "unsupported patch schema or scope")
 	}
@@ -84,7 +89,7 @@ func Apply(baseAfter []byte, req Request) ([]byte, error) {
 	if len(req.Edits) < 1 || len(req.Edits) > MaxEdits {
 		return nil, fail("PATCH_EDITS_INVALID", "patch requires one to five edits")
 	}
-	base, err := ciscoacl.Parse(baseAfter)
+	base, err := ciscoacl.ParseVersion(baseAfter, parser)
 	if err != nil {
 		return nil, fail("PATCH_BASE_INVALID", "base source is not a supported ACL")
 	}
@@ -93,7 +98,7 @@ func Apply(baseAfter []byte, req Request) ([]byte, error) {
 	for _, edit := range req.Edits {
 		switch edit.Op {
 		case "add_before", "replace", "append":
-			if err := validateContent(edit.Content); err != nil {
+			if err := validateContentKind(edit.Content, base.Kind, parser); err != nil {
 				return nil, err
 			}
 		case "remove":
@@ -120,16 +125,29 @@ func Apply(baseAfter []byte, req Request) ([]byte, error) {
 		byLine[ref.Line] = edit
 	}
 	lines, eol := splitLines(string(baseAfter))
-	lastRule := base.Rules[len(base.Rules)-1].Line
+	standard, numbered, highest := base.Kind == "standard", false, int64(0)
+	if standard {
+		numbered, highest = standardLineOrders(lines, base)
+	}
+	insertText := func(content, prefix string) string {
+		if numbered {
+			return "access-list " + base.Name + " " + strings.Trim(content, " ")
+		}
+		return prefix + strings.Trim(content, " ")
+	}
+	lastRule := 0
+	for _, rule := range base.Rules {
+		lastRule = max(lastRule, rule.Line)
+	}
 	out := make([]sourceLine, 0, len(lines)+len(req.Edits))
 	for i, line := range lines {
 		if edit, exists := byLine[i+1]; exists {
 			switch edit.Op {
 			case "add_before":
-				out = append(out, sourceLine{text: " " + strings.Trim(edit.Content, " "), eol: eol})
+				out = append(out, sourceLine{text: insertText(edit.Content, " "), eol: eol, order: line.order - 1, entry: standard && !numbered})
 				out = append(out, line)
 			case "replace":
-				out = append(out, sourceLine{text: indent(line.text) + strings.Trim(edit.Content, " "), eol: line.eol})
+				out = append(out, sourceLine{text: insertText(edit.Content, indent(line.text)), eol: line.eol, order: line.order, entry: line.entry})
 			case "remove": // Deliberately omit only the referenced executable line.
 			}
 		} else {
@@ -144,14 +162,18 @@ func Apply(baseAfter []byte, req Request) ([]byte, error) {
 				if i == len(lines)-1 && j == len(appends)-1 && line.eol == "" {
 					ending = ""
 				}
-				out = append(out, sourceLine{text: " " + content, eol: ending})
+				out = append(out, sourceLine{text: insertText(content, " "), eol: ending, order: highest + int64(j) + 1, entry: standard && !numbered})
 			}
 		}
 	}
 	if len(out) > ciscoacl.MaxLines {
 		return nil, fail("PATCH_LIMIT", "candidate exceeds line limit")
 	}
-	renumber(out)
+	if standard && !numbered {
+		renumberStandard(out)
+	} else {
+		renumber(out)
+	}
 	var candidate strings.Builder
 	for _, line := range out {
 		if len(line.text) > ciscoacl.MaxLineBytes || candidate.Len()+len(line.text)+len(line.eol) > ciscoacl.MaxInputBytes {
@@ -161,7 +183,7 @@ func Apply(baseAfter []byte, req Request) ([]byte, error) {
 		candidate.WriteString(line.eol)
 	}
 	data := []byte(candidate.String())
-	after, err := ciscoacl.Parse(data)
+	after, err := ciscoacl.ParseVersion(data, parser)
 	if err != nil || after.Name != base.Name || after.Kind != base.Kind {
 		return nil, fail("PATCH_CANDIDATE_INVALID", "candidate is not a supported ACL with the same identity")
 	}
@@ -177,6 +199,10 @@ func digest(text string) bool {
 }
 
 func validateContent(content string) error {
+	return validateContentKind(content, "named-extended", ciscoacl.ParserVersion)
+}
+
+func validateContentKind(content, kind, parser string) error {
 	if len(content) == 0 || len(content) > MaxContentBytes || !utf8.ValidString(content) {
 		return fail("PATCH_CONTENT_INVALID", "rule content exceeds allowed encoding or size")
 	}
@@ -190,7 +216,11 @@ func validateContent(content string) error {
 	if len(fields) == 0 || !strings.EqualFold(fields[0], "permit") && !strings.EqualFold(fields[0], "deny") {
 		return fail("PATCH_CONTENT_INVALID", "content must be an unsequenced permit or deny rule")
 	}
-	a, err := ciscoacl.Parse([]byte("ip access-list extended PATCH\n " + body + "\n"))
+	header := "ip access-list extended PATCH\n "
+	if kind == "standard" {
+		header = "ip access-list standard PATCH\n "
+	}
+	a, err := ciscoacl.ParseVersion([]byte(header+body+"\n"), parser)
 	if err != nil || len(a.Rules) != 1 {
 		return fail("PATCH_CONTENT_INVALID", "content is outside the supported rule grammar")
 	}

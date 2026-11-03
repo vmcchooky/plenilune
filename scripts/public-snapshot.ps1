@@ -47,6 +47,12 @@ foreach ($tree in @('cmd', 'internal', 'testdata', 'docs', 'examples/moonstorm-c
 
 Get-ChildItem -LiteralPath (Join-Path $root 'scripts') -File -Filter '*.ps1' | ForEach-Object { Copy-PublicFile $_ }
 
+# Development gates must accompany the source snapshot; no Python packages or
+# generated caches are redistributed.
+foreach ($name in @('scripts/fuzz.sh', 'scripts/oracle/requirements.txt', 'scripts/oracle/differential.py', 'scripts/oracle/test_differential.py', '.github/workflows/fuzz.yml', '.github/workflows/oracle.yml')) {
+    Copy-PublicFile (Get-Item -LiteralPath (Join-Path $root $name))
+}
+
 foreach ($name in @('index.html', 'package.json', 'package-lock.json', '.gitignore', 'tsconfig.json', 'vite.config.ts', 'vitest.config.ts')) {
     Copy-PublicFile (Get-Item -LiteralPath (Join-Path $root ('web/' + $name)))
 }

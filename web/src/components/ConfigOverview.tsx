@@ -1,6 +1,7 @@
 import { useI18n } from '../i18n';
 import type { MessageKey } from '../i18n/messages.en';
 import type { Review } from '../hooks/useReview';
+import { objectErrorClause } from '../lib/labels';
 import type { AnalysisObject, ObjectStatus } from '../lib/types';
 import { SectionHeading, StatusMark, TechnicalDetails } from './Ui';
 import type { Tone } from './Ui';
@@ -58,18 +59,21 @@ export function ObjectErrors({ object }: { object: AnalysisObject }) {
   const { t } = useI18n();
   if (!object.errors?.length) return null;
   return (
-    <ul className="object-errors">
-      {object.errors.map((e, i) => {
-        const side = t(e.side === 'before' ? 'common.before' : 'common.after');
-        return (
-          <li key={i}>
-            {e.line
-              ? t('overview.error', { side, line: e.line, message: e.message, code: e.code })
-              : t('overview.errorNoLine', { side, message: e.message, code: e.code })}
-          </li>
-        );
-      })}
-    </ul>
+    <div role="status">
+      <ul className="object-errors">
+        {object.errors.map((e, i) => {
+          const side = t(e.side === 'before' ? 'common.before' : 'common.after');
+          const clause = objectErrorClause(t, e.code);
+          return (
+            <li key={i} title={e.message}>
+              {e.line
+                ? t('overview.error', { side, line: e.line, clause, code: e.code })
+                : t('overview.errorNoLine', { side, clause, code: e.code })}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 

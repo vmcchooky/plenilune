@@ -17,7 +17,9 @@ import (
 
 func supportedVersions(v Versions) bool {
 	current := currentVersions()
-	if v.Intake != current.Intake || v.ACLParser != current.ACLParser {
+	currentACL := v.Intake == current.Intake && v.ACLParser == current.ACLParser
+	legacyACL := v.Intake == LegacyIntakeVersion && v.ACLParser == ciscoacl.LegacyParserVersion
+	if !currentACL && !legacyACL {
 		return false
 	}
 	// Artifacts sealed under a previous ACL engine replay with that
@@ -129,11 +131,11 @@ func replaySafety(ctx context.Context, before, after []byte, recorded, fresh Res
 				if o.Before == nil || o.After == nil {
 					return 0, false, mismatch()
 				}
-				b, err := sourceACL(before, o.Before)
+				b, err := sourceACL(before, o.Before, recorded.Versions.ACLParser)
 				if err != nil {
 					return 0, false, err
 				}
-				a, err := sourceACL(after, o.After)
+				a, err := sourceACL(after, o.After, recorded.Versions.ACLParser)
 				if err != nil {
 					return 0, false, err
 				}
@@ -154,11 +156,11 @@ func replaySafety(ctx context.Context, before, after []byte, recorded, fresh Res
 		if o.Before == nil || o.After == nil {
 			return 0, false, mismatch()
 		}
-		b, err := sourceACL(before, f.Before)
+		b, err := sourceACL(before, f.Before, recorded.Versions.ACLParser)
 		if err != nil {
 			return 0, false, err
 		}
-		a, err := sourceACL(after, f.After)
+		a, err := sourceACL(after, f.After, recorded.Versions.ACLParser)
 		if err != nil {
 			return 0, false, err
 		}
@@ -220,11 +222,38 @@ func clearChangesTiming(r *verify.ChangeReport) {
 	r.Partial = nil
 }
 
-func sourceACL(source []byte, e *Extent) (ciscoacl.ACL, error) {
-	if e == nil || e.ByteStart == nil || e.ByteEnd == nil || *e.ByteStart < 0 || *e.ByteEnd < *e.ByteStart || *e.ByteEnd > len(source) {
+func sourceACL(source []byte, e *Extent, parser string) (ciscoacl.ACL, error) {
+	if e == nil {
 		return ciscoacl.ACL{}, mismatch()
 	}
-	a, err := ciscoacl.Parse(source[*e.ByteStart:*e.ByteEnd])
+	var raw []byte
+	if e.ByteStart != nil || e.ByteEnd != nil {
+		if e.ByteStart == nil || e.ByteEnd == nil || *e.ByteStart < 0 || *e.ByteEnd < *e.ByteStart || *e.ByteEnd > len(source) {
+			return ciscoacl.ACL{}, mismatch()
+		}
+		raw = source[*e.ByteStart:*e.ByteEnd]
+	} else {
+		rows, previous := splitLines(source), 0
+		if len(e.Lines) == 0 {
+			return ciscoacl.ACL{}, mismatch()
+		}
+		for _, span := range e.Lines {
+			if span[0] <= previous || span[1] < span[0] || span[1] > len(rows) {
+				return ciscoacl.ACL{}, mismatch()
+			}
+			for _, row := range rows[span[0]-1 : span[1]] {
+				if len(raw)+row.end-row.start > ciscoacl.MaxInputBytes {
+					return ciscoacl.ACL{}, mismatch()
+				}
+				raw = append(raw, source[row.start:row.end]...)
+			}
+			previous = span[1]
+		}
+	}
+	if digest(raw) != e.SHA256 {
+		return ciscoacl.ACL{}, mismatch()
+	}
+	a, err := ciscoacl.ParseVersion(raw, parser)
 	if err != nil {
 		return ciscoacl.ACL{}, mismatch()
 	}

@@ -62,8 +62,11 @@ func TestStandardAndIPv6SameNameKeepSeparateSourceNamespaces(t *testing.T) {
 			}
 			if object.Kind == "ipv6" {
 				ipv6 = true
-				if object.Status != "unsupported" {
-					t.Fatal("IPv6 accidentally supported")
+				// Since P3-7 the IPv6 namespace is analyzed in its own right;
+				// identical sources classify unchanged without touching the
+				// IPv4 object that shares the name.
+				if object.Status != "unchanged" || len(object.Errors) != 0 {
+					t.Fatalf("IPv6 namespace mishandled: %+v", object)
 				}
 			}
 		}

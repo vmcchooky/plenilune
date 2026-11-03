@@ -10,6 +10,7 @@ import (
 	"unicode/utf8"
 
 	"plenilune/internal/ciscoacl"
+	"plenilune/internal/ciscoacl6"
 	"plenilune/internal/prefixlist"
 )
 
@@ -139,6 +140,7 @@ type found struct {
 	err                *ObjectError
 	acl                *ciscoacl.ACL
 	aclBytes           []byte
+	acl6               *ciscoacl6.ACL
 	raw                []byte
 	prefix             *prefixlist.List
 	canonical          string
@@ -330,6 +332,17 @@ func intakeLegacy(data []byte, parser string, legacyText bool) inventory {
 	}
 	collectReferences(lines, inv, legacyText)
 	return inv
+}
+
+func acl6Error(err error, headerLine int) *ObjectError {
+	if e, ok := err.(*ciscoacl6.Error); ok {
+		out := &ObjectError{Code: e.Code, Message: e.Message}
+		if e.Line > 0 {
+			out.Line = headerLine + e.Line - 1
+		}
+		return out
+	}
+	return &ObjectError{Code: "PARSE_FAILED", Message: "IPv6 ACL parse failed", Line: headerLine}
 }
 
 func aclError(err error, headerLine int) *ObjectError {

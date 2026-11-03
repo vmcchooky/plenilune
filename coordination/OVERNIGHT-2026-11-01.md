@@ -516,6 +516,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#58 đã merge bởi Chí Nhân:** GitHub xác nhận main `b489720c858098aa550d1dc924027e304f0128ee`. Theo D12 đã regen manifest trên checkout sạch `D:/Quorix/gate-46-20261102`, `core.autocrlf=false`, script `scripts/public-snapshot.ps1`: `Manifest entries: 461 (manifest file itself is not listed)`; scan snapshot nguyên văn `Secret scan clean: 430 scanned files; no blocking patterns.` PR #62 https://github.com/vmcchooky/plenilune/pull/62 head `1842c34`; chỉ manifest; thay đổi thứ tự dòng do sort script local, xin soát hash/ordering; KHÔNG merge.
+
+
 - **#60 lần tiếp: cổng npm đỏ do lỗi thao tác lặp lại của tôi; dừng.** Sau chỉ đạo đổi nhãn, lệnh sửa dùng nhầm `web/src/...` trong cwd `web`, Python báo nguyên văn `FileNotFoundError: [Errno 2] No such file or directory: 'web\\src\\components\\InboxPanel.tsx'`. Vì chuỗi lệnh vẫn chạy tiếp `npm test` dù sửa chưa xảy ra, cùng hai test lại fail: `TestingLibraryElementError: Found multiple elements with the text: Add a watched object`; `Test Files  1 failed | 21 passed (22)`, `Tests  2 failed | 180 passed (182)`, `Start at 06:25:39`, `Duration 13.79s`. Output DOM dài không lưu riêng. Không có sửa mới hay push; xin chỉ đạo tiếp sau cổng đỏ này.
 
 

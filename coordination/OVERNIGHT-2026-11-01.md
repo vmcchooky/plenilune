@@ -458,20 +458,20 @@ local KHÔNG sửa Mục A, KHÔNG sửa STATUS.md (Chí Nhân sở hữu, trán
 Chí Nhân; PR UI không đụng `internal/` hay `docs/plan/`; merge PR UI chỉ khi
 Mục A có dòng UI-MERGE OK cho PR đó.
 
-### 3. Bảng trạng thái (2026-11-03 13:20, cập nhật bởi Chí Nhân)
+### 3. Bảng trạng thái (2026-11-03 13:40, cập nhật bởi Chí Nhân)
 
 | Hạng mục | Trạng thái |
 |---|---|
-| main | `a9449d5` (PR #56 P3-6 đã merge sau cổng Windows PASS toàn bộ — báo cáo Mục B 12:52) |
+| main | `b11e300` (PR #57 manifest đã merge bởi agent local theo MANIFEST-MERGE OK) |
 | P3-6 | DONE (merge `a9449d5`) |
-| Manifest post-#56 | PR **#57** OPEN, head `4120021`, 450 entries, secret-scan sạch (Mục B 12:57). Chí Nhân đã kiểm chứng độc lập: diff chỉ `docs/public-manifest.sha256`, **450/450 hash khớp cây main `a9449d5`** (sha256 nội dung file) → xem dòng MANIFEST-MERGE OK dưới đây |
-| P3-7 IPv6 | Chí Nhân đã build xong + cổng Linux xanh trên main cũ; đã rebase lên `a9449d5` (commit `0c89960`, xử lý xung đột STATUS + standard_intake), cổng Linux trên nhánh rebase đang chạy; PR + chỉ đạo cổng sẽ xuất hiện sau khi cổng xanh (push cần thẻ duyệt của chủ sở hữu) |
+| P3-7 IPv6 | PR **#58** OPEN, head `eb5a9dd`, cổng Linux trên cây rebase xanh toàn bộ; chờ cổng Windows (chỉ đạo D6). Sau merge cần regen manifest (quy trình thường lệ: LOCAL mở PR manifest, Chí Nhân kiểm chứng rồi xử lý merge) |
 | P3-2 | Đóng PARTIAL theo ủy quyền; PR tài liệu (D5) làm SAU khi P3-7 merge, để tránh xung đột STATUS |
-| UI | Brief tại `coordination/UI-WORLDCLASS-BRIEF.md`; lát U1 audit giao LOCAL (D3) vẫn hiệu lực |
+| UI | U1 audit (D3) ĐÃ BÁO (13:18, khôi phục nguyên văn ở Mục B sau sự cố ghi đè của Chí Nhân). Ưu tiên lát do Chí Nhân duyệt: **U2 → U3 → U4** (xem D7). Chủ sở hữu phản hồi thêm 13:19: chế độ nhanh còn rắc rối/dài dòng, đặc biệt **phân cấp menu xổ xuống ở quick mode** — đưa vào U4 |
 
-**MANIFEST-MERGE OK — PR #57 (Chí Nhân, kiểm chứng độc lập 2026-11-03 13:20):** diff chỉ `docs/public-manifest.sha256`; 450/450 hash khớp cây main `a9449d5`. LOCAL được phép merge PR #57 (merge commit) và báo SHA main mới vào Mục B.
+**MANIFEST-MERGE OK — PR #57:** ĐÃ THỰC THI (agent local đã merge, main `b11e300`).
 
-- **D2b — LOCAL** (khi thấy MANIFEST-MERGE OK trên đây): merge PR #57, báo SHA main mới vào Mục B, rồi tiếp tục vòng lặp (D3 nếu chưa báo).
+- **D6 — LOCAL**: Cổng Windows đầy đủ trên PR **#58** (P3-7, head `eb5a9dd`): gofmt, go vet, go build, go test ./..., go test -race ./... -skip '^TestLiveMeta', web npm test + npm run build. **Chỉ cổng + báo nguyên văn vào Mục B, KHÔNG merge** — chủ sở hữu chỉ đạo 13:19 việc merge do Chí Nhân tự xử lý tiếp. Đỏ ở bất kỳ cổng nào → báo nguyên văn, DỪNG, không tự sửa.
+- **D7 — LOCAL** (sau D6): Lát **U2** của brief UI — xử lý dòng ACL dài trong editor (P0-1 theo báo cáo U1: `SourceInputs.tsx` `wrap="off"`): soft-wrap có gutter số dòng cố định hoặc ruler độ dài, không tràn ngang 360–1920, giữ nguyên luồng verdict-first và hệ Neo 1+. PR web-only kèm ảnh trước/sau cùng viewport + bằng chứng axe/overflow; **merge chỉ khi Mục A có UI-MERGE OK của Chí Nhân**. U3 (inbox) và U4 (làm phẳng phân cấp menu quick mode + sửa heading-order ở deep-evidence + nới touch target về ≥44px) sẽ có chỉ đạo riêng sau.
 
 ### 4. Chỉ đạo
 
@@ -531,14 +531,7 @@ Mục A có dòng UI-MERGE OK cho PR đó.
   - **PR Manifest:** Đã mở **PR #57** (`https://github.com/vmcchooky/plenilune/pull/57`).
   - **Bất biến:** **TUYỆT ĐỐI KHÔNG TỰ MERGE PR #57**, để nguyên chờ Chí Nhân / chủ sở hữu kiểm chứng hash và merge.
 
-- 13:21 03/11 — **BÁO CÁO CHỈ ĐẠO D2b: MERGE PR #57 MANIFEST (agent local).**
-  - Nhận dòng **MANIFEST-MERGE OK — PR #57** từ Mục A (Chí Nhân kiểm chứng độc lập 450/450 hash).
-  - Đã thực hiện merge PR #57 bằng merge commit (`Merge pull request #57 from vmcchooky/chore/public-manifest-regen-post56`).
-  - Merge commit SHA: **`b11e3006d338a14e7dc652b17ae2dcc761caf3fb`** (`b11e300`).
-  - **`main` mới: `b11e300`**.
-  - Worktree `manifest-regen-post56` và nhánh local đã dọn sạch.
-
-- 13:22 03/11 — **BÁO CÁO CHỈ ĐẠO D3: LÁT U1 AUDIT GIAO DIỆN CHUẨN THẾ GIỚI (agent local).**
+- 13:18 03/11 — **BÁO CÁO CHỈ ĐẠO D3: LÁT U1 AUDIT GIAO DIỆN CHUẨN THẾ GIỚI (agent local).**
   - **Phạm vi:** Đo lường và chụp inventory mọi màn hình (`quick`, `deep-source`, `deep-conditions`, `deep-result`, `deep-evidence`, `verdict inbox`, `chat`) ở 8 bề rộng (360, 390, 480, 768, 1024, 1280, 1440, 1920 px); quét axe WCAG 2.2 AA; kiểm tra tràn ngang; kiểm tra touch target mobile; đánh giá 2 khiếm khuyết P0. **Tuyệt đối không sửa code.**
   - **Dữ liệu thực nghiệm & Ảnh chụp:** Lưu tại `out/u1-audit/` (báo cáo `audit-report.json` và 23 ảnh chụp tại `out/u1-audit/screenshots/`).
 
@@ -562,4 +555,6 @@ Mục A có dòng UI-MERGE OK cho PR đó.
      - Khi inbox rỗng, không gian panel bị trống trải đơn điệu.
      - **Đề xuất cho lát U3:** Tái bố cục đưa danh sách verdict lên vị trí chủ đạo với visual card/table dày dặn thông tin; form theo dõi chuyển thành action mở rộng hoặc layout 2 cột trên desktop.
 
-  - Báo cáo D2b & D3 hoàn tất. Chờ Chí Nhân xem xét bảng lệch chuẩn U1 và mở PR P3-7 / chỉ đạo tiếp theo.
+  - Báo cáo hoàn tất. Chờ Chí Nhân xem xét bảng lệch chuẩn và duyệt thứ tự ưu tiên các lát U2–U4.
+
+  *(Khôi phục nguyên văn bởi Chí Nhân 13:40 — bản báo cáo này từng bị ghi đè mất khỏi đầu file do Chí Nhân đẩy Mục A từ bản sao cũ ở commit 285b850; nội dung lấy lại từ commit d2bd459. Xin lỗi agent local — lỗi ở phía Chí Nhân, không phải ở báo cáo.)*

@@ -512,6 +512,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D11 — vướng giới hạn sản phẩm, xin chỉ đạo:** main `b11e300`, nhánh local `fix/p36-p15-test-timeout`, chưa sửa/commit. `internal/analysis/analysis.go` validate `l.Timeout > d.Timeout` trả `OPTIONS_INVALID`; `internal/packetset/budget.go` `Defaults()` đặt `Timeout: 2 * time.Second`. Vì vậy đặt timeout test >2s không được nhận, còn ghim 2s không thay đổi giới hạn đã gây hai lượt race đỏ. D11 đồng thời cấm sửa engine/giới hạn sản phẩm và cấm đổi assertion: chưa thấy cách thực hiện đúng đủ các điều kiện. Xin Chí Nhân quyết hướng (ví dụ thu nhỏ corpus trong khi vẫn chứng minh cùng thuộc tính, nếu chấp thuận; hoặc thay đổi ranh giới theo chỉ đạo riêng). Không chạy lại cổng đỏ, chuyển việc độc lập D13.
+
+
 - **#59 U2 — kiểm tra gutter ĐỎ, cần chỉ đạo:** Đã sửa local chưa commit: bỏ huy hiệu cảnh báo >80, giữ max length trung tính; ruler ghi `logical col`/`cột logic` (đếm UTF-16 code units theo textarea selectionStart, không phải cột hiển thị). `npm test` PASS 23 files/185 tests; `npm run build` PASS (cảnh báo chunk). Đo bằng Brave headless, viewport 390×900, textarea 100 dòng synthetic dài 150 ký tự, đặt scrollTop tại 10%, 50%, 100%, 30%, đọc sau hai requestAnimationFrame. Nguyên văn:
   ```text
   wrapped [{"text":1294,"gutter":1294,"textMax":12940,"gutterMax":1775},{"text":6470,"gutter":1775,"textMax":12940,"gutterMax":1775},{"text":12940,"gutter":1775,"textMax":12940,"gutterMax":1775},{"text":3882,"gutter":1775,"textMax":12940,"gutterMax":1775}]

@@ -458,7 +458,7 @@ local KHÔNG sửa Mục A, KHÔNG sửa STATUS.md (Chí Nhân sở hữu, trán
 Chí Nhân; PR UI không đụng `internal/` hay `docs/plan/`; merge PR UI chỉ khi
 Mục A có dòng UI-MERGE OK cho PR đó.
 
-### 3. Bảng trạng thái (2026-11-03 22:47, cập nhật bởi Chí Nhân)
+### 3. Bảng trạng thái (2026-11-03 23:50, cập nhật bởi Chí Nhân)
 
 | Hạng mục | Trạng thái |
 |---|---|
@@ -475,6 +475,10 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 - **GIA HẠN CA — 22:47**: Chủ sở hữu **gia hạn ca local qua 22:00** và chốt 22:49: **không đặt mốc dừng cứng — chạy tới khi HẾT HÀNG thì dừng**. Hết hàng = không còn chỉ đạo LOCAL nào chưa có báo cáo ở Mục B và không còn PR nào chờ cổng; khi đó ghi báo cáo kết ca vào Mục B rồi dừng. Chí Nhân vẫn có thể ghi **STAND-DOWN** bất cứ lúc nào để dừng sớm.
 - **D8 — LOCAL**: Lát **U3** của brief UI — mật độ/bố cục **verdict inbox** (P0-2 theo báo cáo U1: form watch chật ở đáy panel, inbox trống là khoảng chết): danh sách verdict chiếm ưu thế với thẻ/bảng giàu thông tin hơn, form watch thành hành động mở rộng hoặc bố cục 2 cột trên desktop; không tràn ngang 360–1920; giữ nguyên luồng verdict-first và hệ Neo 1+. PR web-only kèm ảnh trước/sau cùng viewport + bằng chứng axe/overflow + cổng npm xanh; **merge chỉ khi Mục A có UI-MERGE OK của Chí Nhân**. PR #59 (U2) vẫn chờ duyệt — không tự merge.
+- **TRẢ LỜI D8 — 23:50 (đọc kỹ, làm ngay):** Lỗi `web\web\tests` là lỗi HARNESS của chính agent (cwd đã ở `web/` mà còn ghi `web/tests/u3-browser.mjs`), **KHÔNG phải cổng sản phẩm đỏ**. Sửa đường dẫn thành `tests/u3-browser.mjs` (tính từ `web/`) hoặc đường dẫn tuyệt đối, chạy tiếp kiểm tra Playwright + axe cho U3. **Quy tắc phân biệt từ nay:** (a) cổng SẢN PHẨM đỏ (test/build/axe/overflow của repo) → dừng + báo nguyên văn; (b) lỗi THIẾT LẬP/HARNESS do agent tự gây (sai đường dẫn, typo ở script tạm, lệnh gõ sai) → **tự sửa và chạy tiếp**, ghi chú ngắn trong báo cáo. Hoàn tất bằng chứng U3 → commit → mở PR; bổ sung/chỉnh test cho phần inbox đã đổi theo mẫu U2 (tối thiểu giữ toàn bộ test hiện có xanh và ghi rõ độ phủ trong báo cáo).
+- **D9 — LOCAL** (ngay sau D8): Cổng tập trung cho PR **#58** khi máy local rảnh tải: `go test -race -run 'TestP15GlobalBudgetLedger|TestP36GroupFormBeyondExpansionWall' -count=3 ./internal/analysis/` rồi `go test -race ./... -skip '^TestLiveMeta'` đúng 1 lần. Bối cảnh: Chí Nhân đã chẩn đoán — cả 2 fail ở D6 là chữ ký wall-clock (Timeout 2s/stage) dưới -race + tải máy; P36 đã tái hiện được trên Linux khi ép tải CPU (dừng ở wall_clock tại 528k/2M operations); ledger theo mã nguồn là tất định (lắp ráp tuần tự canonical, charge là hàm thuần). Báo nguyên văn vào Mục B; **KHÔNG merge, KHÔNG sửa code**.
+- **D10 — CHẾ ĐỘ ĐÊM (chỉ đạo của chủ sở hữu 23:44):** Ca chạy **XUYÊN ĐÊM tới sáng**; Chí Nhân cũng trực phía Mục A suốt đêm và trả lời theo từng vòng poll. Gặp câu hỏi/điểm chưa rõ → ghi vào Mục B rồi **CHUYỂN NGAY sang chỉ đạo độc lập kế tiếp, KHÔNG dừng ca chờ trả lời**. Chỉ dừng khi Mục A có **STAND-DOWN**, hoặc hết hàng VÀ Chí Nhân xác nhận kết ca tại Mục A.
+- **TRANH BIỆN UI — Vòng 1: lát U4.** Lập trường mở của Chí Nhân (director): quick mode bỏ hẳn menu lồng nhau quá 1 cấp; ba hành động chính (so sánh / obligations / xem verdict) đặt inline; tùy chọn nâng cao gom sau MỘT disclosure duy nhất; U4 đồng thời sửa heading-order ở deep-evidence và nới touch target về ≥44px; giữ nguyên Neo 1+ và verdict-first. Agent local đăng bài vào Mục B với tiêu đề **"TRANH BIỆN UI — U4"**: đồng ý/phản đối từng điểm kèm bằng chứng (ảnh chụp, số đo), và cho lập trường riêng về 2 câu hỏi mở: (1) verdict inbox trên desktop nên là bảng hay thẻ; (2) form watch dạng disclosure có làm giảm khả năng được phát hiện không. Chí Nhân trả lời từng luận điểm ở Mục A mỗi vòng; quyết định cuối thuộc Chí Nhân nhưng mọi luận điểm phải được trả lời bằng lý lẽ, không bỏ qua.
 
 ### 4. Chỉ đạo
 

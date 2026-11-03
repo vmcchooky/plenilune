@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"plenilune/internal/ciscoacl"
 	"plenilune/internal/intent"
 	"plenilune/internal/packetset"
 	"plenilune/internal/repair"
@@ -148,8 +149,18 @@ func TestUnsupportedAndUnanalyzedAreExplicit(t *testing.T) {
 		t.Fatalf("acl %+v", acl)
 	}
 	std := object(t, r, DomainACL, "NTP-PEERS")
-	if std.Status != "unsupported" || std.Before != nil || std.Errors[0].Code != "UNSUPPORTED_KIND" {
+	if std.Status != "added" || std.Kind != "standard" || std.Before != nil || std.After == nil || std.ACL != nil || len(std.Errors) != 0 {
 		t.Fatalf("standard %+v", std)
+	}
+	legacyVersions := currentVersions()
+	legacyVersions.Intake, legacyVersions.ACLParser = LegacyIntakeVersion, ciscoacl.LegacyParserVersion
+	legacy, err := analyzeVersion(context.Background(), Request{Schema: RequestSchema, Before: Source{Text: b}, After: Source{Text: a}}, legacyVersions)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacyStandard := object(t, legacy, DomainACL, "NTP-PEERS")
+	if legacyStandard.Status != "unsupported" || legacyStandard.Before != nil || legacyStandard.Errors[0].Code != "UNSUPPORTED_KIND" {
+		t.Fatalf("legacy standard behavior changed: %+v", legacyStandard)
 	}
 	v6 := object(t, r, DomainPrefixList, "V6-CUSTOMER")
 	if v6.Kind != "ipv6" || v6.Status != "unsupported" {

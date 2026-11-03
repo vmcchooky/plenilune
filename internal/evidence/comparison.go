@@ -103,7 +103,10 @@ func SealComparisonAs(c Comparison, schema string) (Comparison, error) {
 	if c.EngineVersion == "" {
 		c.EngineVersion = verify.EngineVersion
 	}
-	c.Schema, c.ParserVersion, c.Scope = schema, ciscoacl.ParserVersion, intent.Scope
+	if c.ParserVersion == "" {
+		c.ParserVersion = ciscoacl.ParserVersion
+	}
+	c.Schema, c.Scope = schema, intent.Scope
 	if c.Conditions != nil {
 		n, err := intent.Normalize(*c.Conditions)
 		if err != nil {
@@ -274,7 +277,7 @@ func comparisonDigest(c Comparison) (string, error) {
 }
 
 func validateComparison(c Comparison) error {
-	if c.Schema != ComparisonSchema && c.Schema != ComparisonSchemaV1 || c.ParserVersion != ciscoacl.ParserVersion || !verify.SupportedEngine(c.EngineVersion) || c.Scope != intent.Scope || !SupportedToolVersion(c.Tool.Version) || c.Tool.Commit == "" {
+	if c.Schema != ComparisonSchema && c.Schema != ComparisonSchemaV1 || !ciscoacl.SupportedParser(c.ParserVersion) || !verify.SupportedEngine(c.EngineVersion) || c.Scope != intent.Scope || !SupportedToolVersion(c.Tool.Version) || c.Tool.Commit == "" {
 		return errors.New("unsupported comparison schema or version")
 	}
 	if c.Schema == ComparisonSchemaV1 && c.ContentSHA256 != "" {
@@ -282,7 +285,7 @@ func validateComparison(c Comparison) error {
 	}
 	for _, in := range []Input{c.Before, c.After} {
 		h, err := hex.DecodeString(in.SHA256)
-		if err != nil || len(h) != 32 || hex.EncodeToString(h) != in.SHA256 || in.Name == "" || in.Kind != "named-extended" {
+		if err != nil || len(h) != 32 || hex.EncodeToString(h) != in.SHA256 || in.Name == "" || !ciscoacl.SupportedKind(in.Kind, c.ParserVersion) {
 			return errors.New("invalid comparison input identity")
 		}
 	}

@@ -160,7 +160,13 @@ func TestRejectUnsupportedAndMalformedDocuments(t *testing.T) {
 		{"UTF8", string([]byte{0xff}), "PARSE_ENCODING"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := Parse([]byte(tt.input))
+			version := ParserVersion
+			if tt.name == "standard" {
+				// This rejection belongs to the frozen extended-only parser;
+				// parser3's standard acceptance is pinned by TestStandardCorpus.
+				version = LegacyParserVersion
+			}
+			a, err := ParseVersion([]byte(tt.input), version)
 			var typed *Error
 			if !errors.As(err, &typed) || typed.Code != tt.code {
 				t.Fatalf("want %s, got %v", tt.code, err)
@@ -344,6 +350,8 @@ func FuzzParse(f *testing.F) {
 	// Seeds mined from the project's synthetic testdata and unit tests
 	// (documentation address space only), extended for plan P1-6.
 	for _, text := range []string{
+		"ip access-list standard X\n 10 deny 192.0.2.0 0.0.0.255\n 20 permit host 192.0.2.7\n",
+		"access-list 1300 permit 192.0.2.85 0.0.0.170\naccess-list 1300 deny any\n",
 		"ip access-list extended X\n permit tcp any any eq 22\n",
 		"ip access-list extended X\n 10 deny ip any any\n",
 		"banner motd ^C\n",

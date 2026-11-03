@@ -1,4 +1,4 @@
-// Package ciscoacl parses one bounded named extended ACL and evaluates a single
+// Package ciscoacl parses one bounded IPv4 ACL and evaluates a single
 // complete IPv4 packet. It does not model interface binding or network reachability.
 package ciscoacl
 
@@ -9,11 +9,12 @@ import (
 )
 
 const (
-	ParserVersion = "cisco-acl/v0.2"
-	MaxInputBytes = 2 << 20
-	MaxRules      = 512
-	MaxLines      = 10000
-	MaxLineBytes  = 8192
+	ParserVersion       = "cisco-acl/v0.3"
+	LegacyParserVersion = "cisco-acl/v0.2"
+	MaxInputBytes       = 2 << 20
+	MaxRules            = 512
+	MaxLines            = 10000
+	MaxLineBytes        = 8192
 )
 
 // Error deliberately excludes source text; CLI errors must not leak a rule.
@@ -41,9 +42,9 @@ type Address struct {
 }
 
 type Rule struct {
-	Ordinal  int        `json:"ordinal"`
-	Line     int        `json:"line"`
-	Sequence *uint32    `json:"sequence,omitempty"`
+	Ordinal  int        `json:"ordinal"`            // evaluation index; standard may differ from physical order
+	Line     int        `json:"line"`               // original physical source line, 1-based
+	Sequence *uint32    `json:"sequence,omitempty"` // standard: effective sequence, including implicit numbering
 	Action   string     `json:"action"`
 	Protocol *uint8     `json:"protocol"` // null means all IPv4 protocols
 	Src      Address    `json:"src"`
@@ -93,15 +94,31 @@ func (a ACL) Evaluate(p Packet) (Decision, error) {
 	if err := p.Validate(); err != nil {
 		return Decision{}, err
 	}
-	if a.Kind != "named-extended" || !aclName.MatchString(a.Name) || len(a.Rules) == 0 || len(a.Rules) > MaxRules {
+	if !SupportedKind(a.Kind, ParserVersion) || !aclName.MatchString(a.Name) || len(a.Rules) == 0 || len(a.Rules) > MaxRules {
 		return Decision{}, fail("ACL_INVALID", 0, "invalid ACL identity or rule count")
+	}
+	if a.Kind == "standard" && !validStandardName(a.Name) {
+		return Decision{}, fail("ACL_INVALID", 0, "invalid standard ACL identity")
 	}
 	// Validate the complete supplied IR before making any decision, including
 	// unreachable rules. Exported DTOs can be constructed outside the parser.
 	previousLine := 0
+	var seenLines map[int]bool
+	var seenHosts map[uint32]bool
+	var seenSequences map[uint32]bool
+	if a.Kind == "standard" {
+		seenLines = make(map[int]bool, len(a.Rules))
+		seenHosts = make(map[uint32]bool)
+		seenSequences = make(map[uint32]bool)
+	}
+	var lastNetworkSequence uint32
+	haveNetwork := false
 	for i, r := range a.Rules {
-		if r.Ordinal != i || r.Line < 1 || r.Line > MaxLines || r.Line <= previousLine {
+		if r.Ordinal != i || r.Line < 1 || r.Line > MaxLines || seenLines[r.Line] || a.Kind == "named-extended" && r.Line <= previousLine {
 			return Decision{}, fail("ACL_INVALID", 0, "invalid rule source binding")
+		}
+		if a.Kind == "standard" {
+			seenLines[r.Line] = true
 		}
 		previousLine = r.Line
 		if r.Action != "permit" && r.Action != "deny" || r.Src.Value&r.Src.Wildcard != 0 || r.Dst.Value&r.Dst.Wildcard != 0 ||
@@ -110,6 +127,23 @@ func (a ACL) Evaluate(p Packet) (Decision, error) {
 		}
 		if (r.Protocol == nil || *r.Protocol != 6 && *r.Protocol != 17) && (!fullPorts(r.SrcPorts) || !fullPorts(r.DstPorts)) {
 			return Decision{}, fail("ACL_INVALID", r.Line, "port constraint requires TCP or UDP")
+		}
+		if a.Kind == "standard" {
+			if r.Protocol != nil || r.Dst != (Address{Wildcard: ^uint32(0)}) || !fullPorts(r.SrcPorts) || !fullPorts(r.DstPorts) || r.Sequence == nil || *r.Sequence == 0 || *r.Sequence > maxStandardSequence || seenSequences[*r.Sequence] || r.Logging != "" && r.Logging != "log" && r.Logging != "log-input" {
+				return Decision{}, fail("ACL_INVALID", r.Line, "invalid standard source-only rule")
+			}
+			seenSequences[*r.Sequence] = true
+			if r.Src.Wildcard == 0 {
+				if haveNetwork || seenHosts[r.Src.Value] {
+					return Decision{}, fail("ACL_INVALID", r.Line, "invalid standard host order or duplicate host")
+				}
+				seenHosts[r.Src.Value] = true
+			} else {
+				if haveNetwork && *r.Sequence <= lastNetworkSequence {
+					return Decision{}, fail("ACL_INVALID", r.Line, "standard network sequences must increase")
+				}
+				haveNetwork, lastNetworkSequence = true, *r.Sequence
+			}
 		}
 	}
 	src, dst := ipv4(p.SrcIP), ipv4(p.DstIP)

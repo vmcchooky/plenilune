@@ -452,7 +452,7 @@ func analyzeSchema(ctx context.Context, req Request, versions Versions, schema s
 	invs := map[string]inventory{}
 	for side, s := range map[string]Source{"before": req.Before, "after": req.After} {
 		data := []byte(s.Text)
-		invs[side] = intakeFormat(data, versions.PrefixListParser, legacy)
+		invs[side] = intakeVersions(data, versions.ACLParser, versions.PrefixListParser, legacy)
 		res.Sources[side] = SourceInfo{SHA256: digest(data), Bytes: len(data), Lines: invs[side].lines, Ref: s.Ref}
 	}
 	before, after := invs["before"], invs["after"]
@@ -625,7 +625,7 @@ func analyzeSchema(ctx context.Context, req Request, versions Versions, schema s
 	for _, p := range policies {
 		found := false
 		for _, o := range res.Objects {
-			found = found || o.Domain == p.Domain && o.Name == p.Name && o.Kind == "named-extended"
+			found = found || o.Domain == p.Domain && o.Name == p.Name && ciscoacl.SupportedKind(o.Kind, versions.ACLParser)
 		}
 		if !found {
 			return Result{}, invalid("POLICY_INVALID", "policy names an ACL that is not present")

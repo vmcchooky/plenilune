@@ -5,7 +5,11 @@ import (
 	"strings"
 )
 
-type sourceLine struct{ text, eol string }
+type sourceLine struct {
+	text, eol string
+	order     int64 // standard named sequence rank, independent of physical position
+	entry     bool
+}
 
 func splitLines(source string) ([]sourceLine, string) {
 	parts := strings.SplitAfter(source, "\n")

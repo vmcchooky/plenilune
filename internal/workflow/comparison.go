@@ -36,7 +36,13 @@ func CompareEngine(ctx context.Context, before, after []byte, conditions *intent
 // embed comparisons (repair receipts) can recompute a recorded artifact
 // in its own shape; fresh comparisons use CompareEngine.
 func CompareEngineSchema(ctx context.Context, before, after []byte, conditions *intent.Set, opts verify.Options, tool evidence.Tool, engine string, schema string) (evidence.Comparison, error) {
-	b, a, err := parsePair(before, after)
+	return CompareVersions(ctx, before, after, conditions, opts, tool, ciscoacl.ParserVersion, engine, schema)
+}
+
+// CompareVersions reproduces the explicitly recorded parser, engine and envelope
+// shape. Fresh callers use Compare; replay never inherits a newer parser default.
+func CompareVersions(ctx context.Context, before, after []byte, conditions *intent.Set, opts verify.Options, tool evidence.Tool, parser, engine, schema string) (evidence.Comparison, error) {
+	b, a, err := parsePairVersion(before, after, parser)
 	if err != nil {
 		return evidence.Comparison{}, err
 	}
@@ -44,7 +50,7 @@ func CompareEngineSchema(ctx context.Context, before, after []byte, conditions *
 	if err != nil {
 		return evidence.Comparison{}, err
 	}
-	return evidence.SealComparisonAs(evidence.Comparison{Tool: tool, EngineVersion: engine, Before: input(before, b), After: input(after, a), Conditions: conditions, Report: r}, schema)
+	return evidence.SealComparisonAs(evidence.Comparison{Tool: tool, ParserVersion: parser, EngineVersion: engine, Before: input(before, b), After: input(after, a), Conditions: conditions, Report: r}, schema)
 }
 
 type ReplayResult struct {
@@ -64,7 +70,7 @@ func Replay(ctx context.Context, before, after []byte, c evidence.Comparison) (R
 	if err := evidence.CheckComparison(c); err != nil {
 		return ReplayResult{}, err
 	}
-	b, a, err := parsePair(before, after)
+	b, a, err := parsePairVersion(before, after, c.ParserVersion)
 	if err != nil {
 		return ReplayResult{}, err
 	}
@@ -121,11 +127,15 @@ func Replay(ctx context.Context, before, after []byte, c evidence.Comparison) (R
 }
 
 func parsePair(before, after []byte) (ciscoacl.ACL, ciscoacl.ACL, error) {
-	b, err := ciscoacl.Parse(before)
+	return parsePairVersion(before, after, ciscoacl.ParserVersion)
+}
+
+func parsePairVersion(before, after []byte, parser string) (ciscoacl.ACL, ciscoacl.ACL, error) {
+	b, err := ciscoacl.ParseVersion(before, parser)
 	if err != nil {
 		return ciscoacl.ACL{}, ciscoacl.ACL{}, parseError("before", err)
 	}
-	a, err := ciscoacl.Parse(after)
+	a, err := ciscoacl.ParseVersion(after, parser)
 	if err != nil {
 		return ciscoacl.ACL{}, ciscoacl.ACL{}, parseError("after", err)
 	}

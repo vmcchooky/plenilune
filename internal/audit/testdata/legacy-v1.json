@@ -1,0 +1,134 @@
+{
+  "schema": "plenilune.audit/v1",
+  "version": "acl-audit/v1",
+  "engine": "acl-exact/v0.4",
+  "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+  "config_sha256": "e50abf553eadfe4691a83967042e4391a361bcd5729ba76b39908654345d1858",
+  "name": "DEMO",
+  "kind": "named-extended",
+  "report": {
+    "complete": true,
+    "rules": 4,
+    "findings": [
+      {
+        "kind": "redundant",
+        "rule": 3,
+        "line": 5,
+        "action": "deny",
+        "match_boxes": 3,
+        "effective_boxes": 452,
+        "implicit_deny": true
+      }
+    ],
+    "relations": [
+      {
+        "kind": "generalization",
+        "earlier": 0,
+        "later": 1,
+        "earlier_action": "permit",
+        "later_action": "deny",
+        "witness": {
+          "id": "wit-1bbc9b5a581e623ac8db2abf3718e249f9c968e94d76e0456e63bb38842204ae",
+          "packet": {
+            "protocol": 6,
+            "src_ip": "192.0.2.10",
+            "dst_ip": "0.0.0.0",
+            "src_port": 0,
+            "dst_port": 22
+          },
+          "decision": {
+            "action": "permit",
+            "rule_ordinal": 0,
+            "line": 2,
+            "implicit": false
+          }
+        }
+      },
+      {
+        "kind": "generalization",
+        "earlier": 0,
+        "later": 3,
+        "earlier_action": "permit",
+        "later_action": "deny",
+        "witness": {
+          "id": "wit-1bbc9b5a581e623ac8db2abf3718e249f9c968e94d76e0456e63bb38842204ae",
+          "packet": {
+            "protocol": 6,
+            "src_ip": "192.0.2.10",
+            "dst_ip": "0.0.0.0",
+            "src_port": 0,
+            "dst_port": 22
+          },
+          "decision": {
+            "action": "permit",
+            "rule_ordinal": 0,
+            "line": 2,
+            "implicit": false
+          }
+        }
+      },
+      {
+        "kind": "generalization",
+        "earlier": 1,
+        "later": 2,
+        "earlier_action": "deny",
+        "later_action": "permit",
+        "witness": {
+          "id": "wit-608df0fb329fddccca6471a22f8ef12936b9431b706c45e28a0c3ed414a03449",
+          "packet": {
+            "protocol": 6,
+            "src_ip": "192.0.2.138",
+            "dst_ip": "0.0.0.0",
+            "src_port": 0,
+            "dst_port": 22
+          },
+          "decision": {
+            "action": "deny",
+            "rule_ordinal": 1,
+            "line": 3,
+            "implicit": false
+          }
+        }
+      },
+      {
+        "kind": "generalization",
+        "earlier": 2,
+        "later": 3,
+        "earlier_action": "permit",
+        "later_action": "deny",
+        "witness": {
+          "id": "wit-3de2c8e871b83409db05db8d581f42b59a4b37383d18c2c682e3eea08c3e9047",
+          "packet": {
+            "protocol": 6,
+            "src_ip": "64.0.2.10",
+            "dst_ip": "0.0.0.0",
+            "src_port": 0,
+            "dst_port": 22
+          },
+          "decision": {
+            "action": "permit",
+            "rule_ordinal": 2,
+            "line": 4,
+            "implicit": false
+          }
+        }
+      }
+    ],
+    "relations_complete": true,
+    "budget": {
+      "operations": 3965,
+      "peak_boxes": 49,
+      "stop_reason": "",
+      "timing_limited": false
+    },
+    "options": {
+      "limits": {
+        "max_operations": 2000000,
+        "max_boxes": 50000,
+        "timeout_ns": 2000000000
+      },
+      "max_witnesses": 8
+    }
+  },
+  "sha256": "80dbe55cf391c8cec2a0663193295a784da47c10472e91cf4b18e60239356f82"
+}

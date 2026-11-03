@@ -5,6 +5,7 @@ package repair
 import (
 	"encoding/json"
 	"errors"
+	"plenilune/internal/ciscoacl"
 	"plenilune/internal/evidence"
 	"plenilune/internal/intent"
 	"plenilune/internal/verify"
@@ -18,14 +19,15 @@ const Schema = "plenilune.repair/v1"
 
 // Version is stamped on new receipts. Each repair version is bound to the ACL
 // engine whose accounting its embedded comparison and collateral record.
-const Version = "acl-repair/v0.4"
+const Version = "acl-repair/v0.5"
+const PartialVersion = "acl-repair/v0.4"
 const ResidualVersion = "acl-repair/v0.3"
 const IndexedVersion = "acl-repair/v0.2"
 const LegacyVersion = "acl-repair/v0.1"
 
 func engineForRepair(version string) (string, error) {
 	switch version {
-	case Version:
+	case Version, PartialVersion:
 		return verify.EngineVersion, nil
 	case ResidualVersion:
 		return verify.ResidualEngineVersion, nil
@@ -35,6 +37,18 @@ func engineForRepair(version string) (string, error) {
 		return verify.LegacyEngineVersion, nil
 	}
 	return "", errors.New("unsupported repair evidence version")
+}
+
+// The repair version pins parsing even when an early rejected receipt has no
+// embedded comparison from which replay could recover a parser version.
+func parserForRepair(version string) (string, error) {
+	if _, err := engineForRepair(version); err != nil {
+		return "", err
+	}
+	if version == Version {
+		return "cisco-acl/v0.3", nil
+	}
+	return ciscoacl.LegacyParserVersion, nil
 }
 
 const MaxJSONBytes = 8 << 20

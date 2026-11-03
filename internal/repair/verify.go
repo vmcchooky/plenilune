@@ -60,6 +60,10 @@ func verifyVersion(ctx context.Context, before, after []byte, policy *Policy, re
 	if err != nil {
 		return Result{}, err
 	}
+	parser, err := parserForRepair(version)
+	if err != nil {
+		return Result{}, err
+	}
 	if len(before) > ciscoacl.MaxInputBytes || len(after) > ciscoacl.MaxInputBytes {
 		return Result{}, errors.New("ACL input exceeds limit")
 	}
@@ -107,7 +111,7 @@ func verifyVersion(ctx context.Context, before, after []byte, policy *Policy, re
 	if r.Policy != nil && request.ObligationsDigest != r.ObligationsDigest {
 		return finish("REJECTED", "obligations_digest_mismatch")
 	}
-	candidate, err := patch.Apply(after, request)
+	candidate, err := patch.ApplyVersion(after, request, parser)
 	if err != nil {
 		var invalid *patch.Error
 		if errors.As(err, &invalid) {
@@ -123,7 +127,7 @@ func verifyVersion(ctx context.Context, before, after []byte, policy *Policy, re
 	if r.Policy == nil {
 		return finish("UNVERIFIED", "policy_missing")
 	}
-	comparison, err := workflow.CompareEngineSchema(ctx, before, candidate, &r.Conditions, opts, evidence.Tool{Version: evidence.ToolVersion, Commit: "unversioned"}, engine, evidenceSchema)
+	comparison, err := workflow.CompareVersions(ctx, before, candidate, &r.Conditions, opts, evidence.Tool{Version: evidence.ToolVersion, Commit: "unversioned"}, parser, engine, evidenceSchema)
 	if err != nil {
 		return Result{}, err
 	}
@@ -146,11 +150,11 @@ func verifyVersion(ctx context.Context, before, after []byte, policy *Policy, re
 	if r.Policy.AllowedChanges == nil {
 		return finish("UNVERIFIED", "allowed_change_region_missing")
 	}
-	bACL, err := ciscoacl.Parse(before)
+	bACL, err := ciscoacl.ParseVersion(before, parser)
 	if err != nil {
 		return Result{}, err
 	}
-	cACL, err := ciscoacl.Parse(candidate)
+	cACL, err := ciscoacl.ParseVersion(candidate, parser)
 	if err != nil {
 		return Result{}, err
 	}
@@ -295,6 +299,10 @@ func validate(r Result) error {
 	if r.Comparison != nil {
 		if err := evidence.CheckComparison(*r.Comparison); err != nil {
 			return err
+		}
+		parser, err := parserForRepair(r.Version)
+		if err != nil || r.Comparison.ParserVersion != parser {
+			return errors.New("candidate comparison is from another parser profile")
 		}
 		if r.Comparison.EngineVersion != engine || !r.Comparison.Report.SearchComplete || r.Comparison.Report.Budget.StopReason != "" || r.Comparison.Report.Budget.TimingLimited {
 			return errors.New("candidate comparison is incomplete or from another engine")

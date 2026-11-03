@@ -14,10 +14,11 @@ import (
 )
 
 const (
-	IntakeVersion  = "plenilune-intake/v0.1"
-	MaxSourceBytes = 4 << 20
-	MaxSourceLines = 200_000
-	maxReferences  = 20
+	IntakeVersion       = "plenilune-intake/v0.2"
+	LegacyIntakeVersion = "plenilune-intake/v0.1"
+	MaxSourceBytes      = 4 << 20
+	MaxSourceLines      = 200_000
+	maxReferences       = 20
 )
 
 // Domain identifiers. A domain owns its parser, semantics and verdicts.
@@ -226,7 +227,7 @@ func intakeWithParser(data []byte, parser string) inventory {
 
 // intakeFormat with legacyText=true reproduces the frozen v1 reference shape
 // (raw line text) so a v1 artifact can be recomputed byte-for-byte at replay.
-func intakeFormat(data []byte, parser string, legacyText bool) inventory {
+func intakeLegacy(data []byte, parser string, legacyText bool) inventory {
 	inv := inventory{byKey: map[string]*found{}}
 	lines := splitLines(data)
 	inv.lines = len(lines)
@@ -247,7 +248,7 @@ func intakeFormat(data []byte, parser string, legacyText bool) inventory {
 	}
 	// A document that is exactly one supported ACL keeps its full bytes, so
 	// digests and replay match single-ACL files used before configuration intake.
-	if acl, err := ciscoacl.Parse(data); err == nil {
+	if acl, err := ciscoacl.ParseVersion(data, ciscoacl.LegacyParserVersion); err == nil {
 		start, end := 0, len(data)
 		f := add(&found{domain: DomainACL, name: acl.Name, kind: acl.Kind, acl: &acl, aclBytes: data, raw: data, extent: Extent{Lines: [][2]int{{1, len(lines)}}, ByteStart: &start, ByteEnd: &end, Units: len(acl.Rules)}, canonical: string(data), lineCount: len(lines) - inv.noise})
 		f.extent.SHA256 = digest(data)
@@ -293,7 +294,7 @@ func intakeFormat(data []byte, parser string, legacyText bool) inventory {
 			continue
 		}
 		obj.aclBytes, obj.canonical = block, string(block)
-		acl, err := ciscoacl.Parse(block)
+		acl, err := ciscoacl.ParseVersion(block, ciscoacl.LegacyParserVersion)
 		if err != nil {
 			obj.err = aclError(err, s.header.number)
 			continue

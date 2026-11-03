@@ -31,12 +31,12 @@ import (
 // iteration, wall time, or the order proposals happened to arrive in.
 //
 // The record is an annotation layer over ordinary repair receipts: the
-// receipt format (plenilune.repair/v1, acl-repair/v0.4) is unchanged, so
-// no repair version bump was needed and receipts from enumeration replay
-// through the existing Replay path. The enumeration has its own schema
-// and scheme version below.
+// current scheme pins parser3 and repair v0.5. Legacy enumeration/v1 pins
+// parser2 and repair v0.4, including receipts with no embedded comparison.
+// Versioned replay preserves the original envelope and candidate receipts.
 const EnumerationSchema = "plenilune.repair-enumeration/v1"
-const EnumerationVersion = "repair-enumeration/v1"
+const EnumerationVersion = "repair-enumeration/v2"
+const LegacyEnumerationVersion = "repair-enumeration/v1"
 
 // MaxEnumerationBytes bounds the sealed enumeration record. A record
 // embeds one full receipt per candidate, and each receipt embeds the
@@ -96,18 +96,20 @@ type Candidate struct {
 // enumeration targets cannot be established exactly — incompleteness is
 // never dressed up as "nothing to repair".
 type Enumeration struct {
-	Schema              string      `json:"schema"`
-	Version             string      `json:"version"`
-	Complete            bool        `json:"complete"`
-	Reason              string      `json:"reason,omitempty"`
-	BeforeSHA256        string      `json:"before_sha256"`
-	BaseAfterSHA256     string      `json:"base_after_sha256"`
-	PolicySHA256        string      `json:"policy_sha256,omitempty"`
-	RepairVersion       string      `json:"repair_version"`
-	Targets             int         `json:"targets"`
-	TargetsTruncated    bool        `json:"targets_truncated,omitempty"`
-	CandidatesTruncated bool        `json:"candidates_truncated,omitempty"`
-	Candidates          []Candidate `json:"candidates"`
+	Schema              string          `json:"schema"`
+	Version             string          `json:"version"`
+	Complete            bool            `json:"complete"`
+	Reason              string          `json:"reason,omitempty"`
+	BeforeSHA256        string          `json:"before_sha256"`
+	BaseAfterSHA256     string          `json:"base_after_sha256"`
+	PolicySHA256        string          `json:"policy_sha256,omitempty"`
+	RepairVersion       string          `json:"repair_version"`
+	ParserVersion       string          `json:"parser_version,omitempty"`
+	Options             *verify.Options `json:"options,omitempty"`
+	Targets             int             `json:"targets"`
+	TargetsTruncated    bool            `json:"targets_truncated,omitempty"`
+	CandidatesTruncated bool            `json:"candidates_truncated,omitempty"`
+	Candidates          []Candidate     `json:"candidates"`
 	// Sensitive follows the receipt convention: the record embeds
 	// rendered candidate configuration text. It is a handling label,
 	// excluded from the digest, not evidence content.
@@ -148,12 +150,46 @@ type generated struct {
 // scope matches the original before, so class resolution is
 // all-or-nothing — no partial class credit is invented).
 func Enumerate(ctx context.Context, before, after []byte, policy *Policy, opts verify.Options, external ...patch.Request) (Enumeration, error) {
+	return enumerateVersion(ctx, before, after, policy, opts, EnumerationVersion, external...)
+}
+
+func enumerationPins(version, parserPin string) (string, string, error) {
+	if version == LegacyEnumerationVersion && parserPin == "" {
+		return PartialVersion, ciscoacl.LegacyParserVersion, nil
+	}
+	if version == EnumerationVersion && parserPin == ciscoacl.ParserVersion {
+		return Version, ciscoacl.ParserVersion, nil
+	}
+	return "", "", errors.New("unsupported enumeration parser/version binding")
+}
+
+func enumerationOptionsValid(opts verify.Options) bool {
+	l, d := opts.Limits, packetset.Defaults()
+	return opts.MaxWitnesses >= 1 && opts.MaxWitnesses <= 64 && l.MaxOperations >= 1 && l.MaxOperations <= d.MaxOperations && l.MaxBoxes >= 1 && l.MaxBoxes <= d.MaxBoxes && l.Timeout > 0 && l.Timeout <= d.Timeout
+}
+
+func enumerateVersion(ctx context.Context, before, after []byte, policy *Policy, opts verify.Options, version string, external ...patch.Request) (Enumeration, error) {
+	parserPin := ciscoacl.ParserVersion
+	if version == LegacyEnumerationVersion {
+		parserPin = ""
+	}
+	repairVersion, parser, err := enumerationPins(version, parserPin)
+	if err != nil {
+		return Enumeration{}, err
+	}
+	if version == EnumerationVersion && !enumerationOptionsValid(opts) {
+		return Enumeration{}, errors.New("invalid enumeration options")
+	}
 	if len(before) > ciscoacl.MaxInputBytes || len(after) > ciscoacl.MaxInputBytes {
 		return Enumeration{}, errors.New("ACL input exceeds limit")
 	}
 	beforeSHA := evidence.ConfigDigest(before)
 	afterSHA := evidence.ConfigDigest(after)
-	e := Enumeration{Schema: EnumerationSchema, Version: EnumerationVersion, Complete: true, BeforeSHA256: beforeSHA, BaseAfterSHA256: afterSHA, RepairVersion: Version, Candidates: []Candidate{}}
+	e := Enumeration{Schema: EnumerationSchema, Version: version, Complete: true, BeforeSHA256: beforeSHA, BaseAfterSHA256: afterSHA, RepairVersion: repairVersion, ParserVersion: parserPin, Candidates: []Candidate{}}
+	if version == EnumerationVersion {
+		pinned := opts
+		e.Options = &pinned
+	}
 	var np *Policy
 	obligationsDigest := strings.Repeat("0", 64)
 	if policy != nil {
@@ -171,11 +207,11 @@ func Enumerate(ctx context.Context, before, after []byte, policy *Policy, opts v
 			return Enumeration{}, err
 		}
 	}
-	bACL, err := ciscoacl.Parse(before)
+	bACL, err := ciscoacl.ParseVersion(before, parser)
 	if err != nil {
 		return Enumeration{}, err
 	}
-	aACL, err := ciscoacl.Parse(after)
+	aACL, err := ciscoacl.ParseVersion(after, parser)
 	if err != nil {
 		return Enumeration{}, err
 	}
@@ -268,7 +304,7 @@ func Enumerate(ctx context.Context, before, after []byte, policy *Policy, opts v
 	}
 	rows := []sortable{}
 	for _, g := range uniq {
-		res, err := Verify(ctx, before, after, policy, g.request, opts)
+		res, err := verifyVersion(ctx, before, after, policy, g.request, opts, repairVersion, evidence.ComparisonSchema)
 		if err != nil {
 			return Enumeration{}, err
 		}
@@ -671,11 +707,18 @@ func CheckEnumeration(e Enumeration) error {
 }
 
 func validateEnumeration(e Enumeration) error {
-	if e.Schema != EnumerationSchema || e.Version != EnumerationVersion {
+	if e.Schema != EnumerationSchema {
 		return errors.New("unsupported repair enumeration schema/version")
 	}
-	if e.RepairVersion != Version {
+	repairVersion, _, err := enumerationPins(e.Version, e.ParserVersion)
+	if err != nil {
+		return err
+	}
+	if e.RepairVersion != repairVersion {
 		return errors.New("unsupported enumeration repair version")
+	}
+	if e.Version == LegacyEnumerationVersion && e.Options != nil || e.Version == EnumerationVersion && (e.Options == nil || !enumerationOptionsValid(*e.Options)) {
+		return errors.New("unsupported enumeration options/version binding")
 	}
 	if !e.Complete {
 		if e.Reason == "" || len(e.Candidates) != 0 {
@@ -690,6 +733,12 @@ func validateEnumeration(e Enumeration) error {
 		}
 		if err := Check(c.Result); err != nil {
 			return err
+		}
+		if c.Result.Version != repairVersion {
+			return errors.New("candidate repair version differs from enumeration")
+		}
+		if e.Options != nil && !reflect.DeepEqual(c.Result.Options, *e.Options) {
+			return errors.New("candidate options differ from enumeration")
 		}
 		if !reflect.DeepEqual(c.Request, c.Result.Request) {
 			return errors.New("enumeration candidate request differs from receipt")
@@ -752,10 +801,15 @@ func ReplayEnumeration(ctx context.Context, before, after []byte, policy *Policy
 			external = append(external, c.Request)
 		}
 	}
-	if len(e.Candidates) > 0 {
+	if e.Options != nil {
+		opts = *e.Options
+	} else if len(e.Candidates) > 0 {
 		opts = e.Candidates[0].Result.Options
 	}
-	fresh, err := Enumerate(ctx, before, after, policy, opts, external...)
+	// Legacy v1 omitted options outside candidate receipts. Preserve that exact
+	// format and behavior: a historical no-candidate nondefault-budget record
+	// may fail replay. Current v2 pins options even for incomplete/empty results.
+	fresh, err := enumerateVersion(ctx, before, after, policy, opts, e.Version, external...)
 	if err != nil {
 		return workflow.ReplayResult{}, err
 	}

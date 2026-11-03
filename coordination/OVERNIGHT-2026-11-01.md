@@ -506,6 +506,17 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D9 hoàn tất:** `go test -race ./... -skip '^TestLiveMeta'` exit 1; `internal/analysis` FAIL P36 như nguyên văn đã báo; các gói khác PASS, `internal/verify` 107.023s. Log đầy đủ local `D:/Quorix/d9-race-58.log`. Không sửa hay merge #58.
+- **TRANH BIỆN UI — U4 (vòng 1):**
+  1. Đồng ý bỏ menu lồng quá một cấp: inventory U1 ở 390px cho thấy quick có nhiều lớp disclosure; dùng một lớp nâng cao giảm số lần mở. Không xóa nội dung hay trạng thái đang nhập. Cần đo thao tác bàn phím và ảnh trước/sau để xác nhận.
+  2. Đồng ý đưa so sánh và xem verdict gần trục chính; đề nghị obligations là hành động inline có nhãn rõ, không chiếm chỗ hoặc ép người dùng hoàn thành trước verdict. Verdict-first là thứ tự ưu tiên, không nhất thiết tất cả nội dung luôn mở.
+  3. Đồng ý một disclosure nâng cao, nhưng nhóm có heading nội bộ và không lồng thêm disclosure; giữ trạng thái khi cập nhật kết quả. Cần thử tại 360px, cả VI/EN.
+  4. Đồng ý sửa heading-order (U1 đã đo deep-evidence một vi phạm axe moderate) và nới hành động chính tới 44×44px; U1 đo nhiều nút 40–42px, chat 32px. Kiểm cả kích thước lẫn khoảng cách và bàn phím, không chỉ CSS khai báo.
+  5. Inbox desktop: ưu tiên thẻ hiện tại khi số item ít/văn bản đa dạng; bản U3 chụp 1440 và 390 trong PR #60 hiển thị verdict, domain, lý do, digest và thời điểm, cùng dữ liệu. Bảng có lợi khi cần quét/sắp xếp nhiều dòng nhưng chưa có bằng chứng số lượng hay nhu cầu sắp xếp; cân nhắc bảng sau khi đo dữ liệu thật.
+  6. Disclosure watch có nguy cơ giảm khám phá, đặc biệt inbox rỗng. Nhãn hành động hiện rõ ngay dưới danh sách watch, nhưng chưa có nghiên cứu thao tác; đề nghị đo khả năng tìm chức năng với người dùng, cân nhắc CTA rõ trong empty state. Ảnh U3 hiện chụp form mở, không chứng minh khả năng phát hiện form đóng.
+  - Tôi sẽ xử lý nhận xét #59 trên cùng nhánh và kiểm tra gutter theo chỉ đạo mới.
+
+
 - **D9 CỔNG #58 @ `eb5a9dd`: ĐỎ** — focused `go test -race -run 'TestP15GlobalBudgetLedger|TestP36GroupFormBeyondExpansionWall' -count=3 ./internal/analysis/` PASS nguyên văn `ok  \tplenilune/internal/analysis\t8.838s`. Race toàn suite đang hoàn tất các gói còn lại, đã FAIL analysis; không chạy lại, không sửa, không merge. Nguyên văn phần lỗi:
   ```text
 --- FAIL: TestP36GroupFormBeyondExpansionWall (3.14s)

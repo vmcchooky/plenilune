@@ -581,3 +581,26 @@ Mục A có dòng UI-MERGE OK cho PR đó.
     - Cổng đỏ ở `go test -race ./...` (package `internal/analysis`) → **DỪNG, KHÔNG MERGE PR #58, KHÔNG TỰ SỬA CODE**, giữ nguyên theo đúng chỉ đạo D6.
     - Dọn dẹp worktree `gate-58-20261103`.
     - Theo chỉ đạo của ca trực, agent local chuyển sang làm tiếp **D7 (Lát UI U2)** độc lập trong khi chờ Chí Nhân xử lý PR #58.
+
+- 14:20 03/11 — **BÁO CÁO CHỈ ĐẠO D7: LÁT UI U2 — ACL LONG LINES TRONG EDITOR (P0-1) (agent local).**
+  - **Nhánh:** `feat/ui-u2-editor-long-lines` (cắt từ `origin/main` `b11e300`).
+  - **Commit SHA:** `29a0068` (`29a0068bdb1d7637841c7b1655fa5fa540003df2`).
+  - **Pull Request:** Đã mở **PR #59** (`https://github.com/vmcchooky/plenilune/pull/59`).
+  - **Phạm vi thay đổi (Web-only discipline):**
+    - Hoàn toàn chỉ sửa `web/` và `web/tests/`:
+      - `web/src/components/SourceInputs.tsx`: Thêm soft-wrap mặc định (`wrap="soft"`, `overflow-wrap: anywhere; word-break: break-word`), gutter số dòng cố định (`.source-editor__gutter`) đồng bộ cuộn dọc với textarea, toggle button chuyển đổi mềm/không ngắt (`.source-editor__wrap-toggle`), ruler thanh trạng thái hiển thị vị trí con trỏ (`Ln X, Col Y`), tổng số dòng, độ dài dòng lớn nhất và huy hiệu cảnh báo amber khi có dòng vượt quá 80 ký tự (`.source-editor__long-badge`).
+      - `web/src/styles/components.css`: CSS cho frame, gutter, ruler, wrap/unwrap modes, bảo đảm không vỡ layout khi focus/hover.
+      - `web/src/i18n/messages.en.ts` & `web/src/i18n/messages.vi.ts`: Thêm đầy đủ nhãn song ngữ cho wrap toggle và editor ruler.
+      - `web/tests/u2-editor.test.tsx`: Unit tests cho tính năng soft-wrap, toggle và ruler (3/3 test PASS).
+      - `web/tests/u2-verify-browser.mjs`: Kịch bản đo lường tự động Playwright trên cả 8 viewports.
+    - TUYỆT ĐỐI KHÔNG chạm `internal/`, Go code, `docs/plan/STATUS.md`, hay `manifest`.
+  - **Kết quả kiểm chứng & Cổng Web:**
+    - `npm test`: **PASS toàn bộ 23/23 files (185/185 tests)** (thêm 3 tests mới của `u2-editor.test.tsx`).
+    - `npm run build`: **PASS** (`tsc -b && vite build` hoàn tất sạch sẽ trong 3.76s).
+    - Đo lường Playwright trên 8 viewports (360, 390, 480, 768, 1024, 1280, 1440, 1920 px):
+      - Tràn ngang cấp trang (`diff`): **0 px trên toàn bộ 8 viewports** (`scrollWidth <= innerWidth`).
+      - WCAG 2.2 AA (axe-core) trên `.source-editor`: **0 vi phạm**. Gutter được đánh dấu `aria-hidden="true"`, các nút có nhãn rõ ràng.
+      - Kiểm thử tương tác toggle chuyển đổi trơn tru giữa lớp `.is-wrapped` và `.is-unwrapped`.
+    - Ảnh chụp nghiệm thu lưu tại `out/u2-verify/`.
+  - **Bất biến:** **TUYỆT ĐỐI KHÔNG TỰ MERGE PR #59**, để nguyên chờ dòng `UI-MERGE OK` của Chí Nhân tại Mục A theo đúng giao thức.
+

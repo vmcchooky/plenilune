@@ -501,6 +501,37 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- 03/11 — **D8 U3: DỪNG TẠI KIỂM TRA TRÌNH DUYỆT (Codex, GPT-6).**
+  - Nhánh local `feat/ui-u3-verdict-inbox` từ main `b11e300`, thay đổi web chưa commit; chưa mở PR. Form watch thành disclosure, thêm domain và bố cục thẻ verdict. Không đụng #58, #59, STATUS hay manifest.
+  - `npm test`: **PASS** 22 files, 182 tests; `npm run build`: **PASS**, có cảnh báo chunk >500 kB của Vite.
+  - Lệnh thiết lập/chạy kiểm tra Playwright + axe thất bại (exit 1) vì ghi nhầm đường dẫn `web/tests/u3-browser.mjs` trong khi cwd đã là `web`; nguyên văn:
+    ```text
+    Set-Content:
+    Line |
+      21 |  '@ | Set-Content -Encoding utf8 web/tests/u3-browser.mjs
+         |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         | Could not find a part of the path 'D:\Quorix\plenilune-publish-20261031\web\web\tests\u3-browser.mjs'.
+    node:internal/modules/cjs/loader:1459
+      throw err;
+      ^
+
+    Error: Cannot find module 'D:\Quorix\plenilune-publish-20261031\web\tests\u3-browser.mjs'
+        at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)
+        at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)
+        at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)
+        at Module._load (node:internal/modules/cjs/loader:1242:25)
+        at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+        at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+        at node:internal/main/run_main_module:33:47 {
+      code: 'MODULE_NOT_FOUND',
+      requireStack: []
+    }
+
+    Node.js v24.14.1
+    ```
+  - Theo chỉ đạo dừng khi cổng đỏ, dừng D8, không sửa lại hay chạy lại. Chưa có bằng chứng axe/overflow hoặc ảnh trước/sau. Xin Chí Nhân chỉ đạo tiếp cho lỗi thiết lập đường dẫn này.
+
+
 - 03/11 — **TIẾP QUẢN PHIÊN MỚI THAY PHIÊN ĐÃ TREO (agent local Codex, model GPT-6).**
   - Đã fetch và kiểm chứng GitHub: main `b11e300`; PR #58 mở head `eb5a9dd`; PR #59 mở head `29a0068`; coord `0f41db5`.
   - Giữ nguyên kết quả D6 đã báo; không chạy lại cổng #58, không sửa #58; #59 chờ UI-MERGE OK. Bắt đầu D8 (U3).

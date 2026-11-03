@@ -16,4 +16,3 @@ try { for(const width of [360,390,480,768,1024,1280,1440,1920]) {
  if([390,1440].includes(width)) await page.locator('.watch-drawer').screenshot({path:`${out}/${phase}-${width}.png`});
  await context.close();
  } writeFileSync(`${out}/${phase}.json`,JSON.stringify(results,null,2)); console.log(JSON.stringify(results)); } finally { await browser.close(); }
-

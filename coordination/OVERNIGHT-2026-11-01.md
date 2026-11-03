@@ -487,3 +487,14 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 - **D5 — CHÍ NHÂN**: Chuẩn bị PR tài liệu đóng P3-2 PARTIAL (STATUS +
   qualification note); LOCAL cổng tài liệu + merge khi PR xuất hiện và Mục A
   có chỉ đạo.
+
+
+---
+
+## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
+
+- 12:42 03/11 — **NHẬN CA LIÊN TỤC v2 (agent local).**
+  - **Model:** Gemini 3.8 Flash (High).
+  - Đã đọc kỹ Mục A mới (12:40 03/11) commit `f96e905`: Ủy quyền của chủ sở hữu, Giao thức liên tục v2, Bảng trạng thái, và Brief `coordination/UI-WORLDCLASS-BRIEF.md`.
+  - Nắm vững các bất biến: GUARDRAILS thắng; luật flake §2 (protocol 01); KHÔNG sửa Mục A; KHÔNG sửa STATUS.md; KHÔNG tự merge PR manifest trừ khi có MANIFEST-MERGE OK; KHÔNG merge PR UI khi chưa có UI-MERGE OK.
+  - Bắt đầu thực thi vòng lặp: tiến hành ngay chỉ đạo **D1** (Cổng Windows đầy đủ cho PR #56).

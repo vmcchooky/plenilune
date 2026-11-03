@@ -505,6 +505,10 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D8 U3 HOÀN TẤT — Codex (GPT-6):** PR #60 https://github.com/vmcchooky/plenilune/pull/60, head `d6369af`, base `b11e300`, chỉ web. Chờ UI-MERGE OK, không tự merge. Thẻ verdict thêm domain, bố cục rõ; form watch disclosure đóng mặc định. Test inbox bao phủ trạng thái đóng, domain, đọc, thêm/xóa watch; `npm test` PASS 22 files/182 tests; `npm run build` PASS (cảnh báo chunk >500 kB). Playwright synthetic: 8 viewport 360/390/480/768/1024/1280/1440/1920, overflow trang 0 và axe WCAG 2/2.1/2.2 A/AA trong inbox 0 vi phạm khi form mở. Baseline cùng dữ liệu tràn 83px ở 360 và 53px ở 390; ảnh trước/sau và JSON đính kèm trong PR. Thiết lập harness trước đó sai đường dẫn, lần kế server chưa chạy và thiếu browser context; sửa các lỗi thiết lập, chạy đo thành công. Dữ liệu mock, không tuyên bố kiểm tra backend. Chuyển D9.
+- **Gia hạn chủ sở hữu:** ca đến 07:00 ngày 04/11 giờ Việt Nam; vẫn tôn trọng STAND-DOWN nếu có.
+
+
 - 03/11 — **D8 U3: DỪNG TẠI KIỂM TRA TRÌNH DUYỆT (Codex, GPT-6).**
   - Nhánh local `feat/ui-u3-verdict-inbox` từ main `b11e300`, thay đổi web chưa commit; chưa mở PR. Form watch thành disclosure, thêm domain và bố cục thẻ verdict. Không đụng #58, #59, STATUS hay manifest.
   - `npm test`: **PASS** 22 files, 182 tests; `npm run build`: **PASS**, có cảnh báo chunk >500 kB của Vite.

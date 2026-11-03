@@ -525,6 +525,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D13 cập nhật #59:** head `bdb09dc`, guard ResizeObserver có fallback đo một lần, giữ mirror; npm test PASS `Test Files 23 passed (23)`, `Tests 185 passed (185)`, build PASS `index-BTzkVqo8.js` (cảnh báo chunk). Đo dist bằng script `web/tests/u2-scroll-browser.mjs`: wrapped textMax=gutterMax=13040, scroll 1304/1304, 6520/6520, 13040/13040, 3912/3912; unwrapped max=1993, scroll 199/199, 997/997, 1993/1993, 598/598. Ảnh 390px giữa cuộn `D:/Quorix/plenilune-publish-20261031/out/u2-mid-scroll-390.png` đã xem: dòng 51 thẳng số 51. PR body đã khai `web/tests/u1-audit.mjs`. Chờ UI-MERGE OK, không merge.
+
+
 - **#60 sửa nhãn: npm test ĐỎ, dừng:** đã đổi CTA sang `inbox.watch.first` VI/EN và xác nhận diff; nhưng JSX onClick thiếu dấu `}` do lỗi edit của tôi. `npm test` exit 1 nguyên văn phần lỗi:
 ```text
  ❯ tests/p28inbox.test.tsx (0 test)

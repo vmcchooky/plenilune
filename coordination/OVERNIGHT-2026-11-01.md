@@ -512,6 +512,26 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#60 CTA — npm test ĐỎ, dừng:** worktree `D:/Quorix/gate-45-20261102`, branch `feat/ui-u3-verdict-inbox` head `d6369af`, thay đổi CTA và xóa evidence staged/chưa commit, chưa push. Lệnh chuẩn bị cập nhật test sai đường dẫn (`web/tests/...` khi cwd đã là web), sau đó npm test đã chạy trên test cũ. Output lỗi chính nguyên văn:
+  ```text
+ ❯ tests/p28inbox.test.tsx (5 tests | 2 failed) 530ms
+   ❯ P2-8 verdict inbox panel (5)
+     × shows the empty state when nothing fired and nothing is watched 119ms
+     × adds a watch through the form and removes it from the list 36ms
+ FAIL  tests/p28inbox.test.tsx > P2-8 verdict inbox panel > shows the empty state when nothing fired and nothing is watched
+TestingLibraryElementError: Found multiple elements with the text: Add a watched object
+ ❯ tests/p28inbox.test.tsx:82:19
+ FAIL  tests/p28inbox.test.tsx > P2-8 verdict inbox panel > adds a watch through the form and removes it from the list
+TestingLibraryElementError: Found multiple elements with the text: Add a watched object
+ ❯ tests/p28inbox.test.tsx:129:28
+ Test Files  1 failed | 21 passed (22)
+      Tests  2 failed | 180 passed (182)
+   Start at  06:13:08
+   Duration  15.28s (environment 70%, tests 16%, import 9%, transform 4%)
+  ```
+  Output đầy đủ có DOM dài trong phiên công cụ, chưa lưu log riêng; không chạy lại để lấy log. Xin chỉ đạo tiếp; không sửa hoặc push sau cổng đỏ.
+
+
 - **D13 thử mirror lần 1 chưa đạt — dừng theo chỉ đạo:** thêm mirror đo từng dòng bằng ResizeObserver/useLayoutEffect, đồng bộ font/bề rộng/wrap; giữ các sửa local U2. Chạy `node tests/u2-scroll-check-temp.mjs`, nguyên văn:
   ```text
 wrapped [{"text":1294,"gutter":1294,"textMax":12940,"gutterMax":1775},{"text":6470,"gutter":1775,"textMax":12940,"gutterMax":1775},{"text":12940,"gutter":1775,"textMax":12940,"gutterMax":1775},{"text":3882,"gutter":1775,"textMax":12940,"gutterMax":1775}]

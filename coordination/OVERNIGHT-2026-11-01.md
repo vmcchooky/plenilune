@@ -458,15 +458,20 @@ local KHÔNG sửa Mục A, KHÔNG sửa STATUS.md (Chí Nhân sở hữu, trán
 Chí Nhân; PR UI không đụng `internal/` hay `docs/plan/`; merge PR UI chỉ khi
 Mục A có dòng UI-MERGE OK cho PR đó.
 
-### 3. Bảng trạng thái (2026-11-03 12:40)
+### 3. Bảng trạng thái (2026-11-03 13:20, cập nhật bởi Chí Nhân)
 
 | Hạng mục | Trạng thái |
 |---|---|
-| main | `f0ba154` (PR #55 manifest đã merge theo ủy quyền — Chí Nhân kiểm chứng 444/444 hash trước đó) |
-| P3-6 | PR **#56** OPEN, head `271aedb`, chờ cổng Windows (chỉ đạo D1) |
-| P3-7 IPv6 | Chí Nhân bắt đầu thiết kế/build ở phía mình (D4) |
-| P3-2 | Đóng PARTIAL theo ủy quyền; Chí Nhân chuẩn bị PR tài liệu (D5) |
-| UI | Brief tại `coordination/UI-WORLDCLASS-BRIEF.md`; lát U1 audit giao LOCAL (D3) |
+| main | `a9449d5` (PR #56 P3-6 đã merge sau cổng Windows PASS toàn bộ — báo cáo Mục B 12:52) |
+| P3-6 | DONE (merge `a9449d5`) |
+| Manifest post-#56 | PR **#57** OPEN, head `4120021`, 450 entries, secret-scan sạch (Mục B 12:57). Chí Nhân đã kiểm chứng độc lập: diff chỉ `docs/public-manifest.sha256`, **450/450 hash khớp cây main `a9449d5`** (sha256 nội dung file) → xem dòng MANIFEST-MERGE OK dưới đây |
+| P3-7 IPv6 | Chí Nhân đã build xong + cổng Linux xanh trên main cũ; đã rebase lên `a9449d5` (commit `0c89960`, xử lý xung đột STATUS + standard_intake), cổng Linux trên nhánh rebase đang chạy; PR + chỉ đạo cổng sẽ xuất hiện sau khi cổng xanh (push cần thẻ duyệt của chủ sở hữu) |
+| P3-2 | Đóng PARTIAL theo ủy quyền; PR tài liệu (D5) làm SAU khi P3-7 merge, để tránh xung đột STATUS |
+| UI | Brief tại `coordination/UI-WORLDCLASS-BRIEF.md`; lát U1 audit giao LOCAL (D3) vẫn hiệu lực |
+
+**MANIFEST-MERGE OK — PR #57 (Chí Nhân, kiểm chứng độc lập 2026-11-03 13:20):** diff chỉ `docs/public-manifest.sha256`; 450/450 hash khớp cây main `a9449d5`. LOCAL được phép merge PR #57 (merge commit) và báo SHA main mới vào Mục B.
+
+- **D2b — LOCAL** (khi thấy MANIFEST-MERGE OK trên đây): merge PR #57, báo SHA main mới vào Mục B, rồi tiếp tục vòng lặp (D3 nếu chưa báo).
 
 ### 4. Chỉ đạo
 
@@ -525,29 +530,3 @@ Mục A có dòng UI-MERGE OK cho PR đó.
   - **Commit head:** **`4120021`**.
   - **PR Manifest:** Đã mở **PR #57** (`https://github.com/vmcchooky/plenilune/pull/57`).
   - **Bất biến:** **TUYỆT ĐỐI KHÔNG TỰ MERGE PR #57**, để nguyên chờ Chí Nhân / chủ sở hữu kiểm chứng hash và merge.
-
-- 13:18 03/11 — **BÁO CÁO CHỈ ĐẠO D3: LÁT U1 AUDIT GIAO DIỆN CHUẨN THẾ GIỚI (agent local).**
-  - **Phạm vi:** Đo lường và chụp inventory mọi màn hình (`quick`, `deep-source`, `deep-conditions`, `deep-result`, `deep-evidence`, `verdict inbox`, `chat`) ở 8 bề rộng (360, 390, 480, 768, 1024, 1280, 1440, 1920 px); quét axe WCAG 2.2 AA; kiểm tra tràn ngang; kiểm tra touch target mobile; đánh giá 2 khiếm khuyết P0. **Tuyệt đối không sửa code.**
-  - **Dữ liệu thực nghiệm & Ảnh chụp:** Lưu tại `out/u1-audit/` (báo cáo `audit-report.json` và 23 ảnh chụp tại `out/u1-audit/screenshots/`).
-
-  #### Bảng kết quả đo lường & Lệch chuẩn đối chiếu Brief "Chuẩn đích":
-
-  | Tiêu chí chuẩn đích | Kết quả đo thực tế | Trạng thái | Đánh giá & Ghi chú |
-  |---|---|---|---|
-  | **Không tràn ngang (8 bề rộng 360 → 1920)** | `diff = 0`, `scrollWidth <= innerWidth` trên toàn bộ 8 bề rộng ở tất cả các màn hình (quick, deep stages). | **ĐẠT** | 0 tràn ngang cấp trang. Các vùng rộng (bảng dòng cấu hình, stepper rail) được bọc trong container cuộn riêng có chủ đích. |
-  | **WCAG 2.2 AA / axe-core** | Quick screen: **0 vi phạm** trên cả 8 bề rộng.<br>Deep stages: 0 vi phạm trên source, conditions, result.<br>Deep evidence: 1 lỗi moderate (`heading-order`: nhảy từ h1 xuống h3 thiếu h2). | **ĐẠT ĐA PHẦN** (1 finding nhẹ) | Tương phản chữ đạt chuẩn ≥ 4.5:1; `prefers-reduced-motion` được tôn trọng (không có animation lối vào). Cần bổ sung `h2` cho màn Bằng chứng ở lát U4. |
-  | **Mục tiêu chạm mobile (≥ 44×44 px)** | Đo trên mobile (360, 390, 480):<br>- Hầu hết input & button chính đạt 40–42 px chiều cao.<br>- Gợi ý câu hỏi chat: 32 px.<br>- Checkbox: 16×16 px. | **LỆCH NHẸ** | Không chặn thao tác thực tế nhưng chưa đạt chuẩn 44 px khuyến nghị. Cần nới vùng chạm (padding/min-height) ở các lát tiếp theo. |
-  | **Hiệu năng cảm nhận & Layout shift** | Dữ liệu verdict xuất hiện mượt mà, khung thẻ giữ ổn định. | **ĐẠT** | Không thấy giật layout khi tải verdict. |
-  | **Sự hiện diện các trạng thái** | Loading spinner, empty state (inbox rỗng), error banner, partial/stale state đều có mặt. | **ĐẠT** | Đầy đủ và nhất quán. |
-
-  #### Hiện trạng 2 khiếm khuyết P0 (theo chỉ đạo chủ sở hữu):
-  1. **P0-1 (Cắt dòng ACL dài trong editor):**
-     - Hiện tại thẻ `textarea` trong `SourceInputs.tsx` đang cấu hình `wrap="off"`.
-     - Dòng dài không soft-wrap mà bắt buộc cuộn ngang trong ô textarea, không có số dòng, minimap hay thước đo, khiến token bị cắt xén trực quan khi xem trên các độ phân giải hẹp.
-     - **Đề xuất cho lát U2:** Xử lý soft-wrap thông minh có đánh số dòng cố định bên lề trái (gutter) hoặc ruler chỉ báo độ dài dòng.
-  2. **P0-2 (Verdict inbox nhiều khoảng trắng chết & form watch chật):**
-     - Form thêm watch (`.inbox-watch__form`) hiện đặt ở đáy panel, dồn ép các input name/domain/condition dạng dọc trên màn hình hẹp (`formWidth: 262px` ở 390 viewport, form chiếm chiều cao tới 313px).
-     - Khi inbox rỗng, không gian panel bị trống trải đơn điệu.
-     - **Đề xuất cho lát U3:** Tái bố cục đưa danh sách verdict lên vị trí chủ đạo với visual card/table dày dặn thông tin; form theo dõi chuyển thành action mở rộng hoặc layout 2 cột trên desktop.
-
-  - Báo cáo hoàn tất. Chờ Chí Nhân xem xét bảng lệch chuẩn và duyệt thứ tự ưu tiên các lát U2–U4.

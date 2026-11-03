@@ -11,12 +11,14 @@ import (
 	"time"
 
 	"plenilune/internal/ciscoacl"
+	"plenilune/internal/ciscoacl6"
 	"plenilune/internal/evidence"
 	"plenilune/internal/intent"
 	"plenilune/internal/packetset"
 	"plenilune/internal/prefixlist"
 	"plenilune/internal/repair"
 	"plenilune/internal/verify"
+	"plenilune/internal/verify6"
 )
 
 const (
@@ -221,6 +223,17 @@ type PrefixListAnalysis struct {
 	Report prefixlist.Report `json:"report"`
 }
 
+// ACL6Analysis is the IPv6 ACL object's engine payload (P3-7): an exact
+// verdict with validated witnesses. Change-class explanation, obligations
+// and repair do not cover IPv6 in this version.
+type ACL6Analysis struct {
+	Parser         string            `json:"parser"`
+	Engine         string            `json:"engine"`
+	Verdict        string            `json:"verdict"`
+	SearchComplete bool              `json:"search_complete"`
+	Witnesses      []verify6.Witness `json:"witnesses"`
+}
+
 type Object struct {
 	Domain     string                 `json:"domain"`
 	Name       string                 `json:"name"`
@@ -232,6 +245,7 @@ type Object struct {
 	References map[string][]Reference `json:"references"`
 	Errors     []ObjectError          `json:"errors,omitempty"`
 	ACL        *ACLAnalysis           `json:"acl,omitempty"`
+	ACL6       *ACL6Analysis          `json:"acl6,omitempty"`
 	PrefixList *PrefixListAnalysis    `json:"prefix_list,omitempty"`
 }
 
@@ -282,6 +296,12 @@ type Versions struct {
 	ACLEngine        string `json:"acl_engine"`
 	PrefixListParser string `json:"prefix_list_parser"`
 	PrefixListEngine string `json:"prefix_list_engine"`
+	// ACL6 fields arrived with P3-7. omitempty is load-bearing: artifacts
+	// sealed before P3-7 must re-marshal byte-identically at replay, and
+	// their recorded versions carry no v6 identity (empty = v6 unsupported,
+	// exactly the behavior they were sealed with).
+	ACL6Parser string `json:"acl6_parser,omitempty"`
+	ACL6Engine string `json:"acl6_engine,omitempty"`
 }
 
 // Result is the sealed review artifact. It describes behavior only for
@@ -314,7 +334,7 @@ type Result struct {
 }
 
 func currentVersions() Versions {
-	return Versions{Intake: IntakeVersion, ACLParser: ciscoacl.ParserVersion, ACLEngine: verify.EngineVersion, PrefixListParser: prefixlist.ParserVersion, PrefixListEngine: prefixlist.EngineVersion}
+	return Versions{Intake: IntakeVersion, ACLParser: ciscoacl.ParserVersion, ACLEngine: verify.EngineVersion, PrefixListParser: prefixlist.ParserVersion, PrefixListEngine: prefixlist.EngineVersion, ACL6Parser: ciscoacl6.ParserVersion, ACL6Engine: verify6.EngineVersion}
 }
 
 func validateRequest(req Request) (Options, []PolicyEcho, error) {
@@ -452,7 +472,7 @@ func analyzeSchema(ctx context.Context, req Request, versions Versions, schema s
 	invs := map[string]inventory{}
 	for side, s := range map[string]Source{"before": req.Before, "after": req.After} {
 		data := []byte(s.Text)
-		invs[side] = intakeVersions(data, versions.ACLParser, versions.PrefixListParser, legacy)
+		invs[side] = intakeVersions(data, versions.ACLParser, versions.PrefixListParser, versions.ACL6Parser, legacy)
 		res.Sources[side] = SourceInfo{SHA256: digest(data), Bytes: len(data), Lines: invs[side].lines, Ref: s.Ref}
 	}
 	before, after := invs["before"], invs["after"]
@@ -792,6 +812,27 @@ func classifyObject(b, a *found, wanted, slotAvailable bool) (Object, bool) {
 // failures; errors racing a dead context are returned raw for the caller
 // to classify as unfinished.
 func runObjectComparison(ctx context.Context, s *analysisSlot, opts Options, versions Versions) (Object, error) {
+	if s.base.Domain == DomainACL && s.base.Kind == "ipv6" {
+		// IPv6 ACLs (P3-7): exact verdict + witnesses via verify6. There is
+		// no changes stage for IPv6 in this version, and v6 objects are not
+		// charged to the global budget ledger (objectCharge reads only the
+		// IPv4 and prefix-list payloads).
+		cmp, err := verify6.Compare(ctx, *s.b.acl6, *s.a.acl6, verify6.Options{Limits: opts.ACL.Limits})
+		if err != nil {
+			if ctx.Err() != nil {
+				return Object{}, err
+			}
+			return Object{}, invalid("ANALYSIS_FAILED", "IPv6 ACL comparison failed")
+		}
+		obj := s.base
+		witnesses := cmp.Witnesses
+		if witnesses == nil {
+			witnesses = []verify6.Witness{}
+		}
+		obj.ACL6 = &ACL6Analysis{Parser: versions.ACL6Parser, Engine: versions.ACL6Engine, Verdict: cmp.Verdict, SearchComplete: cmp.SearchComplete, Witnesses: witnesses}
+		obj.Status = statusFor(cmp.Verdict)
+		return obj, nil
+	}
 	switch s.base.Domain {
 	case DomainACL:
 		report, err := compareStage(ctx, s, opts.ACL.Limits, opts, versions)

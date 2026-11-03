@@ -2,17 +2,18 @@ package analysis
 
 import (
 	"plenilune/internal/ciscoacl"
+	"plenilune/internal/ciscoacl6"
 	"strconv"
 	"strings"
 )
 
 func intakeFormat(data []byte, prefixParser string, legacyText bool) inventory {
-	return intakeVersions(data, ciscoacl.ParserVersion, prefixParser, legacyText)
+	return intakeVersions(data, ciscoacl.ParserVersion, prefixParser, ciscoacl6.ParserVersion, legacyText)
 }
 
 // Legacy intake remains frozen. Parser3 upgrades only standard definitions;
 // other domains and their historical source/coverage behavior stay with it.
-func intakeVersions(data []byte, aclParser, prefixParser string, legacyText bool) inventory {
+func intakeVersions(data []byte, aclParser, prefixParser, acl6Parser string, legacyText bool) inventory {
 	inv := intakeLegacy(data, prefixParser, legacyText)
 	if aclParser == ciscoacl.LegacyParserVersion {
 		return inv
@@ -97,6 +98,7 @@ func intakeVersions(data []byte, aclParser, prefixParser string, legacyText bool
 		obj.acl, obj.aclBytes, obj.extent.Units = &acl, raw, len(acl.Rules)
 	}
 	upgradeGroupACLs(data, inv, aclParser)
+	upgradeIPv6ACLs(inv, acl6Parser)
 	return inv
 }
 
@@ -172,6 +174,42 @@ func upgradeGroupACLs(data []byte, inv inventory, aclParser string) {
 		obj.raw, obj.canonical = spliced, string(spliced)
 		obj.lineCount = len(include)
 		obj.extent = Extent{Lines: objRanges, SHA256: digest(spliced), Units: len(acl.Rules)}
+	}
+}
+
+// upgradeIPv6ACLs parses IPv6 ACL objects with the ciscoacl6 parser when
+// the run's recorded versions carry a v6 parser identity (P3-7). Runs
+// without one — every artifact sealed before P3-7 — keep the legacy
+// outcome (ipv6 sections recognized, marked unsupported) byte-for-byte.
+func upgradeIPv6ACLs(inv inventory, acl6Parser string) {
+	if acl6Parser == "" {
+		return
+	}
+	for _, obj := range inv.objects {
+		if obj.domain != DomainACL || obj.kind != "ipv6" {
+			continue
+		}
+		if obj.err != nil && obj.err.Code == "DUPLICATE_DEFINITION" {
+			continue
+		}
+		headerLine := 0
+		if len(obj.extent.Lines) > 0 {
+			headerLine = obj.extent.Lines[0][0]
+		}
+		acl, err := ciscoacl6.Parse(obj.raw)
+		if err != nil {
+			obj.err = acl6Error(err, headerLine)
+			obj.acl6 = nil
+			continue
+		}
+		obj.err = nil
+		obj.acl6 = &acl
+		obj.extent.Units = len(acl.Rules)
+		// The legacy pass leaves canonical empty for kinds it does not
+		// analyze, which would make every pair "unchanged"; the block text
+		// is the conservative identity (any textual difference goes to the
+		// engine, which decides semantic equivalence).
+		obj.canonical = string(obj.raw)
 	}
 }
 

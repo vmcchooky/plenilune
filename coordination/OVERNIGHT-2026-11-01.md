@@ -389,3 +389,29 @@ Không sửa code/thiết kế nào (ngoài phạm vi được giao); các findi
     - Checkout `D:\Quorix\plenilune-publish-20261031` đang ở branch `feat/p3a-production-completion` @ `9ecbd55`.
     - Kiểm tra `git status` tại checkout: có 1 tệp untracked lạ `coordination/OVERNIGHT-2026-11-01.md` (nội dung là execution report lúc 11:22 của agent trước về 4 commit trên nhánh feat/p3a-production-completion). Báo cáo theo đúng quy định ("có gì lạ thì báo cáo, đừng tự dọn"), giữ nguyên không tự dọn.
   - Bắt đầu thực thi ngay Bước 1: chạy cổng Windows đầy đủ trên `feat/p3a-production-completion` @ `9ecbd55`.
+
+- 11:51 03/11 — **BÁO CÁO CỔNG & MERGE PR #54 + REGEN MANIFEST (agent local).**
+  - **Cổng Windows đầy đủ trên `origin/feat/p3a-production-completion` @ `9ecbd55`:**
+    - `gofmt -l .`: Sạch (0 file).
+    - `go vet ./...`: Sạch (0 lỗi).
+    - `go test ./... -skip '^TestLiveMeta'`: **PASS toàn bộ 26/26 package** (plenilune-demo 3.3s, moonstorm-client 4.8s, verify 25.3s, cli 6.7s, orchestrate 5.8s, demohttp 5.7s, prefixlist 5.5s, analysis 4.0s, repair 3.6s, workflow 2.6s, signature 2.4s, errtax 1.9s, bundle 1.4s, ciscoacl 1.2s, chat 1.1s, capabilities 1.1s, engineadapter 1.0s, inbox 0.95s, evidence 0.91s, audit 0.87s, patch 0.83s).
+    - `go test -race ./... -skip '^TestLiveMeta'`: **PASS toàn bộ 26/26 package ngay lượt đầu** (`internal/verify` 160.4s, `internal/prefixlist` 43.5s, `internal/analysis` 9.4s, `internal/cli` 8.9s, `examples/moonstorm-client` 6.9s, `internal/repair` 6.8s, `internal/ciscoacl` 5.0s, `internal/demohttp` 5.0s, `cmd/plenilune-demo` 4.5s, `internal/orchestrate` 4.2s, `internal/chat` 3.1s, `internal/signature` 3.0s, `internal/capabilities` 2.9s, `internal/engineadapter` 2.7s, `internal/bundle` 2.6s, `internal/patch` 2.6s, `internal/workflow` 2.4s, `internal/errtax` 2.4s, `internal/audit` 2.1s, `internal/evidence` 1.9s, `internal/inbox` 1.8s; 0 race, không flake).
+    - `go build ./...`: **PASS** (0 lỗi).
+    - `web npm test`: **PASS toàn bộ 22/22 files (182/182 tests)** (18.95s, 0 fail).
+    - `web npm run build`: **PASS** (tsc -b && vite build hoàn thành trong 5.30s).
+  - **Merge PR #54:**
+    - Tất cả các bước cổng đều PASS trọn vẹn → thực hiện merge PR #54 bằng merge commit (`Merge pull request #54 from vmcchooky/feat/p3a-production-completion`).
+    - Merge SHA trên main: **`c2b6458bdb47788992dddb1cd2987aa45ce4b58d`** (`c2b6458`) lúc 2026-11-03T04:45:58Z.
+    - `main` hiện tại = `c2b6458`.
+  - **Kết quả workflow `.github/workflows/oracle.yml` trên main sau merge:**
+    - Run ID: **`41580010329`** (job `z3-differential`).
+    - Trạng thái: **SUCCESS** (39s/42s trọn vẹn, XANH ngay lần đầu).
+  - **Regenerate manifest sau merge (PR #55):**
+    - Đã xóa branch cũ `chore/public-manifest-regen-20261102c` trên remote `origin` (PR #53 đã đóng và bị thay thế).
+    - Worktree riêng `manifest-regen-20261103` cắt từ `origin/main` `c2b6458` (LF, `core.autocrlf=false`).
+    - Chạy `scripts/public-snapshot.ps1` tạo snapshot `out/public-review-20261103-114812`: **444 entries** (tăng từ 380 sau khi tích hợp toàn bộ Phase 3).
+    - Chạy `scripts/secret-scan.ps1`: **Sạch** (413 tệp được quét, 0 mẫu chặn).
+    - Spot-check hash thực tế: `.github/workflows/oracle.yml` = `22e0a9bce961f85c5df8de6746d3be38895d569571a9e13b1a4372d8229ec251`, khớp chính xác từng ký tự với manifest.
+    - Commit `3f75181` trên branch `chore/public-manifest-regen-20261103`.
+    - Mở PR **#55** (`https://github.com/vmcchooky/plenilune/pull/55`), chỉ chứa duy nhất `docs/public-manifest.sha256`.
+    - **TUYỆT ĐỐI KHÔNG TỰ MERGE PR #55**, để nguyên chờ chủ sở hữu duyệt.

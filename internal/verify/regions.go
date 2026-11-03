@@ -9,39 +9,63 @@ import (
 	"strconv"
 )
 
+// ruleCubes returns the address union of one rule field: the object-group
+// member set when present (parser v0.4), otherwise the single address.
+// The union lives inside the rule's region — the rule stays one rule.
+func ruleCubes(single ciscoacl.Address, set []ciscoacl.Address) []packetset.Cube {
+	if len(set) == 0 {
+		return []packetset.Cube{{Value: single.Value, Wildcard: single.Wildcard}}
+	}
+	out := make([]packetset.Cube, len(set))
+	for i, a := range set {
+		out[i] = packetset.Cube{Value: a.Value, Wildcard: a.Wildcard}
+	}
+	return out
+}
+
 func ruleRegion(r ciscoacl.Rule, b *packetset.Budget) (packetset.Region, error) {
 	proto := packetset.AllProtocols()
 	if r.Protocol != nil {
 		proto = packetset.Protocol(*r.Protocol)
 	}
-	src := packetset.Cube{Value: r.Src.Value, Wildcard: r.Src.Wildcard}
-	dst := packetset.Cube{Value: r.Dst.Value, Wildcard: r.Dst.Wildcard}
+	srcs := ruleCubes(r.Src, r.SrcSet)
+	dsts := ruleCubes(r.Dst, r.DstSet)
 	out := packetset.Region{}
+	emit := func(box packetset.Box) error {
+		if err := b.Tick(1); err != nil {
+			return err
+		}
+		if err := b.CheckBoxes(len(out) + 1); err != nil {
+			return err
+		}
+		out = append(out, box)
+		return nil
+	}
 	for _, p := range []uint8{6, 17} {
 		if proto[p/64]&(uint64(1)<<(p%64)) == 0 {
 			continue
 		}
-		for _, s := range r.SrcPorts {
-			for _, d := range r.DstPorts {
-				if err := b.Tick(1); err != nil {
-					return nil, err
+		for _, src := range srcs {
+			for _, dst := range dsts {
+				for _, s := range r.SrcPorts {
+					for _, d := range r.DstPorts {
+						if err := emit(packetset.Box{Protocols: packetset.Protocol(p), Src: src, Dst: dst, SrcPort: packetset.Interval{Lo: s.Lo, Hi: s.Hi}, DstPort: packetset.Interval{Lo: d.Lo, Hi: d.Hi}}); err != nil {
+							return nil, err
+						}
+					}
 				}
-				if err := b.CheckBoxes(len(out) + 1); err != nil {
-					return nil, err
-				}
-				out = append(out, packetset.Box{Protocols: packetset.Protocol(p), Src: src, Dst: dst, SrcPort: packetset.Interval{Lo: s.Lo, Hi: s.Hi}, DstPort: packetset.Interval{Lo: d.Lo, Hi: d.Hi}})
 			}
 		}
 	}
 	proto[0] &^= (uint64(1) << 6) | (uint64(1) << 17)
 	if proto != (packetset.Protocols{}) {
-		if err := b.Tick(1); err != nil {
-			return nil, err
+		for _, src := range srcs {
+			for _, dst := range dsts {
+				if err := emit(packetset.Box{Protocols: proto, Src: src, Dst: dst, SrcPort: packetset.Interval{}, DstPort: packetset.Interval{}}); err != nil {
+					return nil, err
+				}
+			}
 		}
-		if err := b.CheckBoxes(len(out) + 1); err != nil {
-			return nil, err
-		}
-		out = append(out, packetset.Box{Protocols: proto, Src: src, Dst: dst, SrcPort: packetset.Interval{}, DstPort: packetset.Interval{}})
 	}
 	packetset.Sort(out)
 	return out, nil

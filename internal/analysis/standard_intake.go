@@ -3,6 +3,7 @@ package analysis
 import (
 	"plenilune/internal/ciscoacl"
 	"strconv"
+	"strings"
 )
 
 func intakeFormat(data []byte, prefixParser string, legacyText bool) inventory {
@@ -95,7 +96,83 @@ func intakeVersions(data []byte, aclParser, prefixParser string, legacyText bool
 		}
 		obj.acl, obj.aclBytes, obj.extent.Units = &acl, raw, len(acl.Rules)
 	}
+	upgradeGroupACLs(data, inv, aclParser)
 	return inv
+}
+
+// upgradeGroupACLs re-parses named-extended ACL objects with the v0.4
+// group-aware parser when the document carries object-group definitions.
+// The legacy pass parses an ACL block in isolation, so group references
+// fail there; the upgrade splices the document's group sections together
+// with the ACL's own section (all other lines blanked, so line numbers
+// stay absolute) and parses that. Group-free documents and pre-v0.4
+// artifact replays are untouched. An object's effective source — and
+// therefore its digest — becomes the spliced text: a group-only edit is a
+// real change to the object and must not digest-identical to the old one.
+func upgradeGroupACLs(data []byte, inv inventory, aclParser string) {
+	if aclParser != ciscoacl.GroupParserVersion {
+		return
+	}
+	lines := splitLines(data)
+	secs, _ := sections(lines)
+	var groupRanges [][2]int
+	for _, s := range secs {
+		if lower(fields(s.header.text), 0) == "object-group" {
+			groupRanges = append(groupRanges, rangesOf(s.lines())...)
+		}
+	}
+	if len(groupRanges) == 0 {
+		return
+	}
+	for _, obj := range inv.objects {
+		if obj.domain != DomainACL || obj.kind != "named-extended" {
+			continue
+		}
+		if obj.err != nil && obj.err.Code == "DUPLICATE_DEFINITION" {
+			continue
+		}
+		include := map[int]bool{}
+		var objRanges [][2]int
+		for _, r := range append(append([][2]int{}, groupRanges...), obj.extent.Lines...) {
+			for n := r[0]; n <= r[1]; n++ {
+				include[n] = true
+			}
+			objRanges = append(objRanges, r)
+		}
+		last := 0
+		for n := range include {
+			if n > last {
+				last = n
+			}
+		}
+		parts := make([]string, 0, last)
+		byNumber := map[int]string{}
+		for _, l := range lines {
+			byNumber[l.number] = l.text
+		}
+		for n := 1; n <= last; n++ {
+			if include[n] {
+				parts = append(parts, byNumber[n])
+			} else {
+				parts = append(parts, "")
+			}
+		}
+		spliced := []byte(strings.Join(parts, "\n"))
+		acl, err := ciscoacl.ParseVersion(spliced, aclParser)
+		if err != nil {
+			obj.err = aclError(err, 1)
+			if e, ok := err.(*ciscoacl.Error); ok && e.Line > 0 {
+				obj.err.Line = e.Line // spliced text is document-aligned
+			}
+			obj.acl = nil
+			continue
+		}
+		obj.err = nil
+		obj.acl, obj.aclBytes = &acl, spliced
+		obj.raw, obj.canonical = spliced, string(spliced)
+		obj.lineCount = len(include)
+		obj.extent = Extent{Lines: objRanges, SHA256: digest(spliced), Units: len(acl.Rules)}
+	}
 }
 
 func standardNumber(name string) bool {

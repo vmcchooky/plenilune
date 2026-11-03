@@ -12,11 +12,19 @@ import (
 const maxStandardSequence uint32 = 2147483647
 
 func SupportedParser(version string) bool {
-	return version == ParserVersion || version == LegacyParserVersion
+	return version == ParserVersion || version == PreviousParserVersion || version == LegacyParserVersion
 }
 
 func SupportedKind(kind, parser string) bool {
-	return SupportedParser(parser) && (kind == "named-extended" || parser == ParserVersion && kind == "standard")
+	if !SupportedParser(parser) {
+		return false
+	}
+	if kind == "named-extended" {
+		return true
+	}
+	// Standard ACLs arrived in v0.3; v0.3 standard artifacts must stay
+	// supported after the v0.4 bump, so both versions accept the kind.
+	return kind == "standard" && (parser == PreviousParserVersion || parser == ParserVersion)
 }
 
 // Parse accepts one ACL-only document. Standard ACLs use the IOS router profile:
@@ -40,17 +48,24 @@ func ParseVersion(input []byte, version string) (ACL, error) {
 	}
 	// Dispatch from the first meaningful line only. The selected parser validates
 	// every line, including unsupported tails and control characters.
+	standard := false
 	for _, line := range strings.Split(string(input), "\n") {
 		f := strings.Fields(line)
 		if len(f) == 0 || len(f) == 1 && f[0] == "!" {
 			continue
 		}
-		if strings.EqualFold(f[0], "access-list") || len(f) >= 3 && strings.EqualFold(f[0], "ip") && strings.EqualFold(f[1], "access-list") && strings.EqualFold(f[2], "standard") {
-			return parseStandard(input)
-		}
+		standard = strings.EqualFold(f[0], "access-list") || len(f) >= 3 && strings.EqualFold(f[0], "ip") && strings.EqualFold(f[1], "access-list") && strings.EqualFold(f[2], "standard")
 		break
 	}
-	return parseLegacy(input)
+	if standard {
+		return parseStandard(input)
+	}
+	if version == PreviousParserVersion {
+		// The v0.3 extended grammar is exactly parseLegacy; group syntax in a
+		// v0.3 request fails there as it did before v0.4 existed.
+		return parseLegacy(input)
+	}
+	return parseExtendedV4(input)
 }
 
 func validStandardName(name string) bool {

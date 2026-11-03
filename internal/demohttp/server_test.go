@@ -104,8 +104,11 @@ func TestParseUnsupportedObjectGroupFailsClosed(t *testing.T) {
 		t.Fatalf("status = %d, want 400", rec.Code)
 	}
 	apiErr := decodeError(t, rec)
-	if apiErr.Code != "PARSE_INVALID_IP" || apiErr.Side != "after" || apiErr.Line != 6 {
-		t.Fatalf("error = %+v, want PARSE_INVALID_IP after line 6", apiErr)
+	// Since parser v0.4 (P3-6) an object-group reference is real grammar;
+	// an UNDEFINED group fails closed with its own typed code instead of
+	// the pre-v0.4 PARSE_INVALID_IP.
+	if apiErr.Code != "PARSE_GROUP_UNDEFINED" || apiErr.Side != "after" || apiErr.Line != 6 {
+		t.Fatalf("error = %+v, want PARSE_GROUP_UNDEFINED after line 6", apiErr)
 	}
 	if strings.Contains(rec.Body.String(), "object-group ADMIN") {
 		t.Fatalf("error response leaked the rejected source line: %s", rec.Body.String())

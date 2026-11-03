@@ -77,7 +77,7 @@ Ghi chú Phase 2: **Phase 2 đã đóng ở phía cài đặt và đặc tả.**
 | P3-1 | Release train (version, changelog, supported versions) | done | Version chính thức **1.0.0** tại `evidence.ToolVersion` — nguồn duy nhất (CLI `version` và capabilities suy ra từ hằng số này; golden capabilities regen bằng `-update`, version 0.2.0-dev → 1.0.0). Việc bump làm lộ và đã sửa một khiếm khuyết có từ trước: replay so envelope digest theo tool stamp của *build hiện hành* thay vì của receipt, nên mọi lần tăng version đều phá replay của receipt cũ — bằng chứng: chỉ đổi hằng số thì 4 test frozen replay đỏ (`TestP01ReplayAcceptsFrozenV1Artifact`, `TestP21ReplayAcceptsFrozenV2Artifact`, `TestFrozenPrefixV01AnalysisReplay`, `TestFrozenV01RepairReplays`). Sửa theo đúng mẫu sẵn có của replay (tính lại trong schema + component versions đã ghi): `analysis.Replay` đóng tool identity đã ghi lên kết quả tính lại trước khi so digest; `repair.Replay` làm tương tự cho comparison nhúng (đóng tool + reseal comparison bằng `SealComparisonAs` rồi mới seal envelope, vì digest riêng của comparison cũng phủ tool). Tập phiên bản tool được chấp nhận khai báo tại `evidence.SupportedToolVersion` = {`1.0.0`, `0.2.0-dev`} — dòng dev tiền phát hành, chưa từng là release chính thức, nhưng artifact của nó tồn tại (fixture đóng băng + receipt thời snapshot công khai); hai điểm validate (`validateComparison`, analysis replay) chuyển từ so bằng sang kiểm tập; test mới `TestSupportedToolVersionSet` ghim cả hai phía (chấp nhận 2, từ chối 8 mẫu lạ gồm `1.0.1`/`2.0.0`/`v1.0.0`). Tài liệu phát hành: `CHANGELOG.md` (mục [1.0.0] 2026-11-03, kèm tuyên bố replay support + known limitations), `RELEASING.md` (quy trình cắt release + ma trận kiểm chứng tiền phát hành: cổng đầy đủ, fuzz short, browser QA offline, frozen replay), `SECURITY.md` thay mục Supported versions bằng bảng chính sách cụ thể + chính sách replay theo tool version; `scripts/public-snapshot.ps1` thêm CHANGELOG.md + RELEASING.md vào root files; CONTRACTS §5 ghi chính sách tool version và mẫu replay-theo-tool-identity. Web không đụng: fixture web giữ `0.2.0-dev` có chủ đích (artifact legacy là dữ liệu mẫu thực tế cho UI). Cổng Linux: gofmt sạch; vet/build PASS; `go test ./...` PASS toàn bộ; race PASS các package đụng (analysis, repair, evidence, workflow, bundle, cli, capabilities). **Phần còn lại ngoài PR này:** thực thi phát hành — tag `v1.0.0`, build binary từ checkout sạch có VCS stamp, GitHub Release — là hành động của chủ sở hữu theo RELEASING.md, thực hiện sau merge; manifest regen ở PR riêng sau merge theo quy trình thường lệ. |
 | P3-2 | Qualification: live UI, screen reader, thiết bị thật | blocked | Đánh giá 02/11/2026: xem docs/qualification-p3a.md; chưa có bằng chứng live UI, screen reader hay mobile thật. Chủ dự án cho phép dùng META_API_KEY; biến vắng ở cả process/User/Machine. Gofmt/vet/test/race/build Windows PASS. Không đóng bằng mock/viewport/axe. |
 | P3-3 | SMT/Batfish differential oracle trong CI | done | Cài đặt workflow Z3 độc lập (.github/workflows/oracle.yml), Python-only ngoài runtime. Seed 3304: 164 cặp PASS (66 EQUIVALENT / 98 DIFFERENT); witness hai chiều kiểm lại; 4 negative/boundary controls PASS. Gofmt/vet/test/race/build Windows PASS, Go không đổi. Xem docs/oracle-z3.md. Hosted CI chưa chạy vì chưa push. |
-| P3-4 | Stale-decision invalidation | todo | |
+| P3-4 | Stale-decision invalidation | done | Local working tree `feat/p3a-production-completion`, chưa commit/push. Giữ choice/hash với current/stale; source/intent/condition/scope/candidate hoặc repair-verify/proposal mới invalidate sticky; hoàn tác/cùng receipt/lỗi/hủy không tự renew. Chỉ quyết định mới tường minh renew, receipt binding/VERIFIED/disputed guard giữ nguyên. Frontend 20 file/163 test PASS, typecheck/build PASS; browser P3-4 VI/EN với engine thật: cùng digest sau dựng lại patch vẫn stale, tải Markdown stale, explicit renewal rồi source edit→restore stale; axe serious/critical 0 và 390px không overflow. Go gofmt/vet/test/race/build PASS trong ca sáng (Go không đổi, tests cached). Review độc lập read-only PASS; owner docs ARCHITECTURE/CONTRACTS/product-ux đồng bộ. Không đổi wire/hash/verdict, không claim live-model/physical-device qualification. Chi tiết `coordination/MORNING-2026-11-03.md`, artifacts `out/p34-browser/results.json`. |
 | P3-5 | Standard ACL | todo | |
 | P3-6 | Object-groups | todo | |
 | P3-7 | IPv6 ACL | todo | |
@@ -95,3 +95,45 @@ Ghi chú Phase 2: **Phase 2 đã đóng ở phía cài đặt và đặc tả.**
 - `internal/repair/enumerate.go` (P1-3, phát hiện khi làm P1-7): số lượng external proposals đưa vào `Enumerate` chưa bị cap — `MaxEnumerateCandidates` (64) chỉ chặn candidate do engine sinh (`generator.full()` đếm `gen.list` trước khi external được append), nên một lời gọi với N external hợp lệ phải trả N lượt `Verify` đầy đủ. Đường CLI `repair-enumerate --proposals` đọc file local nên rủi ro thực tế thấp, nhưng đây là điểm vào proposal duy nhất chưa có giới hạn cứng về số lượng. Không tự sửa trong P1-7 vì cap làm rơi external sẽ phá tính chất replay (replay chỉ có các proposal đã ghi trong record; truncation không tái dựng được từ record trừ khi record ghi thêm số lượng đã nhận — cần quyết định thiết kế riêng của Chooky). **Đã xử lý (quyết định D4 + hạng mục D4-impl):** Chooky chốt cap ở tầng phiên/điểm vào, không cap trong `Enumerate`; đối chiếu baseline khi cài đặt cho thấy điểm vào CLI đã có cap 64 từ P1-3 — D4-impl đặt tên hằng số `repair.MaxExternalProposals` cho cap đó và ghim bằng test, tầng thư viện giữ nguyên theo thiết kế.
 
 - Cùng bẫy all-or-nothing ở họ options `verify.Options` phía compare/repair/session — phát hiện khi làm P2-7-fix, KHÔNG sửa ở đó (ngoài phạm vi; hạng mục này chỉ sửa analysis): `internal/demohttp/comparison.go:14-16,31-33` (POST /api/compare nhận `options?` — có mặt là thay toàn bộ defaults), `internal/demohttp/repair.go:16,21-24` (POST /api/repair), `internal/orchestrate/session.go:21,33-36` (session). Options một phần (ví dụ chỉ `max_witnesses`) để limits bằng 0 và bị từ chối tại `internal/verify/compare.go:26` (max_witnesses) / `internal/packetset/budget.go:53` (limits) thay vì được defaulting theo field như analysis nay đã làm. Phân biệt: các kiểm options đã ghi trong artifact tại `internal/evidence/comparison.go:271` và `internal/repair/verify.go:236` là kiểm bằng chứng khi check/replay — 0 ở đó là bằng chứng hỏng, không phải bề mặt defaulting, không thuộc phát hiện này. **Đã xử lý trong P2-7-fix-2** (Chooky duyệt phương án A — làm theo mẫu P2-7-fix — 2026-11-02): helper `verify.Options.WithDefaults()` áp tại đúng ba boundary kể trên, chỉ ở boundary; hai kiểm bằng chứng giữ nguyên.
+
+
+### UI redesign requested separately · 02/11/2026
+
+Implemented review desk presentation with ui-styles + ui-ux-workflow, per explicit
+owner request. Sequential production items and pre-existing repair/report edits
+are retained. Canonical UI owner: web/DESIGN.md; checks and remaining visual gates:
+[review desk QA](../design/qa/review-desk.md). Go gates PASS, frontend 136/136 PASS,
+build PASS, browser 35 checks PASS. Owner taste approval and full skill calibration
+remain pending; no claim of production/live-model qualification or publication.
+
+
+UI craft follow-up, 02/11/2026: owner rejected inconsistent effects/edges/spacing.
+Shared primitives refined to neutral borders, consistent radii and spacing; content
+entrance motion removed. See docs/design/qa/review-desk.md craft revision for checks.
+Frontend 136/136 PASS; Go gates PASS; browser 35/35 plus final mobile gutter/axe checks
+PASS. Existing lint debt retained; owner taste approval remains pending.
+
+
+Owner palette update, 02/11/2026: light primary, beige/cream neutrals, gentle olive
+accent and tonal component separation. Automatic OS dark colors removed. Current
+recipe/QA in docs/design/; build PASS and browser 35/35 PASS with light-only asserts
+under both OS preferences. Existing proof/repair behavior and pending visual sign-off retained.
+
+
+Quick UX correction, 02/11/2026: owner rejected long-report entry for the SSH case.
+Added concise engine-witness/deciding-rule outcome and grouped optional tools;
+incomplete/coverage/truncation notices remain visible. Build PASS, frontend 138/138,
+browser 35/35. Synthetic sample: 93 main-content words at 1440x900. See design QA.
+
+Composition study step, 02/11/2026: user requested the next planned deliverable.
+Implemented live A/B/C alternatives using the same synthetic SSH engine result,
+with source/rule/group controls and the existing canonical condition-preview path.
+Normal app entry retained. Build, frontend 138/138 and Go gates PASS; browser 26
+checks PASS; new-folder UI lint clean. See docs/design/composition-studies.md.
+Owner selection and golden-screen approval remain pending; no wider migration.
+
+A refinement, 02/11/2026: owner chose A and reported unresolved visual feel. Refined
+rhythm/type, aligned endpoint fields, removed duplicate proof controls and redundant
+dividers/count. Added focused preview with synthetic provenance. Build PASS; frontend
+140/140 PASS; browser 34 checks PASS; skill lint clean. See design/qa/record-refinement.
+Direction A selected; final approval and wider migration remain pending.

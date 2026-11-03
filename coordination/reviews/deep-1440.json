@@ -1,0 +1,153 @@
+{
+  "url": "http://127.0.0.1:8084/",
+  "overflow": {
+    "sw": 1440,
+    "cw": 1440
+  },
+  "heads": [
+    {
+      "tag": "H1",
+      "text": "Kết luận",
+      "size": "32px",
+      "weight": "600",
+      "y": 229
+    },
+    {
+      "tag": "H2",
+      "text": "TCP 192.0.2.10 → 198.51.100.10:22: trước Cho phép, sau Từ chối.",
+      "size": "24px",
+      "weight": "500",
+      "y": 479
+    },
+    {
+      "tag": "H2",
+      "text": "Hành vi thay đổi",
+      "size": "20px",
+      "weight": "500",
+      "y": 868
+    },
+    {
+      "tag": "H2",
+      "text": "Gói tin minh chứng",
+      "size": "20px",
+      "weight": "500",
+      "y": 1211
+    },
+    {
+      "tag": "H2",
+      "text": "Gói tin minh chứng",
+      "size": "20px",
+      "weight": "500",
+      "y": 1326
+    },
+    {
+      "tag": "H2",
+      "text": "Hỏi về kết quả này",
+      "size": "20px",
+      "weight": "500",
+      "y": 2000
+    }
+  ],
+  "notices": [],
+  "small": [
+    {
+      "tag": "A",
+      "cls": "skip-link",
+      "text": "Bỏ qua điều hướng",
+      "w": 143,
+      "h": 38
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "",
+      "text": "Kết luận nhanh",
+      "w": 120,
+      "h": 40
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "is-active",
+      "text": "Duyệt sâu",
+      "w": 88,
+      "h": 40
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "button button--quiet button--small",
+      "text": "Thử gói này",
+      "w": 96,
+      "h": 40
+    },
+    {
+      "tag": "SUMMARY",
+      "cls": "",
+      "text": "Thử một gói tin",
+      "w": 115,
+      "h": 21
+    },
+    {
+      "tag": "SUMMARY",
+      "cls": "",
+      "text": "Toàn bộ cấu hình trước/sau",
+      "w": 184,
+      "h": 21
+    },
+    {
+      "tag": "SUMMARY",
+      "cls": "",
+      "text": "Chi tiết gói tin minh chứng",
+      "w": 182,
+      "h": 21
+    },
+    {
+      "tag": "SUMMARY",
+      "cls": "",
+      "text": "Chi tiết bằng chứng so sánh",
+      "w": 188,
+      "h": 21
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "badge",
+      "text": "Vì sao là kết luận này?",
+      "w": 146,
+      "h": 32
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "badge",
+      "text": "Kết quả các điều kiện thế nào?",
+      "w": 192,
+      "h": 32
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "badge",
+      "text": "Cho xem gói witness",
+      "w": 138,
+      "h": 32
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "badge",
+      "text": "Phần nào chưa quyết định?",
+      "w": 174,
+      "h": 32
+    },
+    {
+      "tag": "BUTTON",
+      "cls": "badge",
+      "text": "Cái gì đã thay đổi?",
+      "w": 127,
+      "h": 32
+    },
+    {
+      "tag": "INPUT",
+      "cls": "",
+      "text": "",
+      "w": 16,
+      "h": 16
+    }
+  ],
+  "bodyText": "Bỏ qua điều hướngPleniluneKiểm chứng thay đổi cấu hìnhMáy chủ cục bộAI tắtVIENKhông gian duyệt thay đổiKết luận nhanhDuyệt sâuHồ sơMGMTSố quy tắc: 435638b3daa…0f64bd01Nguồn & ý địnhCấu hình trước, sau và điều phải giữ02Điều kiện & phạm viDuyệt điều kiện trước khi kiểm chứng ý định03Kết quảKết luận, đối tượng và bằng chứng04Bản sửaBản sửa ứng viên và ảnh hưởng05Bằng chứngBáo cáo dịch và JSON gốcChỉ mô hình cục bộ. Không kết nối thiết bị.Theo dõi & thông báoTheo dõi & thông báoĐối tượng đang theo dõi sẽ báo về đây khi một lượt phân tích hoặc so sánh hoàn tất chạm điều kiện kích hoạt. Mỗi mục ghi rõ artifact đã sinh ra nó; artifact vẫn là bản ghi gốc.Làm mớiKhông có gì cần chú ý. Các kích hoạt sẽ hiện tại đây.Đối tượng đang theo dõiGhim đối tượng theo tên; kích hoạt được xét trên kết quả gần nhất đã ghi của nó.Chưa có đối tượng nào được theo dõi.Tên đối tượng (ví dụ tên ACL)ACL / Prefix listACLPrefix listVerdict đã đổiKết quả khác biệtĐiều kiện không đạtTheo dõiBước 3/5 · Kết quảKết luậnĐọc kết luận trước. Gói tin, dòng quy tắc và chi tiết kỹ thuật ở bên dưới.Kết quả engine cục bộDữ liệu mẫuACL MGMTKết quả engine cục bộDIFFERENTTCP 192.0.2.10 → 198.51.100.10:22: trước Cho phép, sau Từ"
+}

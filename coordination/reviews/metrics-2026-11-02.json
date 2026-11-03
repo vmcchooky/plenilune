@@ -1,0 +1,4613 @@
+{
+  "320": {
+    "overflow": {
+      "sw": 320,
+      "cw": 320,
+      "bodySW": 320
+    },
+    "scrollY": 0,
+    "outcome": {
+      "y": 282,
+      "h": 554
+    },
+    "outcomeTitle": {
+      "y": 338,
+      "h": 29
+    },
+    "heads": [
+      {
+        "tag": "H2",
+        "text": "Theo dõi & thông báo",
+        "size": "20px",
+        "weight": "500",
+        "y": 208
+      },
+      {
+        "tag": "H3",
+        "text": "Đối tượng đang theo dõi",
+        "size": "16px",
+        "weight": "600",
+        "y": 509
+      },
+      {
+        "tag": "H1",
+        "text": "Duyệt thay đổi cấu hình",
+        "size": "20px",
+        "weight": "600",
+        "y": 209
+      },
+      {
+        "tag": "H2",
+        "text": "Có truy cập mới bị chặn",
+        "size": "24px",
+        "weight": "500",
+        "y": 338
+      },
+      {
+        "tag": "H2",
+        "text": "Hành vi thay đổi",
+        "size": "16px",
+        "weight": "500",
+        "y": 954
+      },
+      {
+        "tag": "H2",
+        "text": "Tổng quan thay đổi cấu hình",
+        "size": "16px",
+        "weight": "500",
+        "y": 984
+      },
+      {
+        "tag": "H3",
+        "text": "Giới hạn của kết quả",
+        "size": "16px",
+        "weight": "600",
+        "y": 1455
+      },
+      {
+        "tag": "H2",
+        "text": "Điều kiện & trạng thái",
+        "size": "16px",
+        "weight": "500",
+        "y": 1078
+      },
+      {
+        "tag": "H2",
+        "text": "Hỏi về kết quả này",
+        "size": "14px",
+        "weight": "500",
+        "y": 1180
+      }
+    ],
+    "notices": [
+      {
+        "tag": "P",
+        "cls": "banner banner--neutral",
+        "role": null,
+        "text": "Các phần ngoài phạm vi phân tích không đổi văn bản; điều này không chứng minh chúng an toàn.",
+        "color": "rgb(80, 76, 67)",
+        "bg": "rgb(238, 232, 220)",
+        "size": "14px",
+        "weight": "400"
+      }
+    ],
+    "controls": [
+      {
+        "tag": "A",
+        "cls": "skip-link",
+        "text": "Bỏ qua điều hướng",
+        "w": 143,
+        "h": 38,
+        "x": 16,
+        "y": -100,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "is-active",
+        "text": "VI",
+        "w": 44,
+        "h": 44,
+        "x": 215,
+        "y": 10,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "EN",
+        "w": 44,
+        "h": 44,
+        "x": 259,
+        "y": 10,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "is-active",
+        "text": "Kết luận nhanh",
+        "w": 120,
+        "h": 40,
+        "x": 17,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Duyệt sâu",
+        "w": 88,
+        "h": 40,
+        "x": 137,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Theo dõi & thông báo",
+        "w": 288,
+        "h": 46,
+        "x": 16,
+        "y": 146,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Làm mới",
+        "w": 77,
+        "h": 40,
+        "x": 32,
+        "y": 361,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 180,
+        "h": 42,
+        "x": 32,
+        "y": 689,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "ACLPrefix list",
+        "w": 94,
+        "h": 42,
+        "x": 32,
+        "y": 770,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 36,
+        "y": 838,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 155,
+        "y": 838,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 36,
+        "y": 894,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Theo dõi",
+        "w": 78,
+        "h": 40,
+        "x": 32,
+        "y": 936,
+        "disabled": true
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--primary",
+        "text": "Kiểm chứng ý định",
+        "w": 153,
+        "h": 44,
+        "x": 33,
+        "y": 630,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary",
+        "text": "Xem / sửa cấu hình",
+        "w": 156,
+        "h": 44,
+        "x": 33,
+        "y": 682,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Xem toàn bộ thay đổi & kết quả kiểm tra",
+        "w": 254,
+        "h": 69,
+        "x": 33,
+        "y": 751,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Thử gói này",
+        "w": 96,
+        "h": 40,
+        "x": 33,
+        "y": 1429,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Thử một gói tin",
+        "w": 115,
+        "h": 21,
+        "x": 33,
+        "y": 1503,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 123,
+        "h": 42,
+        "x": 33,
+        "y": 1640,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 123,
+        "h": 42,
+        "x": 164,
+        "y": 1640,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 123,
+        "h": 42,
+        "x": 33,
+        "y": 1713,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 123,
+        "h": 42,
+        "x": 164,
+        "y": 1713,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 123,
+        "h": 42,
+        "x": 33,
+        "y": 1786,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Kiểm tra gói",
+        "w": 254,
+        "h": 40,
+        "x": 33,
+        "y": 1836,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Điều kiện, bằng chứng & công cụ khác",
+        "w": 288,
+        "h": 46,
+        "x": 16,
+        "y": 849,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Đối tượng & phạm vi phân tích",
+        "w": 288,
+        "h": 46,
+        "x": 16,
+        "y": 905,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phần cấu hình ngoài phạm vi phân tích",
+        "w": 253,
+        "h": 21,
+        "x": 33,
+        "y": 1261,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Xem / sửa cấu hình",
+        "w": 288,
+        "h": 46,
+        "x": 16,
+        "y": 960,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "SSH bị che bởi quy tắc mớiNgân sách tìm kiếm hạn chếCấu hình đầy đủ: A",
+        "w": 288,
+        "h": 42,
+        "x": 16,
+        "y": 1124,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 245,
+        "y": 1207,
+        "disabled": false
+      },
+      {
+        "tag": "TEXTAREA",
+        "cls": "source-editor__input",
+        "text": "ip access-list extended MGMT 10 remark synthetic documentation address",
+        "w": 254,
+        "h": 240,
+        "x": 33,
+        "y": 1283,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 245,
+        "y": 1646,
+        "disabled": false
+      },
+      {
+        "tag": "TEXTAREA",
+        "cls": "source-editor__input",
+        "text": "ip access-list extended MGMT 10 remark synthetic documentation address",
+        "w": 254,
+        "h": 240,
+        "x": 33,
+        "y": 1722,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Điều kiện & trạng thái",
+        "w": 288,
+        "h": 46,
+        "x": 16,
+        "y": 1016,
+        "disabled": false
+      },
+      {
+        "tag": "TEXTAREA",
+        "cls": "intent-block__input",
+        "text": "Every management host must retain SSH access to the primary jump host.",
+        "w": 256,
+        "h": 104,
+        "x": 32,
+        "y": 1225,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 256,
+        "h": 40,
+        "x": 32,
+        "y": 1453,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 248,
+        "y": 1374,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 1580,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 1657,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 1734,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 1811,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 1877,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 1937,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2014,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2092,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 256,
+        "h": 40,
+        "x": 32,
+        "y": 2095,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 248,
+        "y": 2016,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2221,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2298,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2376,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2453,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 2519,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2579,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2656,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2733,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 256,
+        "h": 40,
+        "x": 32,
+        "y": 2736,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 248,
+        "y": 2657,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2863,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2940,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 3017,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 3094,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 3160,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 3220,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 3297,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 3375,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small condition-add",
+        "text": "Thêm điều kiện",
+        "w": 140,
+        "h": 40,
+        "x": 32,
+        "y": 3309,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phạm vi được phép thay đổi",
+        "w": 189,
+        "h": 21,
+        "x": 32,
+        "y": 3373,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3427,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3537,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3650,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary",
+        "text": "Xem policy đã chuẩn hóa",
+        "w": 194,
+        "h": 44,
+        "x": 32,
+        "y": 3418,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "quick-evidence__toggle",
+        "text": "Bằng chứng & chia sẻTóm tắt ticket (.md)",
+        "w": 288,
+        "h": 47,
+        "x": 16,
+        "y": 1062,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Hỏi về kết quả này",
+        "w": 288,
+        "h": 46,
+        "x": 16,
+        "y": 1118,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Vì sao là kết luận này?",
+        "w": 146,
+        "h": 32,
+        "x": 16,
+        "y": 1301,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Kết quả các điều kiện thế nào?",
+        "w": 192,
+        "h": 32,
+        "x": 16,
+        "y": 1341,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cho xem gói witness",
+        "w": 138,
+        "h": 32,
+        "x": 16,
+        "y": 1381,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Phần nào chưa quyết định?",
+        "w": 174,
+        "h": 32,
+        "x": 16,
+        "y": 1421,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cái gì đã thay đổi?",
+        "w": 127,
+        "h": 32,
+        "x": 16,
+        "y": 1461,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 224,
+        "h": 44,
+        "x": 16,
+        "y": 1517,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--primary",
+        "text": "Hỏi",
+        "w": 56,
+        "h": 44,
+        "x": 248,
+        "y": 1517,
+        "disabled": true
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 20,
+        "y": 1587,
+        "disabled": false
+      }
+    ],
+    "small": [
+      {
+        "tag": "A",
+        "cls": "skip-link",
+        "text": "Bỏ qua điều hướng",
+        "w": 143,
+        "h": 38,
+        "x": 16,
+        "y": -100,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "is-active",
+        "text": "Kết luận nhanh",
+        "w": 120,
+        "h": 40,
+        "x": 17,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Duyệt sâu",
+        "w": 88,
+        "h": 40,
+        "x": 137,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Làm mới",
+        "w": 77,
+        "h": 40,
+        "x": 32,
+        "y": 361,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 180,
+        "h": 42,
+        "x": 32,
+        "y": 689,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "ACLPrefix list",
+        "w": 94,
+        "h": 42,
+        "x": 32,
+        "y": 770,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 36,
+        "y": 838,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 155,
+        "y": 838,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 36,
+        "y": 894,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Theo dõi",
+        "w": 78,
+        "h": 40,
+        "x": 32,
+        "y": 936,
+        "disabled": true
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Thử gói này",
+        "w": 96,
+        "h": 40,
+        "x": 33,
+        "y": 1429,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Thử một gói tin",
+        "w": 115,
+        "h": 21,
+        "x": 33,
+        "y": 1503,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 123,
+        "h": 42,
+        "x": 33,
+        "y": 1640,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 123,
+        "h": 42,
+        "x": 164,
+        "y": 1640,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 123,
+        "h": 42,
+        "x": 33,
+        "y": 1713,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 123,
+        "h": 42,
+        "x": 164,
+        "y": 1713,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 123,
+        "h": 42,
+        "x": 33,
+        "y": 1786,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Kiểm tra gói",
+        "w": 254,
+        "h": 40,
+        "x": 33,
+        "y": 1836,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phần cấu hình ngoài phạm vi phân tích",
+        "w": 253,
+        "h": 21,
+        "x": 33,
+        "y": 1261,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "SSH bị che bởi quy tắc mớiNgân sách tìm kiếm hạn chếCấu hình đầy đủ: A",
+        "w": 288,
+        "h": 42,
+        "x": 16,
+        "y": 1124,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 245,
+        "y": 1207,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 245,
+        "y": 1646,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 256,
+        "h": 40,
+        "x": 32,
+        "y": 1453,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 248,
+        "y": 1374,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 1580,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 1657,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 1734,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 1811,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 1877,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 1937,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2014,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2092,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 256,
+        "h": 40,
+        "x": 32,
+        "y": 2095,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 248,
+        "y": 2016,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2221,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2298,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2376,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2453,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 2519,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2579,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2656,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2733,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 256,
+        "h": 40,
+        "x": 32,
+        "y": 2736,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 248,
+        "y": 2657,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2863,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 2940,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 3017,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 3094,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 3160,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 3220,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 3297,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 256,
+        "h": 42,
+        "x": 32,
+        "y": 3375,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small condition-add",
+        "text": "Thêm điều kiện",
+        "w": 140,
+        "h": 40,
+        "x": 32,
+        "y": 3309,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phạm vi được phép thay đổi",
+        "w": 189,
+        "h": 21,
+        "x": 32,
+        "y": 3373,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3427,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3537,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3650,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Vì sao là kết luận này?",
+        "w": 146,
+        "h": 32,
+        "x": 16,
+        "y": 1301,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Kết quả các điều kiện thế nào?",
+        "w": 192,
+        "h": 32,
+        "x": 16,
+        "y": 1341,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cho xem gói witness",
+        "w": 138,
+        "h": 32,
+        "x": 16,
+        "y": 1381,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Phần nào chưa quyết định?",
+        "w": 174,
+        "h": 32,
+        "x": 16,
+        "y": 1421,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cái gì đã thay đổi?",
+        "w": 127,
+        "h": 32,
+        "x": 16,
+        "y": 1461,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 20,
+        "y": 1587,
+        "disabled": false
+      }
+    ]
+  },
+  "390": {
+    "overflow": {
+      "sw": 390,
+      "cw": 390,
+      "bodySW": 390
+    },
+    "scrollY": 0,
+    "outcome": {
+      "y": 282,
+      "h": 438
+    },
+    "outcomeTitle": {
+      "y": 338,
+      "h": 29
+    },
+    "heads": [
+      {
+        "tag": "H2",
+        "text": "Theo dõi & thông báo",
+        "size": "20px",
+        "weight": "500",
+        "y": 208
+      },
+      {
+        "tag": "H3",
+        "text": "Đối tượng đang theo dõi",
+        "size": "16px",
+        "weight": "600",
+        "y": 465
+      },
+      {
+        "tag": "H1",
+        "text": "Duyệt thay đổi cấu hình",
+        "size": "20px",
+        "weight": "600",
+        "y": 209
+      },
+      {
+        "tag": "H2",
+        "text": "Có truy cập mới bị chặn",
+        "size": "24px",
+        "weight": "500",
+        "y": 338
+      },
+      {
+        "tag": "H2",
+        "text": "Hành vi thay đổi",
+        "size": "16px",
+        "weight": "500",
+        "y": 815
+      },
+      {
+        "tag": "H2",
+        "text": "Tổng quan thay đổi cấu hình",
+        "size": "16px",
+        "weight": "500",
+        "y": 868
+      },
+      {
+        "tag": "H3",
+        "text": "Giới hạn của kết quả",
+        "size": "16px",
+        "weight": "600",
+        "y": 1299
+      },
+      {
+        "tag": "H2",
+        "text": "Điều kiện & trạng thái",
+        "size": "16px",
+        "weight": "500",
+        "y": 962
+      },
+      {
+        "tag": "H2",
+        "text": "Hỏi về kết quả này",
+        "size": "14px",
+        "weight": "500",
+        "y": 1065
+      }
+    ],
+    "notices": [
+      {
+        "tag": "P",
+        "cls": "banner banner--neutral",
+        "role": null,
+        "text": "Các phần ngoài phạm vi phân tích không đổi văn bản; điều này không chứng minh chúng an toàn.",
+        "color": "rgb(80, 76, 67)",
+        "bg": "rgb(238, 232, 220)",
+        "size": "14px",
+        "weight": "400"
+      }
+    ],
+    "controls": [
+      {
+        "tag": "A",
+        "cls": "skip-link",
+        "text": "Bỏ qua điều hướng",
+        "w": 143,
+        "h": 38,
+        "x": 16,
+        "y": -100,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "is-active",
+        "text": "VI",
+        "w": 44,
+        "h": 44,
+        "x": 285,
+        "y": 10,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "EN",
+        "w": 44,
+        "h": 44,
+        "x": 329,
+        "y": 10,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "is-active",
+        "text": "Kết luận nhanh",
+        "w": 120,
+        "h": 40,
+        "x": 17,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Duyệt sâu",
+        "w": 88,
+        "h": 40,
+        "x": 137,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Theo dõi & thông báo",
+        "w": 358,
+        "h": 46,
+        "x": 16,
+        "y": 146,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Làm mới",
+        "w": 77,
+        "h": 40,
+        "x": 32,
+        "y": 339,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 180,
+        "h": 42,
+        "x": 32,
+        "y": 645,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "ACLPrefix list",
+        "w": 94,
+        "h": 42,
+        "x": 224,
+        "y": 645,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 36,
+        "y": 713,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 155,
+        "y": 713,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 36,
+        "y": 769,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Theo dõi",
+        "w": 78,
+        "h": 40,
+        "x": 32,
+        "y": 811,
+        "disabled": true
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--primary",
+        "text": "Kiểm chứng ý định",
+        "w": 153,
+        "h": 44,
+        "x": 33,
+        "y": 588,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary",
+        "text": "Xem / sửa cấu hình",
+        "w": 156,
+        "h": 44,
+        "x": 194,
+        "y": 588,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Xem toàn bộ thay đổi & kết quả kiểm tra",
+        "w": 324,
+        "h": 46,
+        "x": 33,
+        "y": 657,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Thử gói này",
+        "w": 96,
+        "h": 40,
+        "x": 33,
+        "y": 1225,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Thử một gói tin",
+        "w": 115,
+        "h": 21,
+        "x": 33,
+        "y": 1299,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 158,
+        "h": 42,
+        "x": 33,
+        "y": 1415,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 158,
+        "h": 42,
+        "x": 199,
+        "y": 1415,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 158,
+        "h": 42,
+        "x": 33,
+        "y": 1488,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 158,
+        "h": 42,
+        "x": 199,
+        "y": 1488,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 158,
+        "h": 42,
+        "x": 33,
+        "y": 1561,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Kiểm tra gói",
+        "w": 324,
+        "h": 40,
+        "x": 33,
+        "y": 1611,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Điều kiện, bằng chứng & công cụ khác",
+        "w": 358,
+        "h": 46,
+        "x": 16,
+        "y": 733,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Đối tượng & phạm vi phân tích",
+        "w": 358,
+        "h": 46,
+        "x": 16,
+        "y": 789,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phần cấu hình ngoài phạm vi phân tích",
+        "w": 253,
+        "h": 21,
+        "x": 33,
+        "y": 1145,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Xem / sửa cấu hình",
+        "w": 358,
+        "h": 46,
+        "x": 16,
+        "y": 844,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "SSH bị che bởi quy tắc mớiNgân sách tìm kiếm hạn chếCấu hình đầy đủ: A",
+        "w": 358,
+        "h": 42,
+        "x": 16,
+        "y": 1008,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 315,
+        "y": 1091,
+        "disabled": false
+      },
+      {
+        "tag": "TEXTAREA",
+        "cls": "source-editor__input",
+        "text": "ip access-list extended MGMT 10 remark synthetic documentation address",
+        "w": 324,
+        "h": 240,
+        "x": 33,
+        "y": 1167,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 315,
+        "y": 1510,
+        "disabled": false
+      },
+      {
+        "tag": "TEXTAREA",
+        "cls": "source-editor__input",
+        "text": "ip access-list extended MGMT 10 remark synthetic documentation address",
+        "w": 324,
+        "h": 240,
+        "x": 33,
+        "y": 1586,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Điều kiện & trạng thái",
+        "w": 358,
+        "h": 46,
+        "x": 16,
+        "y": 900,
+        "disabled": false
+      },
+      {
+        "tag": "TEXTAREA",
+        "cls": "intent-block__input",
+        "text": "Every management host must retain SSH access to the primary jump host.",
+        "w": 326,
+        "h": 104,
+        "x": 32,
+        "y": 1109,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 326,
+        "h": 40,
+        "x": 32,
+        "y": 1337,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 318,
+        "y": 1258,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1444,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1521,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1599,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1676,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 1742,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1802,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1879,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1956,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 326,
+        "h": 40,
+        "x": 32,
+        "y": 1959,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 318,
+        "y": 1880,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2066,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2143,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2221,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2298,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 2364,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2424,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2501,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2578,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 326,
+        "h": 40,
+        "x": 32,
+        "y": 2581,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 318,
+        "y": 2502,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2688,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2765,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2843,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2920,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 2986,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 3046,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 3123,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 3200,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small condition-add",
+        "text": "Thêm điều kiện",
+        "w": 140,
+        "h": 40,
+        "x": 32,
+        "y": 3135,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phạm vi được phép thay đổi",
+        "w": 189,
+        "h": 21,
+        "x": 32,
+        "y": 3199,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3253,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3343,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3433,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary",
+        "text": "Xem policy đã chuẩn hóa",
+        "w": 194,
+        "h": 44,
+        "x": 32,
+        "y": 3244,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "quick-evidence__toggle",
+        "text": "Bằng chứng & chia sẻTóm tắt ticket (.md)",
+        "w": 358,
+        "h": 47,
+        "x": 16,
+        "y": 946,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Hỏi về kết quả này",
+        "w": 358,
+        "h": 46,
+        "x": 16,
+        "y": 1002,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Vì sao là kết luận này?",
+        "w": 146,
+        "h": 32,
+        "x": 16,
+        "y": 1185,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Kết quả các điều kiện thế nào?",
+        "w": 192,
+        "h": 32,
+        "x": 170,
+        "y": 1185,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cho xem gói witness",
+        "w": 138,
+        "h": 32,
+        "x": 16,
+        "y": 1225,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Phần nào chưa quyết định?",
+        "w": 174,
+        "h": 32,
+        "x": 162,
+        "y": 1225,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cái gì đã thay đổi?",
+        "w": 127,
+        "h": 32,
+        "x": 16,
+        "y": 1265,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 294,
+        "h": 44,
+        "x": 16,
+        "y": 1321,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--primary",
+        "text": "Hỏi",
+        "w": 56,
+        "h": 44,
+        "x": 318,
+        "y": 1321,
+        "disabled": true
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 20,
+        "y": 1391,
+        "disabled": false
+      }
+    ],
+    "small": [
+      {
+        "tag": "A",
+        "cls": "skip-link",
+        "text": "Bỏ qua điều hướng",
+        "w": 143,
+        "h": 38,
+        "x": 16,
+        "y": -100,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "is-active",
+        "text": "Kết luận nhanh",
+        "w": 120,
+        "h": 40,
+        "x": 17,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Duyệt sâu",
+        "w": 88,
+        "h": 40,
+        "x": 137,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Làm mới",
+        "w": 77,
+        "h": 40,
+        "x": 32,
+        "y": 339,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 180,
+        "h": 42,
+        "x": 32,
+        "y": 645,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "ACLPrefix list",
+        "w": 94,
+        "h": 42,
+        "x": 224,
+        "y": 645,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 36,
+        "y": 713,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 155,
+        "y": 713,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 36,
+        "y": 769,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Theo dõi",
+        "w": 78,
+        "h": 40,
+        "x": 32,
+        "y": 811,
+        "disabled": true
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Thử gói này",
+        "w": 96,
+        "h": 40,
+        "x": 33,
+        "y": 1225,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Thử một gói tin",
+        "w": 115,
+        "h": 21,
+        "x": 33,
+        "y": 1299,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 158,
+        "h": 42,
+        "x": 33,
+        "y": 1415,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 158,
+        "h": 42,
+        "x": 199,
+        "y": 1415,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 158,
+        "h": 42,
+        "x": 33,
+        "y": 1488,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 158,
+        "h": 42,
+        "x": 199,
+        "y": 1488,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 158,
+        "h": 42,
+        "x": 33,
+        "y": 1561,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Kiểm tra gói",
+        "w": 324,
+        "h": 40,
+        "x": 33,
+        "y": 1611,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phần cấu hình ngoài phạm vi phân tích",
+        "w": 253,
+        "h": 21,
+        "x": 33,
+        "y": 1145,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "SSH bị che bởi quy tắc mớiNgân sách tìm kiếm hạn chếCấu hình đầy đủ: A",
+        "w": 358,
+        "h": 42,
+        "x": 16,
+        "y": 1008,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 315,
+        "y": 1091,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 315,
+        "y": 1510,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 326,
+        "h": 40,
+        "x": 32,
+        "y": 1337,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 318,
+        "y": 1258,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1444,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1521,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1599,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1676,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 1742,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1802,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1879,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 1956,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 326,
+        "h": 40,
+        "x": 32,
+        "y": 1959,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 318,
+        "y": 1880,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2066,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2143,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2221,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2298,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 2364,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2424,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2501,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2578,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 326,
+        "h": 40,
+        "x": 32,
+        "y": 2581,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 318,
+        "y": 2502,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2688,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2765,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2843,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 2920,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 32,
+        "y": 2986,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 3046,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 3123,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 326,
+        "h": 42,
+        "x": 32,
+        "y": 3200,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small condition-add",
+        "text": "Thêm điều kiện",
+        "w": 140,
+        "h": 40,
+        "x": 32,
+        "y": 3135,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phạm vi được phép thay đổi",
+        "w": 189,
+        "h": 21,
+        "x": 32,
+        "y": 3199,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3253,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3343,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 32,
+        "y": 3433,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Vì sao là kết luận này?",
+        "w": 146,
+        "h": 32,
+        "x": 16,
+        "y": 1185,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Kết quả các điều kiện thế nào?",
+        "w": 192,
+        "h": 32,
+        "x": 170,
+        "y": 1185,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cho xem gói witness",
+        "w": 138,
+        "h": 32,
+        "x": 16,
+        "y": 1225,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Phần nào chưa quyết định?",
+        "w": 174,
+        "h": 32,
+        "x": 162,
+        "y": 1225,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cái gì đã thay đổi?",
+        "w": 127,
+        "h": 32,
+        "x": 16,
+        "y": 1265,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 20,
+        "y": 1391,
+        "disabled": false
+      }
+    ]
+  },
+  "1440": {
+    "overflow": {
+      "sw": 1440,
+      "cw": 1440,
+      "bodySW": 1440
+    },
+    "scrollY": 0,
+    "outcome": {
+      "y": 249,
+      "h": 434
+    },
+    "outcomeTitle": {
+      "y": 313,
+      "h": 29
+    },
+    "heads": [
+      {
+        "tag": "H2",
+        "text": "Theo dõi & thông báo",
+        "size": "20px",
+        "weight": "500",
+        "y": 200
+      },
+      {
+        "tag": "H3",
+        "text": "Đối tượng đang theo dõi",
+        "size": "16px",
+        "weight": "600",
+        "y": 435
+      },
+      {
+        "tag": "H1",
+        "text": "Duyệt thay đổi cấu hình",
+        "size": "20px",
+        "weight": "600",
+        "y": 201
+      },
+      {
+        "tag": "H2",
+        "text": "Có truy cập mới bị chặn",
+        "size": "24px",
+        "weight": "500",
+        "y": 313
+      },
+      {
+        "tag": "H2",
+        "text": "Hành vi thay đổi",
+        "size": "16px",
+        "weight": "500",
+        "y": 726
+      },
+      {
+        "tag": "H2",
+        "text": "Tổng quan thay đổi cấu hình",
+        "size": "16px",
+        "weight": "500",
+        "y": 839
+      },
+      {
+        "tag": "H3",
+        "text": "Giới hạn của kết quả",
+        "size": "16px",
+        "weight": "600",
+        "y": 1159
+      },
+      {
+        "tag": "H2",
+        "text": "Điều kiện & trạng thái",
+        "size": "16px",
+        "weight": "500",
+        "y": 933
+      },
+      {
+        "tag": "H2",
+        "text": "Hỏi về kết quả này",
+        "size": "14px",
+        "weight": "500",
+        "y": 1028
+      }
+    ],
+    "notices": [
+      {
+        "tag": "P",
+        "cls": "banner banner--neutral",
+        "role": null,
+        "text": "Các phần ngoài phạm vi phân tích không đổi văn bản; điều này không chứng minh chúng an toàn.",
+        "color": "rgb(80, 76, 67)",
+        "bg": "rgb(238, 232, 220)",
+        "size": "14px",
+        "weight": "400"
+      }
+    ],
+    "controls": [
+      {
+        "tag": "A",
+        "cls": "skip-link",
+        "text": "Bỏ qua điều hướng",
+        "w": 143,
+        "h": 38,
+        "x": 16,
+        "y": -100,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "is-active",
+        "text": "VI",
+        "w": 44,
+        "h": 44,
+        "x": 1303,
+        "y": 10,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "EN",
+        "w": 44,
+        "h": 44,
+        "x": 1347,
+        "y": 10,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "is-active",
+        "text": "Kết luận nhanh",
+        "w": 120,
+        "h": 40,
+        "x": 1103,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Duyệt sâu",
+        "w": 88,
+        "h": 40,
+        "x": 1223,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Theo dõi & thông báo",
+        "w": 1184,
+        "h": 46,
+        "x": 128,
+        "y": 138,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Làm mới",
+        "w": 77,
+        "h": 40,
+        "x": 144,
+        "y": 309,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 180,
+        "h": 42,
+        "x": 144,
+        "y": 595,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "ACLPrefix list",
+        "w": 94,
+        "h": 42,
+        "x": 336,
+        "y": 595,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 446,
+        "y": 607,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 565,
+        "y": 607,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 703,
+        "y": 607,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Theo dõi",
+        "w": 78,
+        "h": 40,
+        "x": 854,
+        "y": 597,
+        "disabled": true
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--primary",
+        "text": "Kiểm chứng ý định",
+        "w": 153,
+        "h": 44,
+        "x": 153,
+        "y": 543,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary",
+        "text": "Xem / sửa cấu hình",
+        "w": 156,
+        "h": 44,
+        "x": 314,
+        "y": 543,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Xem toàn bộ thay đổi & kết quả kiểm tra",
+        "w": 1134,
+        "h": 46,
+        "x": 153,
+        "y": 612,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Thử gói này",
+        "w": 96,
+        "h": 40,
+        "x": 520,
+        "y": 925,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Thử một gói tin",
+        "w": 115,
+        "h": 21,
+        "x": 153,
+        "y": 999,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 199,
+        "h": 42,
+        "x": 153,
+        "y": 1095,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 199,
+        "h": 42,
+        "x": 360,
+        "y": 1095,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 199,
+        "h": 42,
+        "x": 567,
+        "y": 1095,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 199,
+        "h": 42,
+        "x": 774,
+        "y": 1095,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 199,
+        "h": 42,
+        "x": 982,
+        "y": 1095,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Kiểm tra gói",
+        "w": 98,
+        "h": 40,
+        "x": 1189,
+        "y": 1097,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Điều kiện, bằng chứng & công cụ khác",
+        "w": 1184,
+        "h": 46,
+        "x": 128,
+        "y": 696,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Đối tượng & phạm vi phân tích",
+        "w": 1184,
+        "h": 46,
+        "x": 128,
+        "y": 752,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phần cấu hình ngoài phạm vi phân tích",
+        "w": 253,
+        "h": 21,
+        "x": 153,
+        "y": 1046,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Xem / sửa cấu hình",
+        "w": 1184,
+        "h": 46,
+        "x": 128,
+        "y": 807,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "SSH bị che bởi quy tắc mớiNgân sách tìm kiếm hạn chếCấu hình đầy đủ: A",
+        "w": 311,
+        "h": 42,
+        "x": 1001,
+        "y": 897,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 662,
+        "y": 980,
+        "disabled": false
+      },
+      {
+        "tag": "TEXTAREA",
+        "cls": "source-editor__input",
+        "text": "ip access-list extended MGMT 10 remark synthetic documentation address",
+        "w": 559,
+        "h": 208,
+        "x": 145,
+        "y": 1029,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 1253,
+        "y": 980,
+        "disabled": false
+      },
+      {
+        "tag": "TEXTAREA",
+        "cls": "source-editor__input",
+        "text": "ip access-list extended MGMT 10 remark synthetic documentation address",
+        "w": 558,
+        "h": 208,
+        "x": 737,
+        "y": 1029,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Điều kiện & trạng thái",
+        "w": 1184,
+        "h": 46,
+        "x": 128,
+        "y": 863,
+        "disabled": false
+      },
+      {
+        "tag": "TEXTAREA",
+        "cls": "intent-block__input",
+        "text": "Every management host must retain SSH access to the primary jump host.",
+        "w": 1184,
+        "h": 104,
+        "x": 128,
+        "y": 1032,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 240,
+        "h": 40,
+        "x": 1016,
+        "y": 1204,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 1272,
+        "y": 1204,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 219,
+        "h": 42,
+        "x": 128,
+        "y": 1311,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 359,
+        "y": 1311,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 699,
+        "y": 1311,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 273,
+        "h": 42,
+        "x": 1039,
+        "y": 1311,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 128,
+        "y": 1377,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 128,
+        "y": 1437,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 527,
+        "y": 1437,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 925,
+        "y": 1437,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 240,
+        "h": 40,
+        "x": 1016,
+        "y": 1517,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 1272,
+        "y": 1517,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 219,
+        "h": 42,
+        "x": 128,
+        "y": 1623,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 359,
+        "y": 1623,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 699,
+        "y": 1623,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 273,
+        "h": 42,
+        "x": 1039,
+        "y": 1623,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 128,
+        "y": 1689,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 128,
+        "y": 1749,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 527,
+        "y": 1749,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 925,
+        "y": 1749,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 240,
+        "h": 40,
+        "x": 1016,
+        "y": 1829,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 1272,
+        "y": 1829,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 219,
+        "h": 42,
+        "x": 128,
+        "y": 1935,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 359,
+        "y": 1935,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 699,
+        "y": 1935,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 273,
+        "h": 42,
+        "x": 1039,
+        "y": 1935,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 128,
+        "y": 2001,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 128,
+        "y": 2061,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 527,
+        "y": 2061,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 925,
+        "y": 2061,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small condition-add",
+        "text": "Thêm điều kiện",
+        "w": 140,
+        "h": 40,
+        "x": 128,
+        "y": 2105,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phạm vi được phép thay đổi",
+        "w": 189,
+        "h": 21,
+        "x": 128,
+        "y": 2169,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 128,
+        "y": 2223,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 128,
+        "y": 2294,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 128,
+        "y": 2365,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary",
+        "text": "Xem policy đã chuẩn hóa",
+        "w": 194,
+        "h": 44,
+        "x": 128,
+        "y": 2214,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "quick-evidence__toggle",
+        "text": "Bằng chứng & chia sẻTóm tắt ticket (.md)",
+        "w": 1184,
+        "h": 47,
+        "x": 128,
+        "y": 909,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Hỏi về kết quả này",
+        "w": 1184,
+        "h": 46,
+        "x": 128,
+        "y": 965,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Vì sao là kết luận này?",
+        "w": 146,
+        "h": 32,
+        "x": 128,
+        "y": 1128,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Kết quả các điều kiện thế nào?",
+        "w": 192,
+        "h": 32,
+        "x": 282,
+        "y": 1128,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cho xem gói witness",
+        "w": 138,
+        "h": 32,
+        "x": 482,
+        "y": 1128,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Phần nào chưa quyết định?",
+        "w": 174,
+        "h": 32,
+        "x": 628,
+        "y": 1128,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cái gì đã thay đổi?",
+        "w": 127,
+        "h": 32,
+        "x": 810,
+        "y": 1128,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 1120,
+        "h": 44,
+        "x": 128,
+        "y": 1184,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--primary",
+        "text": "Hỏi",
+        "w": 56,
+        "h": 44,
+        "x": 1256,
+        "y": 1184,
+        "disabled": true
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 132,
+        "y": 1254,
+        "disabled": false
+      }
+    ],
+    "small": [
+      {
+        "tag": "A",
+        "cls": "skip-link",
+        "text": "Bỏ qua điều hướng",
+        "w": 143,
+        "h": 38,
+        "x": 16,
+        "y": -100,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "is-active",
+        "text": "Kết luận nhanh",
+        "w": 120,
+        "h": 40,
+        "x": 1103,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Duyệt sâu",
+        "w": 88,
+        "h": 40,
+        "x": 1223,
+        "y": 81,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Làm mới",
+        "w": 77,
+        "h": 40,
+        "x": 144,
+        "y": 309,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 180,
+        "h": 42,
+        "x": 144,
+        "y": 595,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "ACLPrefix list",
+        "w": 94,
+        "h": 42,
+        "x": 336,
+        "y": 595,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 446,
+        "y": 607,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 565,
+        "y": 607,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 703,
+        "y": 607,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Theo dõi",
+        "w": 78,
+        "h": 40,
+        "x": 854,
+        "y": 597,
+        "disabled": true
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small",
+        "text": "Thử gói này",
+        "w": 96,
+        "h": 40,
+        "x": 520,
+        "y": 925,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Thử một gói tin",
+        "w": 115,
+        "h": 21,
+        "x": 153,
+        "y": 999,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 199,
+        "h": 42,
+        "x": 153,
+        "y": 1095,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 199,
+        "h": 42,
+        "x": 360,
+        "y": 1095,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 199,
+        "h": 42,
+        "x": 567,
+        "y": 1095,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 199,
+        "h": 42,
+        "x": 774,
+        "y": 1095,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 199,
+        "h": 42,
+        "x": 982,
+        "y": 1095,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small",
+        "text": "Kiểm tra gói",
+        "w": 98,
+        "h": 40,
+        "x": 1189,
+        "y": 1097,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phần cấu hình ngoài phạm vi phân tích",
+        "w": 253,
+        "h": 21,
+        "x": 153,
+        "y": 1046,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "SSH bị che bởi quy tắc mớiNgân sách tìm kiếm hạn chếCấu hình đầy đủ: A",
+        "w": 311,
+        "h": 42,
+        "x": 1001,
+        "y": 897,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 662,
+        "y": 980,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "sr-only",
+        "text": "",
+        "w": 1,
+        "h": 42,
+        "x": 1253,
+        "y": 980,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 240,
+        "h": 40,
+        "x": 1016,
+        "y": 1204,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 1272,
+        "y": 1204,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 219,
+        "h": 42,
+        "x": 128,
+        "y": 1311,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 359,
+        "y": 1311,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 699,
+        "y": 1311,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 273,
+        "h": 42,
+        "x": 1039,
+        "y": 1311,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 128,
+        "y": 1377,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 128,
+        "y": 1437,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 527,
+        "y": 1437,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 925,
+        "y": 1437,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 240,
+        "h": 40,
+        "x": 1016,
+        "y": 1517,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 1272,
+        "y": 1517,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 219,
+        "h": 42,
+        "x": 128,
+        "y": 1623,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 359,
+        "y": 1623,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 699,
+        "y": 1623,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 273,
+        "h": 42,
+        "x": 1039,
+        "y": 1623,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 128,
+        "y": 1689,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 128,
+        "y": 1749,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 527,
+        "y": 1749,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 925,
+        "y": 1749,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "Phải cho phépPhải từ chốiPhải giữ nguyên",
+        "w": 240,
+        "h": 40,
+        "x": 1016,
+        "y": 1829,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--quiet button--small button--danger condition-row__remove",
+        "text": "",
+        "w": 40,
+        "h": 40,
+        "x": 1272,
+        "y": 1829,
+        "disabled": false
+      },
+      {
+        "tag": "SELECT",
+        "cls": "",
+        "text": "IPTCPUDPICMP",
+        "w": 219,
+        "h": 42,
+        "x": 128,
+        "y": 1935,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 359,
+        "y": 1935,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 328,
+        "h": 42,
+        "x": 699,
+        "y": 1935,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 273,
+        "h": 42,
+        "x": 1039,
+        "y": 1935,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Loại trừ nâng cao",
+        "w": 126,
+        "h": 21,
+        "x": 128,
+        "y": 2001,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 128,
+        "y": 2061,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 527,
+        "y": 2061,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 387,
+        "h": 42,
+        "x": 925,
+        "y": 2061,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "button button--secondary button--small condition-add",
+        "text": "Thêm điều kiện",
+        "w": 140,
+        "h": 40,
+        "x": 128,
+        "y": 2105,
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "cls": "",
+        "text": "Phạm vi được phép thay đổi",
+        "w": 189,
+        "h": 21,
+        "x": 128,
+        "y": 2169,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 128,
+        "y": 2223,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 128,
+        "y": 2294,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 128,
+        "y": 2365,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Vì sao là kết luận này?",
+        "w": 146,
+        "h": 32,
+        "x": 128,
+        "y": 1128,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Kết quả các điều kiện thế nào?",
+        "w": 192,
+        "h": 32,
+        "x": 282,
+        "y": 1128,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cho xem gói witness",
+        "w": 138,
+        "h": 32,
+        "x": 482,
+        "y": 1128,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Phần nào chưa quyết định?",
+        "w": 174,
+        "h": 32,
+        "x": 628,
+        "y": 1128,
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "badge",
+        "text": "Cái gì đã thay đổi?",
+        "w": 127,
+        "h": 32,
+        "x": 810,
+        "y": 1128,
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "cls": "",
+        "text": "",
+        "w": 16,
+        "h": 16,
+        "x": 132,
+        "y": 1254,
+        "disabled": false
+      }
+    ]
+  }
+}

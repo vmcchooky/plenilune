@@ -538,6 +538,137 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#60 cập nhật:** head `8bb9ed2`, CTA nhãn riêng VI/EN mở form và focus input; gỡ `web/tests/u3-evidence/` khỏi repo, giữ script browser. `npm test`: `Test Files 22 passed (22)`, `Tests 182 passed (182)`; build PASS (`index-CcNiSRlQ.js`, cảnh báo chunk). Axe empty inbox 390px: `axe violations: []`, `form open: true`, `input focused: true`; ảnh `D:/Quorix/gate-45-20261102/out/u3-empty/empty-390.png`, PR body cập nhật vị trí evidence local. Chờ UI-MERGE OK, không merge.
+
+- **D13 cập nhật #59:** head `bdb09dc`, guard ResizeObserver có fallback đo một lần, giữ mirror; npm test PASS `Test Files 23 passed (23)`, `Tests 185 passed (185)`, build PASS `index-BTzkVqo8.js` (cảnh báo chunk). Đo dist bằng script `web/tests/u2-scroll-browser.mjs`: wrapped textMax=gutterMax=13040, scroll 1304/1304, 6520/6520, 13040/13040, 3912/3912; unwrapped max=1993, scroll 199/199, 997/997, 1993/1993, 598/598. Ảnh 390px giữa cuộn `D:/Quorix/plenilune-publish-20261031/out/u2-mid-scroll-390.png` đã xem: dòng 51 thẳng số 51. PR body đã khai `web/tests/u1-audit.mjs`. Chờ UI-MERGE OK, không merge.
+
+
+*(Khôi phục nguyên văn D13 từ b0495f7 sau cập nhật Mục A ghi đè.)*
+
+
+- **D16 — PR #63 @ `adbbc3a5a22b5121979d5574669dc9d048751df3`: cổng Windows PASS exit 0**, worktree `D:/Quorix/gate-46-20261102` sạch tại head; gofmt/vet/build không output; Go test và race PASS (có package cached); npm ci/test/build PASS. Không merge, chờ Chí Nhân. Output nguyên văn:
+```text
+gofmt -l .
+go vet ./...
+go build ./...
+go test ./...
+?   	plenilune/cmd/plenilune	[no test files]
+ok  	plenilune/cmd/plenilune-demo	(cached)
+ok  	plenilune/examples/moonstorm-client	(cached)
+ok  	plenilune/internal/agent	(cached)
+ok  	plenilune/internal/ai	(cached)
+ok  	plenilune/internal/analysis	(cached)
+ok  	plenilune/internal/audit	(cached)
+ok  	plenilune/internal/bundle	(cached)
+ok  	plenilune/internal/capabilities	3.004s
+ok  	plenilune/internal/chat	(cached)
+ok  	plenilune/internal/ciscoacl	(cached)
+ok  	plenilune/internal/ciscoacl6	(cached)
+ok  	plenilune/internal/cli	(cached)
+ok  	plenilune/internal/demohttp	(cached)
+ok  	plenilune/internal/engineadapter	(cached)
+ok  	plenilune/internal/errtax	(cached)
+ok  	plenilune/internal/evidence	(cached)
+ok  	plenilune/internal/inbox	(cached)
+ok  	plenilune/internal/intent	(cached)
+ok  	plenilune/internal/jsonio	(cached)
+ok  	plenilune/internal/orchestrate	(cached)
+ok  	plenilune/internal/packetset	(cached)
+ok  	plenilune/internal/packetset6	(cached)
+ok  	plenilune/internal/patch	(cached)
+ok  	plenilune/internal/prefixlist	(cached)
+ok  	plenilune/internal/repair	(cached)
+ok  	plenilune/internal/signature	(cached)
+ok  	plenilune/internal/verify	44.665s
+ok  	plenilune/internal/verify6	(cached)
+ok  	plenilune/internal/workflow	(cached)
+go race ./...
+?   	plenilune/cmd/plenilune	[no test files]
+ok  	plenilune/cmd/plenilune-demo	(cached)
+ok  	plenilune/examples/moonstorm-client	(cached)
+ok  	plenilune/internal/agent	(cached)
+ok  	plenilune/internal/ai	(cached)
+ok  	plenilune/internal/analysis	(cached)
+ok  	plenilune/internal/audit	(cached)
+ok  	plenilune/internal/bundle	(cached)
+ok  	plenilune/internal/capabilities	3.354s
+ok  	plenilune/internal/chat	(cached)
+ok  	plenilune/internal/ciscoacl	(cached)
+ok  	plenilune/internal/ciscoacl6	(cached)
+ok  	plenilune/internal/cli	(cached)
+ok  	plenilune/internal/demohttp	(cached)
+ok  	plenilune/internal/engineadapter	(cached)
+ok  	plenilune/internal/errtax	(cached)
+ok  	plenilune/internal/evidence	(cached)
+ok  	plenilune/internal/inbox	(cached)
+ok  	plenilune/internal/intent	(cached)
+ok  	plenilune/internal/jsonio	(cached)
+ok  	plenilune/internal/orchestrate	(cached)
+ok  	plenilune/internal/packetset	(cached)
+ok  	plenilune/internal/packetset6	(cached)
+ok  	plenilune/internal/patch	(cached)
+ok  	plenilune/internal/prefixlist	(cached)
+ok  	plenilune/internal/repair	(cached)
+ok  	plenilune/internal/signature	(cached)
+ok  	plenilune/internal/verify	219.201s
+ok  	plenilune/internal/verify6	(cached)
+ok  	plenilune/internal/workflow	(cached)
+
+added 139 packages, and audited 140 packages in 26s
+
+22 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+> plenilune-demo@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 D:/Quorix/gate-46-20261102/web
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+ Test Files  22 passed (22)
+      Tests  182 passed (182)
+   Start at  08:05:59
+   Duration  28.66s (environment 69%, tests 18%, import 9%, transform 3%)
+
+Environment  jsdom was created 22 times · 114.23s total, 69% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+
+> plenilune-demo@0.1.0 build
+> tsc -b && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 89 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                            0.98 kB │ gzip:   0.58 kB
+dist/assets/CompositionLab-B66ywJt6.css   10.41 kB │ gzip:   2.04 kB
+dist/assets/index-C9VYcKGP.css            74.01 kB │ gzip:  11.49 kB
+dist/assets/CompositionLab-CtXHk-OW.js    14.72 kB │ gzip:   5.17 kB
+dist/assets/index-MRnqveB7.js            538.85 kB │ gzip: 149.32 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 5.22s
+
+```
+
+
+*(Khôi phục nguyên văn từ b74bc74 sau cập nhật Mục A ghi đè.)*
+
+
+*(Khôi phục nguyên văn từ e6fc322 sau cập nhật Mục A ghi đè.)*
+
+
 - **#60 sửa nhãn: npm test ĐỎ, dừng:** đã đổi CTA sang `inbox.watch.first` VI/EN và xác nhận diff; nhưng JSX onClick thiếu dấu `}` do lỗi edit của tôi. `npm test` exit 1 nguyên văn phần lỗi:
 ```text
  ❯ tests/p28inbox.test.tsx (0 test)

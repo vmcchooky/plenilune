@@ -163,6 +163,36 @@ sau watermark vòng trước `e6c0880`); main `3400e7d`; PR mở: #70 head `4129
 - N2/N3/N4: Chí Nhân đăng danh sách lát cắt/dàn ý sau khi N0–N1 merge xong,
   đối chiếu trên main mới. N6 vẫn HOLD publish cho tới RELEASE-GO.
 
+### VÒNG 05:30 05/11 — Chí Nhân (relay cycle, phiên đêm)
+Trạng thái kiểm trực tiếp trên GitHub lúc mở vòng: coord tip `37238f0` (2 Mục B mới
+sau watermark vòng trước `2bed995`); main `04fd7b3`; PR mở: chỉ #72 (manifest sau #70).
+- **N0 + N1 — CẢ HAI ĐÃ MERGE, kiểm chứng độc lập xong.**
+  - #71 merge commit `2d1cd6c`: parent1 `3400e7d`, parent2 `4d4eb89` = đúng head đã
+    cấp MANIFEST-MERGE OK, không thêm commit; diff `3400e7d..2d1cd6c` chỉ
+    `docs/public-manifest.sha256` (16+/15−).
+  - #70 merge commit `04fd7b3`: parent1 `2d1cd6c`, parent2 `412974f` = đúng head đã
+    cấp UI-MERGE OK, base đúng main sau #71 (thứ tự N0 trước N1 đã thỏa), không
+    thêm commit; diff `2d1cd6c..04fd7b3` đúng 28 file web + QA doc đã duyệt, 0 file Go.
+    Đối chiếu web với head đã duyệt: `web/src` + `web/tests` trùng hệt `412974f`;
+    chỉ `web/index.html` + `web/package.json` khác, và đúng bằng phần license
+    Apache-2.0 của #69 (trùng hệt cây `2d1cd6c`) — merge sạch, không sửa conflict.
+  - Cổng Linux độc lập trên đúng head merge `04fd7b3` (worktree riêng, Go 1.26.7):
+    gofmt 0 file; `go vet ./...` PASS; `go build ./...` PASS;
+    `go test -skip '^TestLiveMeta' ./...` PASS (29 package ok, 1 không có test);
+    `go test -race -skip '^TestLiveMeta' ./...` PASS (29 ok, 1 không có test);
+    `npm test` PASS (24 file / 192 test); `npm run build` PASS.
+- **MANIFEST-MERGE OK — PR #72 head `9239ea7` (chỉ hiệu lực cho head này).**
+  PR gồm đúng 1 commit trên `04fd7b3`, diff chỉ `docs/public-manifest.sha256`
+  (27+/23−). Kiểm sha256 trên NỘI DUNG THÔ của main `04fd7b3` (git archive, đúng
+  luật chọn file của `scripts/public-snapshot.ps1`): **476/476 khớp, 0 lệch,
+  0 thiếu, 0 thừa** (476 = 472 cũ + 4 entry mới của #70: Select.tsx, select.test.tsx,
+  qa/ui-polish-2026-11-04.md, review-desk-browser.mjs — đổi hash đúng các file #70 sửa).
+  Cổng Windows của LOCAL trên head này đã PASS (gofmt/vet/test/race/build PASS).
+- **LOCAL làm ngay:** merge #72 bằng merge commit, báo SHA vào Mục B. Sau đó N0–N1
+  coi như đóng hẳn (kể cả manifest sau #70). N2: Chí Nhân đăng danh sách lát cắt
+  UI ở vòng sau, đối chiếu trên main mới sau merge #72 — LOCAL chưa tự mở lát N2
+  trước khi danh sách đó lên Mục A. N6 vẫn HOLD publish cho tới RELEASE-GO.
+
 - 23:10 — PR **#25** `feat/ui-s1-tokens` @ `9bc94ec6` (base `main`) ĐÃ MỞ:
   UI lát 1 (token Neo 1+). Chờ cổng + kiểm tra hình ảnh như prompt.
 - 23:10 — PR **#26** `feat/ui-s2-s3-primitives-hierarchy` @ `93fe463e`

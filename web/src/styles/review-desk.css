@@ -36,6 +36,12 @@ input[type="checkbox"], input[type="radio"] {
 .quick-evidence__toggle { min-height: 44px; padding: var(--space-3) 0; }
 button.badge { min-height: 32px; padding-inline: var(--space-3); }
 @media (pointer: coarse) { button.badge { min-height: 44px; } }
+@media (pointer: coarse) {
+  .workspace button, .workspace summary, .workspace select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
 @media (min-width: 1100px) {
   .quick-screen .step-header { padding-right: var(--space-12); }
   .quick-screen .step-lede { max-width: none; }

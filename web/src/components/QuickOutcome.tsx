@@ -13,12 +13,13 @@ import { StatusMark } from './Ui';
 
 type Props = { review: Review; onPolicy: () => void; onSource: () => void };
 export function QuickOutcome(props: Props) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const data = quickOutcomeData(props.review);
   if (!data) return null;
   const key = props.review.comparison?.comparison.sha256 ?? props.review.analysis?.result.sha256 ?? 'analysis';
-  return <QuickOutcomeRecord {...props} data={data} key={key} />;
+  return <QuickOutcomeRecord {...props} data={data} key={key} detailsOpen={detailsOpen} setDetailsOpen={setDetailsOpen} />;
 }
-function QuickOutcomeRecord({ review, data, onPolicy, onSource }: Props & { data: QuickOutcomeData }) {
+function QuickOutcomeRecord({ review, data, onPolicy, onSource, detailsOpen, setDetailsOpen }: Props & { data: QuickOutcomeData; detailsOpen: boolean; setDetailsOpen: (open: boolean) => void }) {
   const { t } = useI18n();
   const [selected, setSelected] = useState<number | null>(null);
   const { verdict, report, changes, partial, complete } = data;
@@ -53,11 +54,13 @@ function QuickOutcomeRecord({ review, data, onPolicy, onSource }: Props & { data
     </>}
     leadingContent={multiple && changes ? <QuickChangeGroups groups={changes.classes} selected={selected} onSelect={setSelected} /> : undefined}
     scope={<div className="record-refined__scope"><p>{t('quick.shortScope')}</p></div>}
-    details={<details className="quick-outcome__details record-refined__details">
-      <summary>{t('quick.resultDetails')}</summary>
+    details={<section className="quick-outcome__details record-refined__details">
+      <button type="button" className="button button--quiet" aria-expanded={detailsOpen} aria-controls="quick-outcome-details-panel" onClick={() => setDetailsOpen(!detailsOpen)}>{t('quick.resultDetails')}</button>
+      <div id="quick-outcome-details-panel" hidden={!detailsOpen}>
       <p>{review.accepted && report ? obligationStatusList(t, report.obligations) : t('result.noPolicy')}</p>
       <p>{t('result.searchComplete')}: {complete ? t('result.yes') : t('result.no')}</p>
       <p>{t('quick.scopeNote')}</p>
       <ChangeClasses review={review} />
-    </details>} />;
+      </div>
+    </section>} />;
 }

@@ -166,15 +166,18 @@ export function QuickScreen({ review }: { review: Review }) {
   const attemptedRef = useRef<string | null>(null);
   const exploreRef = useRef(review.exploreSource);
   exploreRef.current = review.exploreSource;
-  const toolsRef = useRef<HTMLDetailsElement>(null);
-  const sourceRef = useRef<HTMLDetailsElement>(null);
-  const policyRef = useRef<HTMLDetailsElement>(null);
-  function reveal(ref: { current: HTMLDetailsElement | null }) {
-    if (!ref.current) return;
-    if (toolsRef.current) toolsRef.current.open = true;
-    ref.current.open = true;
-    ref.current.querySelector('summary')?.focus();
-    ref.current.scrollIntoView?.({ block: 'start' });
+  const sourceRef = useRef<HTMLDivElement>(null);
+  const policyRef = useRef<HTMLDivElement>(null);
+  const [sourceOpen, setSourceOpen] = useState(false);
+  const [policyOpen, setPolicyOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [questionsOpen, setQuestionsOpen] = useState(false);
+  function reveal(ref: { current: HTMLDivElement | null }, setOpen: (open: boolean) => void) {
+    setOpen(true);
+    requestAnimationFrame(() => {
+      ref.current?.focus();
+      ref.current?.scrollIntoView?.({ block: 'start' });
+    });
   }
   const [dragOver, setDragOver] = useState(false);
   const [dropError, setDropError] = useState(false);
@@ -234,6 +237,10 @@ export function QuickScreen({ review }: { review: Review }) {
   }
 
   const report = review.comparison?.comparison.report ?? null;
+  const showObjectSelection = Boolean(review.analysis && (
+    review.analysis.result.summary.objects !== 1 || review.analysis.result.summary.unsupported > 0
+    || !review.selectedObject || (!review.comparison && !review.selectedObject.acl)
+  ));
   const showRepair = Boolean(
     review.accepted && report && report.verdict === 'DIFFERENT'
     && report.obligations.some((obligation) => obligation.status === 'VIOLATED'),
@@ -247,17 +254,19 @@ export function QuickScreen({ review }: { review: Review }) {
         {review.sample && !review.pristine && <ProvenanceTag icon="file">{t('source.sample.modified')}</ProvenanceTag>}
       </header>
 
-      <QuickOutcome review={review} onPolicy={() => reveal(policyRef)} onSource={() => reveal(sourceRef)} />
-      <details className="review-disclosure quick-tools" ref={toolsRef} open={!review.analysis || !review.selectedObject || !review.selectedObject.acl || review.analysis.result.summary.objects > 1 || review.analysis.result.summary.unsupported > 0}>
-        <summary>{t('quick.tools')}</summary>
-      {review.analysis && (
-        <details className="review-disclosure quick-overview" open={review.analysis.result.summary.objects !== 1 || review.analysis.result.summary.unsupported > 0 || !review.selectedObject || (!review.comparison && !review.selectedObject.acl)}>
-          <summary>{t('quick.objects')}</summary>
+      <QuickOutcome review={review} onPolicy={() => reveal(policyRef, setPolicyOpen)} onSource={() => reveal(sourceRef, setSourceOpen)} />
+      {review.analysis && showObjectSelection && <ConfigOverview review={review} />}
+      {review.analysis && !showObjectSelection && (
+        <section className="review-disclosure quick-tools">
+          <button type="button" className="button button--quiet" aria-expanded={toolsOpen} aria-controls="quick-tools-panel" onClick={() => setToolsOpen(!toolsOpen)}>{t('quick.tools')}</button>
+          <section id="quick-tools-panel" className="quick-overview" aria-label={t('quick.objects')} hidden={!toolsOpen}>
           <ConfigOverview review={review} />
-        </details>
+          </section>
+        </section>
       )}
-      <details className="review-disclosure quick-sources" ref={sourceRef} open={!review.analysis}>
-        <summary>{t('quick.sources')}</summary>
+      <section className="review-disclosure quick-sources">
+      <div id="quick-sources-panel" ref={sourceRef} tabIndex={-1} hidden={Boolean(review.analysis) && !sourceOpen}>
+      <h2>{t('quick.sources')}</h2>
       <div
         className={`quick-dropzone ${dragOver ? 'quick-dropzone--over' : ''}`}
         onDragOver={(event) => { event.preventDefault(); if (!busy) setDragOver(true); }}
@@ -287,7 +296,8 @@ export function QuickScreen({ review }: { review: Review }) {
         {dropError && <p className="field-error" role="alert">{t('source.importError')}</p>}
       </div>
 
-      </details>
+      </div>
+      </section>
 
       {review.busy === 'parse' && !review.analysis && (
         <BusyPanel label={t('source.busy')} onCancel={review.cancel} />
@@ -310,10 +320,12 @@ export function QuickScreen({ review }: { review: Review }) {
       {!review.comparison && review.selectedObject && (
         <ObjectDetail object={review.selectedObject} />
       )}
-      <details className="review-disclosure quick-policy" ref={policyRef}>
-        <summary>{t('quick.obligations.title')}</summary>
+      <section className="review-disclosure quick-policy">
+        <button type="button" className="button button--quiet" aria-expanded={policyOpen} aria-controls="quick-policy-panel" onClick={() => setPolicyOpen(!policyOpen)}>{t('quick.obligations.title')}</button>
+        <div id="quick-policy-panel" ref={policyRef} tabIndex={-1} hidden={!policyOpen}>
         <QuickObligations review={review} />
-      </details>
+        </div>
+      </section>
       {showRepair && (
         <section className="quick-repair" aria-labelledby="quick-repair-title">
           <SectionHeading id="quick-repair-title" title={t('quick.repair.title')} />
@@ -321,11 +333,12 @@ export function QuickScreen({ review }: { review: Review }) {
         </section>
       )}
       <QuickEvidence review={review} />
-      {review.analysis && <details className="review-disclosure quick-questions">
-        <summary>{t('chat.title')}</summary>
+      {review.analysis && <section className="review-disclosure quick-questions">
+        <button type="button" className="button button--quiet" aria-expanded={questionsOpen} aria-controls="quick-questions-panel" onClick={() => setQuestionsOpen(!questionsOpen)}>{t('chat.title')}</button>
+        <div id="quick-questions-panel" hidden={!questionsOpen}>
         <ChatPanel comparison={review.comparison?.comparison ?? null} analysis={review.analysis?.result ?? null} />
-      </details>}
-      </details>
+        </div>
+      </section>}
     </div>
   );
 }

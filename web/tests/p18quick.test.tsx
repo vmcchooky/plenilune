@@ -94,6 +94,13 @@ async function awaitVerdict() {
 async function evaluateObligations() {
   // Editor controls stay disabled while a run is settling (busy state), and
   // a click on a disabled button is a no-op: wait for the button to enable.
+  if (document.querySelector<HTMLElement>('#quick-policy-panel')?.hidden) {
+    const toggle = screen.getByRole('button', { name: text('quick.obligations.title') });
+    expect(toggle.getAttribute('aria-controls')).toBe('quick-policy-panel');
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(document.querySelector<HTMLElement>('#quick-policy-panel')?.hidden).toBe(false);
+  }
   const previewButton = screen.getByRole('button', { name: text('accept.previewAction') });
   await waitFor(() => {
     expect((previewButton as HTMLButtonElement).disabled).toBe(false);
@@ -130,16 +137,20 @@ describe('P1-8 quick verdict path', () => {
   it('keeps the initial quick result short and reveals editors only on request', async () => {
     renderApp();
     await awaitVerdict();
-    const sources = document.querySelector<HTMLDetailsElement>('.quick-sources')!;
-    const policy = document.querySelector<HTMLDetailsElement>('.quick-policy')!;
-    expect(sources.open).toBe(false);
-    expect(policy.open).toBe(false);
-    expect(document.querySelector<HTMLDetailsElement>('.quick-questions')!.open).toBe(false);
+    const sources = document.querySelector<HTMLElement>('#quick-sources-panel')!;
+    const policy = document.querySelector<HTMLElement>('#quick-policy-panel')!;
+    expect(sources.hidden).toBe(true);
+    expect(policy.hidden).toBe(true);
+    expect(sources.closest('.quick-tools')).toBeNull();
+    expect(policy.closest('.quick-tools')).toBeNull();
+    expect(document.querySelector<HTMLElement>('#quick-questions-panel')!.hidden).toBe(true);
+    expect(document.querySelector('.quick-screen details details')).toBeNull();
     expect(document.querySelector('.quick-outcome__example')?.textContent).toContain('192.0.2.10');
     fireEvent.click(screen.getByRole('button', { name: text('quick.sources') }));
-    expect(sources.open).toBe(true);
+    expect(sources.hidden).toBe(false);
     fireEvent.click(screen.getByRole('button', { name: text('quick.checkIntent') }));
-    expect(policy.open).toBe(true);
+    expect(policy.hidden).toBe(false);
+    expect(sources.hidden).toBe(false);
   });
 
   it('keeps incomplete-result warnings outside collapsed details', async () => {
@@ -149,8 +160,35 @@ describe('P1-8 quick verdict path', () => {
     renderApp();
     await screen.findByText('Chưa kết luận', { selector: 'code.badge' }, { timeout: 5000 });
     expect(document.querySelector('.quick-outcome > [role="status"]')).toBeTruthy();
-    expect(document.querySelector<HTMLDetailsElement>('.quick-outcome__details')!.open).toBe(false);
+    expect(document.querySelector<HTMLElement>('#quick-outcome-details-panel')!.hidden).toBe(true);
     expect(screen.queryByText('Tương đương')).toBeNull();
+  });
+
+  it('keeps quick panel toggle state synchronized with their panels', async () => {
+    renderApp();
+    await awaitVerdict();
+    for (const id of ['quick-tools-panel', 'quick-policy-panel', 'quick-questions-panel', 'quick-outcome-details-panel']) {
+      const toggle = document.querySelector<HTMLButtonElement>(`button[aria-controls="${id}"]`)!;
+      const panel = document.getElementById(id)!;
+      expect(toggle).toBeTruthy();
+      expect(toggle.getAttribute('aria-expanded')).toBe('false');
+      expect(panel.hidden).toBe(true);
+      fireEvent.click(toggle);
+      expect(toggle.getAttribute('aria-expanded')).toBe('true');
+      expect(panel.hidden).toBe(false);
+      fireEvent.click(toggle);
+      expect(toggle.getAttribute('aria-expanded')).toBe('false');
+      expect(panel.hidden).toBe(true);
+    }
+    const evidenceToggle = document.querySelector<HTMLButtonElement>('button[aria-controls="quick-evidence-panel"]')!;
+    expect(evidenceToggle.getAttribute('aria-expanded')).toBe('false');
+    expect(document.getElementById('quick-evidence-panel')).toBeNull();
+    fireEvent.click(evidenceToggle);
+    expect(evidenceToggle.getAttribute('aria-expanded')).toBe('true');
+    expect(document.getElementById('quick-evidence-panel')).toBeTruthy();
+    fireEvent.click(evidenceToggle);
+    expect(evidenceToggle.getAttribute('aria-expanded')).toBe('false');
+    expect(document.getElementById('quick-evidence-panel')).toBeNull();
   });
 
   it('(a) auto-runs on the default sample and shows the verdict with zero clicks', async () => {

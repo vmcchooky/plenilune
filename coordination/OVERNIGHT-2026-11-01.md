@@ -559,6 +559,20 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D14 U4 — npm test ĐỎ, dừng:** nhánh local `feat/ui-u4-hierarchy`, chưa commit/push. Trong khi làm phẳng lớp quick, tôi đặt `showObjectSelection` sai phạm vi; lỗi sản phẩm xuất hiện sau thay đổi. `npm test` exit 1; output bị tool cắt, không có log đầy đủ và không chạy lại. Phần chính nguyên văn:
+```text
+ ❯ tests/p18quick.test.tsx (9 tests | 8 failed) 40924ms
+ReferenceError: showObjectSelection is not defined
+ ❯ QuickScreen src/components/QuickScreen.tsx:253:27
+ Test Files  1 failed | 22 passed (23)
+      Tests  8 failed | 177 passed (185)
+     Errors  8 errors
+   Start at  11:10:03
+   Duration  47.72s (environment 50%, tests 37%, import 10%, transform 2%)
+```
+  Không sửa code, không nới test/timeout, không chạy lại; xin chỉ đạo tiếp. Script baseline và ảnh local `D:/Quorix/gate-46-20261102/out/u4-evidence/`; U4 chưa hoàn thành.
+
+
 - **#66 đã merge theo MANIFEST-MERGE OK:** merge commit `4bee10ce7d3b2103ee489dec0434e785f8ef90a2`; tiếp tục D14.
 
 

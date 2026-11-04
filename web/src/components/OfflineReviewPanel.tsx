@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { useI18n } from '../i18n';
 import { ApiError, isAbort } from '../lib/api';
+import { FileField } from './FileField';
 import {
   inspectReceipt, MAX_CONFIG_BYTES, MAX_RECEIPT_BYTES, readReviewFile,
   replayImported, reviewCopy,
@@ -102,10 +103,15 @@ export function OfflineReviewPanel() {
         {(['before', 'after', 'receipt'] as const).map((slot) => (
           <div className="field" key={slot}>
             <label htmlFor={`${id}-${slot}`}>{copy[slot]}</label>
-            <input id={`${id}-${slot}`} type="file" accept={slot === 'receipt' ? '.json,application/json' : '.acl,.cfg,.conf,.txt,text/plain'}
-              onChange={(event) => { void selectFile(slot, event.target.files?.[0]); }} />
+            <FileField
+              id={`${id}-${slot}`}
+              accept={slot === 'receipt' ? '.json,application/json' : '.acl,.cfg,.conf,.txt,text/plain'}
+              chooseLabel={copy.chooseFile}
+              emptyLabel={copy.noFile}
+              file={files[slot]}
+              onFile={(file) => { void selectFile(slot, file); }}
+            />
             {reading[slot] && <p role="status">{copy.loading}</p>}
-            {files[slot] && <p className="field-hint">{files[slot]?.name} · {files[slot]?.bytes.byteLength} bytes</p>}
             {fileErrors[slot] && <p role="alert">{copy[fileErrors[slot]!]}</p>}
           </div>
         ))}

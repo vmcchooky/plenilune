@@ -489,7 +489,7 @@
 }
 
 .condition-row__identity .field-label { margin: 0; }
-.condition-row__kind select { min-height: 40px; }
+.condition-row__kind .select-trigger { min-height: 40px; }
 .condition-row__remove { width: 40px; min-width: 40px; padding: 0; align-self: end; }
 
 .condition-row__help {
@@ -780,14 +780,23 @@
   align-items: baseline;
 }
 
-.witness-index__top strong { font-size: var(--text-sm); font-weight: 600; }
-.witness-index__top code { color: var(--muted); font-size: var(--text-xs); overflow-wrap: anywhere; }
+.witness-index__top strong { font-size: var(--text-sm); font-weight: 600; overflow-wrap: break-word; }
+.witness-index__top code {
+  color: var(--muted);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
 
 .witness-index__packet {
   color: var(--ink-2);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .witness-layout__detail { min-width: 0; }
@@ -1338,7 +1347,8 @@
   grid-template-columns: 24px minmax(0, 1fr) 18px;
   gap: var(--space-3);
   align-items: center;
-  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  min-width: 0;
+  padding: var(--space-3);
   text-align: left;
   background: transparent;
   border: 0;
@@ -1357,7 +1367,7 @@
   min-width: 0;
 }
 
-.download-item strong { font-size: var(--text-sm); font-weight: 600; }
+.download-item strong { font-size: var(--text-sm); font-weight: 600; overflow-wrap: break-word; }
 
 .download-item small {
   color: var(--muted);
@@ -1953,7 +1963,8 @@
    the .step gap alone (a multiple of 8); the rule lines the sections
    used to carry are removed in place above. */
 
-.quick-screen { max-width: var(--study-record-width); }
+/* The quick screen spans the same rail as the rest of the review —
+   an earlier 58rem cap left the record cramped next to full-width rules. */
 
 /* The page title steps down so the verdict word (--text-xl on the
    plate) is the largest type on the screen. */
@@ -2108,7 +2119,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: end;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .inbox-watch__conditions {
@@ -2129,14 +2140,23 @@
 
 /* U3: verdicts lead; watch creation is an optional disclosure. */
 .inbox-panel, .inbox-list, .inbox-entry, .inbox-watch { min-width: 0; }
-.inbox-panel__empty { padding: var(--space-4); border: var(--border-thin) solid var(--line); border-radius: var(--radius-md); }
+.inbox-panel__empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: flex-start;
+  padding: var(--space-6);
+  border: var(--border-thin) solid var(--line);
+  border-radius: var(--radius-md);
+}
+.inbox-panel__empty p { margin: 0; }
 .inbox-entry { display: grid; gap: var(--space-3); border: var(--border-thin) solid var(--line); }
 .inbox-entry__head { flex-wrap: wrap; min-width: 0; }
 .inbox-entry__name, .inbox-entry__meta, .watch-list__item { overflow-wrap: anywhere; min-width: 0; }
 .inbox-entry__meta { align-items: baseline; }
 .inbox-entry > button { justify-self: start; min-height: 44px; }
 .inbox-watch__add > summary { cursor: pointer; min-height: 44px; padding: var(--space-3) 0; font-weight: 600; }
-.inbox-watch__form { padding: var(--space-3); background: var(--surface-2); border-radius: var(--radius-md); }
-.inbox-watch__form .field { min-width: 0; flex: 1 1 200px; }
-.inbox-watch__form input, .inbox-watch__form select { max-width: 100%; }
+.inbox-watch__form { padding: var(--space-4); background: var(--surface-2); border-radius: var(--radius-md); }
+.inbox-watch__form .field { min-width: 0; flex: 1 1 240px; }
+.inbox-watch__form input, .inbox-watch__form .select { max-width: 100%; }
 .inbox-watch__conditions { flex: 1 1 100%; }

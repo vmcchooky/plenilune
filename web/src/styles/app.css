@@ -30,14 +30,14 @@ body {
 
 button,
 input,
-select,
 textarea { font: inherit; }
 
 button,
-select { cursor: pointer; }
+input,
+textarea,
+.file-field__choose { cursor: pointer; }
 
 button:disabled,
-select:disabled,
 input:disabled,
 textarea:disabled {
   cursor: not-allowed;
@@ -46,7 +46,6 @@ textarea:disabled {
 
 button,
 input,
-select,
 textarea,
 summary,
 a { -webkit-tap-highlight-color: transparent; }
@@ -58,7 +57,11 @@ a { -webkit-tap-highlight-color: transparent; }
 
 h1, h2, h3, h4, p { margin-top: 0; }
 
-h1, h2, h3, h4 { line-height: 1.2; }
+h1, h2, h3, h4 { line-height: 1.2; text-wrap: balance; }
+
+.step-lede,
+.field-hint,
+.report-view p { text-wrap: pretty; }
 
 h1 {
   margin-bottom: var(--space-3);
@@ -131,6 +134,8 @@ img, svg { flex: 0 0 auto; }
 }
 
 .skip-link:focus { top: 10px; }
+
+summary { border-radius: var(--radius-sm); }
 
 .app {
   display: flex;
@@ -508,7 +513,6 @@ img, svg { flex: 0 0 auto; }
 }
 
 input,
-select,
 textarea {
   width: 100%;
   min-height: 42px;
@@ -528,11 +532,9 @@ textarea {
 }
 
 input:hover:not(:disabled),
-select:hover:not(:disabled),
 textarea:hover:not(:disabled) { border-color: var(--line-strong); }
 
 input:focus-visible,
-select:focus-visible,
 textarea:focus-visible {
   border-color: var(--line);
   outline: var(--focus-width) solid var(--focus);
@@ -541,6 +543,177 @@ textarea:focus-visible {
 
 input::placeholder,
 textarea::placeholder { color: var(--faint); opacity: 1; }
+
+/* Select (custom listbox) — native popups cannot be themed. */
+
+.select {
+  position: relative;
+  width: 100%;
+}
+
+.select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 42px;
+  padding: 0 var(--space-2);
+  color: var(--ink);
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-body);
+  transition: border-color var(--dur-1) var(--ease);
+}
+
+.select-trigger:hover:not(:disabled) { border-color: var(--line-strong); }
+
+.select-trigger:focus-visible {
+  border-color: var(--line);
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: var(--focus-offset);
+}
+
+.select-trigger[aria-expanded="true"] { border-color: var(--accent); }
+
+.select-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.select-trigger__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select-trigger__chevron {
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition: transform var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+
+.select-trigger[aria-expanded="true"] .select-trigger__chevron {
+  transform: rotate(180deg);
+  color: var(--accent);
+}
+
+.select-list {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + var(--space-1));
+  right: 0;
+  left: 0;
+  max-height: 280px;
+  padding: var(--space-1);
+  margin: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.select-list--above {
+  top: auto;
+  bottom: calc(100% + var(--space-1));
+}
+
+.select-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 40px;
+  padding: 0 var(--space-2);
+  color: var(--ink);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-body);
+  line-height: 1.4;
+}
+
+@media (pointer: coarse) {
+  .select-option { min-height: 44px; }
+}
+
+.select-option[data-active="true"] { background: var(--surface-2); }
+
+.select-option[aria-selected="true"] {
+  color: var(--accent-strong);
+  font-weight: 600;
+  background: var(--accent-soft);
+}
+
+.select-option[aria-selected="true"][data-active="true"] {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.select-option__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select-option__check {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--accent-strong);
+}
+
+/* File field — the native input stays sr-only; this is the visible control. */
+
+.file-field {
+  position: relative;
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-height: 44px;
+}
+
+.file-field:focus-within .file-field__choose {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: var(--focus-offset);
+}
+
+.file-field__choose {
+  flex: 0 0 auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.file-field__name {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+}
+
+.file-field__name--empty { color: var(--muted); }
+
+.file-field__filename {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-field__icon { flex: 0 0 auto; color: var(--muted); }
+
+.file-field__size {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
 
 button { color: inherit; }
 
@@ -653,7 +826,7 @@ button.badge:hover { background: var(--surface-3); }
   gap: var(--space-4) var(--space-6);
   align-items: center;
   justify-content: space-between;
-  padding-top: var(--space-4);
+  padding-top: var(--space-6);
   border-top: 1px solid var(--line);
 }
 

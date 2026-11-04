@@ -10,6 +10,7 @@ import {
 } from '../lib/conditions';
 import { Icon } from './Icon';
 import { RegionFields } from './RegionFields';
+import { Select } from './Select';
 import { EmptyState } from './Ui';
 
 // The condition list and allowed-change scope editors, shared by the deep
@@ -61,16 +62,13 @@ export function ConditionEditorList({ review }: { review: Review }) {
               </div>
               <div className="field condition-row__kind">
                 <label htmlFor={`${condition.id}-kind`}>{t('cond.kind')}</label>
-                <select
+                <Select
                   id={`${condition.id}-kind`}
                   value={condition.kind}
                   disabled={busy}
-                  onChange={(event) => review.updateCondition(condition.id, { ...condition, kind: event.target.value as typeof condition.kind })}
-                >
-                  {(['must_permit', 'must_deny', 'must_remain'] as const).map((kind) => (
-                    <option key={kind} value={kind}>{kindLabel(t, kind)}</option>
-                  ))}
-                </select>
+                  onChange={(next) => review.updateCondition(condition.id, { ...condition, kind: next as typeof condition.kind })}
+                  options={(['must_permit', 'must_deny', 'must_remain'] as const).map((kind) => ({ value: kind, label: kindLabel(t, kind) }))}
+                />
               </div>
               <button
                 type="button"

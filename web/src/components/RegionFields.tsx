@@ -1,6 +1,7 @@
 import { useI18n } from '../i18n';
 import { parsePorts, protocolLabel } from '../lib/conditions';
 import type { RegionDraft } from '../lib/conditions';
+import { Select } from './Select';
 import { TechnicalDetails } from './Ui';
 
 const baseProtocols = ['ip', 'tcp', 'udp', 'icmp'];
@@ -30,16 +31,13 @@ export function RegionFields({
     <div className="region-fields">
       <div className="field">
         <label htmlFor={`${idPrefix}-protocol`}>{t('cond.protocol')}</label>
-        <select
+        <Select
           id={`${idPrefix}-protocol`}
           value={value.protocol}
           disabled={disabled}
-          onChange={(event) => set('protocol', event.target.value)}
-        >
-          {protocols.map((protocol) => (
-            <option key={protocol} value={protocol}>{protocolLabel(t, protocol)}</option>
-          ))}
-        </select>
+          onChange={(next) => set('protocol', next)}
+          options={protocols.map((protocol) => ({ value: protocol, label: protocolLabel(t, protocol) }))}
+        />
       </div>
       <div className="field">
         <label htmlFor={`${idPrefix}-src`}>{t('cond.src')}</label>

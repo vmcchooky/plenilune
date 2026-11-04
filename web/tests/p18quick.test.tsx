@@ -31,6 +31,14 @@ vi.mock('../src/lib/api', async (importOriginal) => {
 const artifact = <T,>(data: T): Artifact<T> => ({ data, raw: JSON.stringify(data) });
 const text = (key: keyof typeof viMessages): string => viMessages[key];
 
+// The sample picker is the custom listbox; open it and pick o option.
+function chooseSample(key: keyof typeof viMessages) {
+  const trigger = document.querySelector<HTMLButtonElement>('#sample-select');
+  expect(trigger).toBeTruthy();
+  fireEvent.click(trigger!);
+  fireEvent.click(screen.getByRole('option', { name: viMessages[key] }));
+}
+
 // What the accepted-policy comparison returns; tests override per scenario.
 let acceptedComparison: Comparison = comparison;
 
@@ -115,7 +123,7 @@ describe('P1-8 quick verdict path', () => {
     let finishInbox!: (doc: Artifact<InboxDocument>) => void;
     vi.mocked(runtime.listInbox).mockImplementation(() => new Promise(resolve => { finishInbox = resolve; }));
     renderApp();
-    fireEvent.change(document.querySelector('#sample-select')!, { target: { value: 'blank' } });
+    chooseSample('source.sample.blank');
     const drawer = document.querySelector<HTMLDetailsElement>('.watch-drawer')!;
     drawer.open = true;
     const name = screen.getByLabelText(text('inbox.watch.name')) as HTMLInputElement;
@@ -207,9 +215,8 @@ describe('P1-8 quick verdict path', () => {
 
   it('(b) reaches the verdict with no obligations at all and is never blocked', async () => {
     const { container } = renderApp();
-    const select = container.querySelector('#sample-select');
-    expect(select).toBeTruthy();
-    fireEvent.change(select!, { target: { value: 'blank' } });
+    expect(container.querySelector('#sample-select')).toBeTruthy();
+    chooseSample('source.sample.blank');
     fireEvent.change(screen.getByLabelText(text('source.before')), { target: { value: scenario.before } });
     fireEvent.change(screen.getByLabelText(text('source.after')), { target: { value: scenario.after } });
     await awaitVerdict();

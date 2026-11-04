@@ -219,9 +219,9 @@ export function ResultStep({ review }: { review: Review }) {
                   >
                     <span className="witness-index__top">
                       <strong>{entry.label}</strong>
-                      <code>{shortHash(entry.witness.id)}</code>
+                      <code title={entry.witness.id}>{shortHash(entry.witness.id)}</code>
                     </span>
-                    <span className="witness-index__packet">{packetSummary(entry.witness.packet)}</span>
+                    <span className="witness-index__packet" title={packetSummary(entry.witness.packet)}>{packetSummary(entry.witness.packet)}</span>
                   </button>
                 );
               })}

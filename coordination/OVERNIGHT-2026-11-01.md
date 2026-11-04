@@ -258,6 +258,10 @@ sau watermark vòng trước `e6c0880`); main `3400e7d`; PR mở: #70 head `4129
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N1 manifest chờ duyệt
+- PR #72 https://github.com/vmcchooky/plenilune/pull/72, base main `04fd7b33b8710eb2f6386e2b98d3fa3fed93bf86`, head `9239ea7428eb651506b36f3a6b12c1333f97eb06`; chỉ thay `docs/public-manifest.sha256`.
+- Checkout sạch `core.autocrlf=false`, chạy `scripts/public-snapshot.ps1`: `Manifest entries: 476 (manifest file itself is not listed)`. Chờ MANIFEST-MERGE OK.
+
 ### 2026-11-05 — N1 PR #70 MERGED
 - MERGED PR #70 bằng merge commit `04fd7b33b8710eb2f6386e2b98d3fa3fed93bf86`, head `412974f1b634c678141e4f9e95fb5bd6f67b1a44`, base main `2d1cd6caf4b297547ae38cb896450633ef63f5ca`, theo UI-MERGE OK; bản ghép thử không conflict.
 - Cổng Windows trên bản ghép trước merge: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0; `npm test` PASS exit=0, Test Files 24 passed (24), Tests 192 passed (192); `npm run build` PASS exit=0. Test in 4 dòng `Not implemented: Window's scrollTo() method`; build cảnh báo chunk lớn hơn 500 kB.

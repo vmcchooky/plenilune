@@ -558,6 +558,12 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D5 PR #65:** cổng tài liệu PASS: diff chỉ `docs/plan/STATUS.md` và `docs/qualification-p3a.md` (29+/2−); `git diff --check` không output; disposition ghi PARTIAL, live UI/NVDA theo phạm vi chứng cứ, AI conditions 0/3 usable, thiết bị thật NOT QUALIFIED, không claim qualify toàn phần. GitHub head `e00dfbf`, MERGEABLE; đã merge theo chỉ đạo thành `5264d519b44ee1c9b9f0d1a97cffe514bf3065a8`. Tiếp tục #60.
+
+
+*(Khôi phục từ f6b75b7 do cập nhật Mục A ghi đè.)*
+
+
 - **#60 đã merge theo UI-MERGE OK:** rebase lên main `5264d51`, head `cbaec7c9d8fe80e9b286f0ebbd13a041dd70733a`, diff check sạch; `npm test`: `Test Files 23 passed (23)`, `Tests 185 passed (185)`, `Duration 33.74s`; `npm run build` PASS `index-D5pitK52.js`, cảnh báo chunk; merge commit `78ae3d33a653fcb123ff786f14a1e0132b423777`.
 - **Manifest sau D5 + #60:** script `public-snapshot.ps1` từ `78ae3d3`, `core.autocrlf=false`, `Manifest entries: 468 (manifest file itself is not listed)`; `Secret scan clean: 437 scanned files; no blocking patterns.` PR #66 https://github.com/vmcchooky/plenilune/pull/66 head `87557db`, chỉ manifest; chờ MANIFEST-MERGE OK, không merge.
 

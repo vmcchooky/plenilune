@@ -336,6 +336,9 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2.1 P0-1 dòng dài synthetic
+- Main `55c1ce0`: điền `#before-acl` bằng ACL synthetic có dòng remark 500 ký tự liên tiếp; VI/EN × 360/390/480/768/1024/1280/1440/1920 = 16/16 trường hợp `scrollWidth=clientWidth`, `wrap=soft`, `white-space=pre-wrap`, document overflow 0; scroll dọc xuất hiện (ví dụ 390: clientHeight 240 / scrollHeight 400). Chi tiết `C:\Users\vmcch\AppData\Local\Temp\plenilune-n1-lf-20261105\out\n2-audit\long-line.json`. P0-1 đạt phép thử dòng dài synthetic này; U1 gốc thiếu số editor nên không thể định lượng mức cải thiện.
+
 ### 2026-11-05 — N2.1 đo bổ sung chat, inbox, editor
 - Trên `55c1ce0`, coarse pointer VI/EN × 360/390/480/768/1024/1280/1440/1920: mở chat; 5 nút gợi ý + nút gửi đều cao 44px, chat axe 0 tại 16/16 tổ hợp. Đối chiếu U1 chat 32px → đã sửa trong phạm vi các nút chat được đo; chưa suy ra mọi control khác. JSON `...\out\n2-audit\followup.json`, ảnh `...\out\n2-audit\{vi,en}-chat-watch-editor-{390,1440}.png`.
 - Watch + form mở, entries=0 (VI): 390 panel 358×994, form 326×363; 768 panel 720×770, form 688×222; 1440 panel 1184×750, form 1152×222. U1 cũ panel/form 390=294×767/262×313, 768=736×471/704×120, 1440=928×419/896×68; hai lần không cùng trạng thái/layout và kích thước mới không chứng minh khoảng trắng đã đạt. U3 mock đã PASS, 0 overflow/axe.

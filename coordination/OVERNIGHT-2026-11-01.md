@@ -258,6 +258,10 @@ sau watermark vòng trước `e6c0880`); main `3400e7d`; PR mở: #70 head `4129
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N0 PR #71 MERGED
+- MERGED PR #71 bằng merge commit `2d1cd6caf4b297547ae38cb896450633ef63f5ca`, head `4d4eb89b3326a1f76087a8128114b4f1466c23a7`, theo MANIFEST-MERGE OK.
+- Cổng Windows trước merge: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0.
+
 ### 2026-11-05 — Cổng #71 và #70
 - #71 head `4d4eb89b3326a1f76087a8128114b4f1466c23a7`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
 - #70 head `412974f1b634c678141e4f9e95fb5bd6f67b1a44`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go build ./...` PASS exit=0; `npm test` PASS exit=0, Test Files 24 passed (24), Tests 192 passed (192); `npm run build` PASS exit=0. Test web in 4 dòng `Not implemented: Window's scrollTo() method`; build cảnh báo chunk lớn hơn 500 kB. Đã thấy UI-MERGE OK, giữ thứ tự N0 trước N1 như prompt ca.

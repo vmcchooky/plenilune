@@ -377,7 +377,7 @@ export function AnalysisReplay({ review }: { review: Review }) {
   const replay = review.analysisReplay;
   return (
     <div className="replay-tool">
-      <h3>{t('evidence.replayAnalysis')}</h3>
+      <h2>{t('evidence.replayAnalysis')}</h2>
       {replay ? (
         <p>
           <StatusMark tone={replay.result.status === 'TIMING_SENSITIVE' ? 'warn' : 'good'} label={replayLabel(t, replay.result.status)} />

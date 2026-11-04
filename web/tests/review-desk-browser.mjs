@@ -24,9 +24,9 @@ try {
     await page.goto('http://127.0.0.1:8098');
     if (locale === 'en') await page.getByRole('button', { name: /EN —/ }).click();
     await page.locator('#quick-verdict-title').waitFor();
-    assert.equal(await page.locator('.quick-sources').getAttribute('open'), null);
-    assert.equal(await page.locator('.quick-policy').getAttribute('open'), null);
-    assert.equal(await page.locator('.quick-questions').getAttribute('open'), null);
+    assert.equal(await page.locator('#quick-sources-panel').isHidden(), true);
+    assert.equal(await page.locator('#quick-policy-panel').isHidden(), true);
+    assert.equal(await page.locator('#quick-questions-panel').isHidden(), true);
     assert.match(await page.locator('.quick-outcome__rule').innerText(), /deny tcp host 192\.0\.2\.10 any eq 22/);
     assert.ok((await page.locator('main').innerText()).trim().split(/\s+/).length < 200, 'quick entry is under 200 visible words');
     for (const width of [320, 390, 768, 1440]) {
@@ -34,8 +34,7 @@ try {
       await check(page, `${locale}-${colorScheme}-${width}-quick`);
       await page.screenshot({ path: `${output}/${locale}-${colorScheme}-${width}.png`, fullPage: true });
     }
-    await page.locator('.quick-tools > summary').click();
-    await page.locator('.quick-policy > summary').click();
+    await page.locator('[aria-controls="quick-policy-panel"]').click();
     await check(page, `${locale}-${colorScheme}-conditions-open`);
     await page.locator('.watch-drawer > summary').click();
     await check(page, `${locale}-${colorScheme}-watches-open`);
@@ -68,10 +67,9 @@ try {
   assert.match(await p.locator('.accept-section').innerText(), /Đã nhận để review/);
   await p.screenshot({ path: `${output}/vi-repair.png`, fullPage: true });
   await p.getByRole('button', { name: 'Kết luận nhanh', exact: true }).click();
-  await p.locator('.quick-tools > summary').click();
-  await p.locator('.quick-policy > summary').focus();
+  await p.locator('[aria-controls="quick-policy-panel"]').focus();
   await p.keyboard.press('Enter');
-  assert.equal(await p.locator('.quick-policy').getAttribute('open'), '');
+  assert.equal(await p.locator('[aria-controls="quick-policy-panel"]').getAttribute('aria-expanded'), 'true');
   await p.getByRole('button', { name: 'Xem / sửa cấu hình', exact: true }).click();
   await p.locator('#sample-select').selectOption('blank');
   await check(p, 'vi-empty');

@@ -561,25 +561,10 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 - **TRẢ LỜI D14 — PHẠM VI “MỘT DISCLOSURE” (QUYẾT ĐỊNH CỦA CHÍ NHÂN, director):** Xác nhận cách hiểu của LOCAL: “tối đa 1 cấp disclosure” chỉ giới hạn **hệ phân cấp điều hướng/công cụ của quick mode** — menu `quick-tools` bao ngoài rồi bên trong lại có disclosure là vi phạm và phải bỏ, đúng như LOCAL dự định. KHÔNG bắt buộc làm phẳng các disclosure kỹ thuật **nội dung** bên trong một vùng đã mở (`quick.resultDetails`, TechnicalDetails trong evidence/scope, disclosures nội bộ ConfigOverview/ChatPanel): đó là progressive disclosure của chính nội dung đó, đúng hướng verdict-first và không dong dài; làm phẳng hết sẽ phình màn quick và vượt phạm vi U4 — ConfigOverview/ChatPanel nằm ngoài quick mode, KHÔNG đụng trong U4. Ranh giới cứng: (a) không disclosure nào lồng trong một disclosure khác ở bất kỳ đâu trong luồng quick; (b) một panel/view mở bằng nút có thể chứa tối đa một disclosure nội dung; (c) disclosure nội dung không được là đường duy nhất tới một hành động chính (so sánh/obligations/xem verdict phải inline); (d) giữ trạng thái khi kết quả cập nhật; heading-order deep-evidence (thêm h2) + touch ≥44px + thao tác bàn phím vẫn thuộc U4. **Phương án của LOCAL ĐƯỢC CHẤP THUẬN:** source + obligations thành hành động inline mở vùng cùng cấp, bỏ disclosure `quick-tools`, công cụ phụ thành các vùng cùng cấp.
 - **THỨ TỰ HÀNG ĐỢI CẬP NHẬT:** LOCAL triển khai D14 U4 theo ranh giới trên → PR web-only kèm bằng chứng thường lệ (ảnh trước/sau 360/390 + desktop, cả VI/EN, axe, overflow, npm) → **KHÔNG tự merge, chờ UI-MERGE OK của Chí Nhân** → merge → regen manifest một lần → UI stream về trạng thái cuối. Điều kiện kết thúc vòng đời chưa đạt (U4 chưa có PR; chưa qua 12:00 05/11) — job tiếp tục. Vòng này không có merge nào thuộc Chí Nhân, không chờ thẻ duyệt.
 
+- **TRẢ LỜI D14 — npm test ĐỎ (Mục B `60949a2`, 11:11):** Đã đọc báo cáo: nhánh local `feat/ui-u4-hierarchy` chưa commit/push, `npm test` exit 1, `tests/p18quick.test.tsx` 8 failed / 177 passed, `ReferenceError: showObjectSelection is not defined` tại `QuickScreen.tsx:253:27`. LOCAL dừng và không tự sửa — ĐÚNG kỷ luật (không nới test/timeout, không sửa ẩu). **Chỉ đạo:** đây là lỗi sản phẩm do đặt sai phạm vi khi làm phẳng lớp quick, không phải lỗi test và không làm thay đổi quyết định phạm vi ở mục 11:00 trên (mục đó đã nằm trên coord, LOCAL đọc trước khi sửa tiếp). Sửa đúng gốc: (1) chạy lại chỉ `p18quick` với output ghi ra file để có log đầy đủ, xác nhận 8 lỗi cùng một gốc `showObjectSelection` chứ không phải nhiều gốc khác nhau; (2) đối chiếu nơi `showObjectSelection` được định nghĩa (state/prop) với dòng 253 đang dùng nó — hoặc đưa khối dùng nó về đúng phạm vi định nghĩa, hoặc nâng state lên phạm vi chung nếu cả hành động inline và vùng mở đều cần nó; (3) CẤM: thêm biến giả/global cho qua, đổi tên ẩu, bỏ qua/skipped `p18quick`, nới timeout. Sau sửa: `npm test` toàn bộ + `npm run build` xanh mới được mở PR U4; vẫn KHÔNG tự merge, chờ UI-MERGE OK. Nếu log đầy đủ lộ thêm gốc lỗi khác ngoài `showObjectSelection`, báo lại Mục B trước khi sửa tiếp.
+
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
-
-- **D14 U4 — npm test ĐỎ, dừng:** nhánh local `feat/ui-u4-hierarchy`, chưa commit/push. Trong khi làm phẳng lớp quick, tôi đặt `showObjectSelection` sai phạm vi; lỗi sản phẩm xuất hiện sau thay đổi. `npm test` exit 1; output bị tool cắt, không có log đầy đủ và không chạy lại. Phần chính nguyên văn:
-```text
- ❯ tests/p18quick.test.tsx (9 tests | 8 failed) 40924ms
-ReferenceError: showObjectSelection is not defined
- ❯ QuickScreen src/components/QuickScreen.tsx:253:27
- Test Files  1 failed | 22 passed (23)
-      Tests  8 failed | 177 passed (185)
-     Errors  8 errors
-   Start at  11:10:03
-   Duration  47.72s (environment 50%, tests 37%, import 10%, transform 2%)
-```
-  Không sửa code, không nới test/timeout, không chạy lại; xin chỉ đạo tiếp. Script baseline và ảnh local `D:/Quorix/gate-46-20261102/out/u4-evidence/`; U4 chưa hoàn thành.
-
-
-*(Khôi phục nguyên văn từ 60949a2 sau cập nhật Mục A ghi đè; xin chỉ đạo cụ thể cho cổng đỏ trước khi sửa.)*
-
 
 - **#66 đã merge theo MANIFEST-MERGE OK:** merge commit `4bee10ce7d3b2103ee489dec0434e785f8ef90a2`; tiếp tục D14.
 

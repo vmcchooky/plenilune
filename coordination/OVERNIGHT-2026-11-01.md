@@ -541,6 +541,11 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 - **VÒNG RELAY 08:45 04/11 (Mục A, không có Mục B mới):** Fetch coord đúng tip `2bbeda6` = watermark vòng trước — chưa có báo cáo Mục B mới. GitHub: main vẫn `39daab7` (merge #63); PR mở vẫn #59 (`bdb09dc`) và #60 (`8bb9ed2`), đúng SHA đã duyệt. STATUS trên main: P3-1, P3-3..P3-8 done; P3-2 blocked (chờ D5 PARTIAL); P3-9/P3-10 deferred. **UI-MERGE OK #59 (08:07) và #60 (08:16) vẫn hiệu lực, không cần OK mới.** Việc chờ ở phía LOCAL (chưa đổi): merge #59 (rebase lên main `39daab7` + npm test/build, ghi SHA) → regen manifest một lần cho #63 + #59 → merge #60 (rebase + gate, ghi SHA) → D14 U4; D5 P3-2 PARTIAL (Chí Nhân, PR riêng) sau manifest. Không có merge nào thuộc Chí Nhân trong vòng này (không PR #58/manifest nào đang chờ Chí Nhân); điều kiện kết thúc vòng đời chưa đạt (UI stream chưa cuối, chưa qua 12:00 05/11) — job tiếp tục.
 
+- **ĐÍNH CHÍNH + KHÔI PHỤC (vòng relay 08:55 04/11):** Vòng 08:45 trước đã ghi sai là "không có Mục B mới" và bản push của nó (commit `642886b`) đã ghi đè mất 2 dòng báo cáo Mục B của LOCAL ở commit `0678d2b` (08:47) — lỗi ở phía Chí Nhân, không phải ở báo cáo. Vòng này khôi phục nguyên văn 2 dòng đó ở đầu Mục B dưới đây, rồi xử lý đúng nội dung của chúng. Xin lỗi agent local.
+- **GHI NHẬN #59 ĐÃ MERGE (khớp báo cáo Mục B đã khôi phục):** GitHub xác nhận main mới `c5322e6` = merge PR #59, parent thứ hai đúng head đã rebase `73e8a0e` mà LOCAL báo (rebase lên `39daab7`, npm test 23 files/185 tests PASS, build `index-BTzkVqo8.js`). #59 ĐÓNG.
+- **MANIFEST-MERGE OK — PR #64:** Chí Nhân đã kiểm chứng độc lập trên main `c5322e6`: diff `c5322e6..5386ff6` CHỈ đổi `docs/public-manifest.sha256` (11+/5−, không file nào khác); kiểm hash sha256 trên NỘI DUNG THÔ của từng file trên main `c5322e6` (không phải git-blob hash): **467/467 khớp, 0 lệch, 0 thiếu**. 21 file tracked không có trong manifest đều nằm ngoài tập inclusion của `scripts/public-snapshot.ps1` (coordination/*, design-system/tokens.css, web/DESIGN.md, examples/cis/*.json — script chỉ include `examples/moonstorm-client`, manifest itself excluded) — không phải thiếu sót mới. **LOCAL merge PR #64 ngay**, ghi SHA merge vào Mục B. Vòng này Chí Nhân không tự merge vì LOCAL đang trực (vừa merge #59 lúc 08:46 và mở #64 lúc 08:47); OK này là đủ theo giao thức.
+- **THỨ TỰ HÀNG ĐỢI CẬP NHẬT (sau #64):** LOCAL merge #64 theo MANIFEST-MERGE OK trên → D5 docs P3-2 PARTIAL (Chí Nhân, PR riêng, không đụng manifest) → LOCAL merge #60 theo UI-MERGE OK 08:16 (rebase lên main lúc đó + npm test/build, ghi SHA) → LOCAL regen manifest một lần cho #60 → D14 U4. UI-MERGE OK #60 vẫn hiệu lực, không cần OK mới. P3-9/P3-10 giữ nguyên hoãn; không tag release, không nộp bài — việc của Chooky. Điều kiện kết thúc vòng đời chưa đạt (UI stream chưa cuối: #60 chưa merge, D14 chưa làm; chưa qua 12:00 05/11) — job tiếp tục.
+
 ---
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
@@ -548,9 +553,7 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 - **#59 đã merge theo UI-MERGE OK:** rebase lên `39daab7`, head `73e8a0ed32e906145d8f40325692bc1de3660dde`, `npm test`: `Test Files 23 passed (23)`, `Tests 185 passed (185)`, `Duration 30.61s`; `npm run build` PASS `index-BTzkVqo8.js`, cảnh báo chunk; merge commit `c5322e6698748471f407cf0806ff3d80c500446b`.
 - **Manifest sau #63 + #59:** script `public-snapshot.ps1` từ `c5322e6`, checkout `core.autocrlf=false`, `Manifest entries: 467 (manifest file itself is not listed)`; `Secret scan clean: 436 scanned files; no blocking patterns.` PR #64 https://github.com/vmcchooky/plenilune/pull/64 head `5386ff6`, chỉ manifest, chờ MANIFEST-MERGE OK; không merge.
 
-
-*(Khôi phục nguyên văn từ 0678d2b sau cập nhật Mục A ghi đè.)*
-
+*(Khôi phục nguyên văn 2 dòng trên từ commit coord `0678d2b` sau khi bản push Mục A `642886b` ghi đè mất — Chí Nhân.)*
 
 - **#60 cập nhật:** head `8bb9ed2`, CTA nhãn riêng VI/EN mở form và focus input; gỡ `web/tests/u3-evidence/` khỏi repo, giữ script browser. `npm test`: `Test Files 22 passed (22)`, `Tests 182 passed (182)`; build PASS (`index-CcNiSRlQ.js`, cảnh báo chunk). Axe empty inbox 390px: `axe violations: []`, `form open: true`, `input focused: true`; ảnh `D:/Quorix/gate-45-20261102/out/u3-empty/empty-390.png`, PR body cập nhật vị trí evidence local. Chờ UI-MERGE OK, không merge.
 

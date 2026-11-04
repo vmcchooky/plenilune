@@ -193,6 +193,54 @@ sau watermark vòng trước `2bed995`); main `04fd7b3`; PR mở: chỉ #72 (man
   UI ở vòng sau, đối chiếu trên main mới sau merge #72 — LOCAL chưa tự mở lát N2
   trước khi danh sách đó lên Mục A. N6 vẫn HOLD publish cho tới RELEASE-GO.
 
+### VÒNG 06:05 05/11 — Chí Nhân (relay cycle, phiên đêm)
+Trạng thái kiểm trực tiếp trên GitHub lúc mở vòng: coord tip `2123e89` (1 Mục B mới
+sau watermark vòng trước `dbb4274`: LOCAL báo #72 đã merge); main `55c1ce0`; PR mở:
+không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
+- **N1 ĐÓNG HẲN — #72 đã merge, kiểm chứng độc lập xong.**
+  - Merge commit `55c1ce0`: parent1 `04fd7b3`, parent2 `9239ea7` = đúng head đã cấp
+    MANIFEST-MERGE OK, không thêm commit; diff `04fd7b3..55c1ce0` chỉ
+    `docs/public-manifest.sha256` (27+/23−).
+  - Kiểm sha256 trên NỘI DUNG THÔ của main `55c1ce0` (git archive, đúng luật chọn
+    file của `scripts/public-snapshot.ps1`): **476/476 khớp, 0 lệch, 0 thiếu,
+    0 thừa** (thứ tự dòng theo sort của script, không phải sort bytewise — tập
+    hash đã khớp tuyệt đối).
+  - Cổng Linux độc lập trên đúng head merge `55c1ce0` (Go 1.26.7): gofmt 0 file;
+    `go vet ./...` PASS; `go build ./...` PASS;
+    `go test -skip '^TestLiveMeta' ./...` PASS (29 package ok, 1 không có test);
+    `go test -race -skip '^TestLiveMeta' ./...` PASS (29 ok, 1 không có test).
+    Cổng Windows của LOCAL trước merge đã PASS với cùng số đếm. Merge
+    manifest-only, web không đụng, nên không chạy lại npm.
+  - N0–N1 coi như đóng hẳn (license #69 + UI cream #70 + cả hai manifest #71/#72
+    đều đã merge). Không còn PR mở.
+- **N2 — DANH SÁCH LÁT CẮT UI (LOCAL làm ngay, từng lát: nhánh riêng, cổng đầy đủ,
+  PR web-only, báo Mục B, chờ UI-MERGE OK).** Đo trên main `55c1ce0` lúc 06:05:
+  code Go + web không còn TODO/FIXME (grep sạch); `docs/design/qa/` có 3 file
+  (record-refinement, review-desk, ui-polish-2026-11-04); QA cream ghi npm 192 +
+  browser 35/35 + overflow 0 + axe 0 — các số này đo trên cây trước #70/#72, phải
+  chạy lại trên main mới.
+  - **N2.1 — Đối chiếu bảng U1 còn dở:** LOCAL giữ `out/u1-audit/audit-report.json`
+    — lập bảng từng finding U1 → đã sửa bởi U2/U3/U4/cream (kèm bằng chứng số đo/
+    ảnh) hay còn mở; các mục còn mở thành lát N2.x riêng, không gộp chung. Riêng
+    hai mục U1 đã biết phải đo lại bằng bằng chứng, không kết luận bằng mắt:
+    (a) heading-order ở deep-evidence (U1 đo 1 vi phạm axe moderate);
+    (b) touch target <44px (U1 đo nhiều nút 40–42px, chat 32px) — đo lại bằng axe +
+    script browser ở 360–1920, cả VI + EN.
+  - **N2.2 — Chạy lại QA cream trên main mới:** `npm test` + `npm run build` +
+    `tests/review-desk-browser.mjs` + `tests/u4-browser.mjs` + `tests/u3-browser.mjs`
+    trên đúng main `55c1ce0`; mọi số phải xanh như QA cream (192 test, overflow 0,
+    axe 0) mới coi nền N2 là sạch; lệch thì báo nguyên văn, không sửa lén.
+  - **N2.3 — Quick mode còn rắc rối/dài dòng (phản hồi chủ sở hữu 13:19 03/11, đưa
+    vào U4 nhưng chưa có số đo sau U4):** đếm bước/click tới verdict ở quick mode
+    trên main mới (cả 2 locale, viewport 390 + 1440); đề xuất rút gọn trong khóa
+    Neo 1+ (không đổi flow, không đổi engine) — đề xuất ghi Mục B kèm số đo,
+    Chí Nhân duyệt trước khi thành PR.
+  - **N2.4 — QA scripts trong docs phải chạy được:** mọi script `web/tests/*.mjs`
+    mà `docs/design/qa/*.md` trích dẫn đều phải tồn tại trên main và chạy xanh;
+    script nào chết/thiếu thì báo, không xóa trích dẫn cho qua.
+  - Không mở lát N3 trước khi N2.1 có bảng đối chiếu (N3/N4 đăng sau khi N2 lên PR
+    đầu tiên hoặc bảng U1 xong). N6 vẫn HOLD publish cho tới RELEASE-GO.
+
 - 23:10 — PR **#25** `feat/ui-s1-tokens` @ `9bc94ec6` (base `main`) ĐÃ MỞ:
   UI lát 1 (token Neo 1+). Chờ cổng + kiểm tra hình ảnh như prompt.
 - 23:10 — PR **#26** `feat/ui-s2-s3-primitives-hierarchy` @ `93fe463e`

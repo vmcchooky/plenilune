@@ -64,9 +64,8 @@ button.badge { min-height: 32px; padding-inline: var(--space-3); }
 /* The quick entry answers one question before offering optional review tools. */
 .quick-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-2) var(--space-4); }
 .quick-header h1 { margin: 0; font-size: var(--text-lg); }
-.quick-screen > .review-disclosure { padding-top: 0; }
 .quick-screen > .review-disclosure > summary { font-size: var(--text-body); font-weight: 500; }
-.quick-screen { gap: var(--space-4); }
+.quick-screen { gap: var(--space-6); }
 .quick-header { margin-bottom: var(--space-3); }
 .quick-screen .quick-evidence__toggle { font-weight: 500; }
 .quick-sources > .quick-dropzone, .quick-questions > .chat-panel { padding-block: var(--space-4); }

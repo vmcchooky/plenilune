@@ -573,6 +573,50 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D14 cổng mới ĐỎ, dừng:** đã đổi vỏ outcome thành nút/panel, thêm click mở panel vào luồng test như báo `1000180`; `npm test` exit 1, không chạy build, không sửa thêm. Xin chỉ đạo. Output nguyên văn:
+```text
+
+> plenilune-demo@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 D:/Quorix/gate-46-20261102/web
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ tests/p18quick.test.tsx (9 tests | 1 failed) 35682ms
+   ❯ P1-8 quick verdict path (9)
+     × (d) shows the contextual repair section for DIFFERENT with a violated obligation 5646ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/p18quick.test.tsx > P1-8 quick verdict path > (d) shows the contextual repair section for DIFFERENT with a violated obligation
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/p18quick.test.tsx:245:3
+    243|   });
+    244|
+    245|   it('(d) shows the contextual repair section for DIFFERENT with a vio…
+       |   ^
+    246|     renderApp();
+    247|     await awaitVerdict();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 22 passed (23)
+      Tests  1 failed | 184 passed (185)
+   Start at  12:00:47
+   Duration  52.60s (environment 71%, tests 18%, import 10%, transform 1%)
+
+Environment  jsdom was created 23 times · 233.09s total, 71% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+
+```
+
+
 - **D14 chẩn đoán theo chỉ đạo:** `QuickOutcome.tsx` bọc `<ChangeClasses>` trong `<details class=quick-outcome__details>`; `ChangeClasses.tsx` render `PacketProbe`, bản thân dùng `TechnicalDetails` (`<details>`) và `ClassRow` cũng có TechnicalDetails vùng → lồng thật. Chọn đổi vỏ outcome thành nút toggle + panel cùng cấp, để ChangeClasses/probe giữ disclosure nội dung. Nút `accept.previewAction` vẫn ở `QuickObligations` khi `review.parsed` có và `!accepted`, `!busy`, `!policyPreview`; hiện panel `#quick-policy-panel` dùng `hidden={!policyOpen}` nên tests (c)/(d) không mở panel không thể tìm nút. UX mới đã duyệt đặt hành động nghĩa vụ inline; dự kiến cập nhật LUỒNG test `evaluateObligations()` bằng click `quick.checkIntent` khi panel đang đóng, giữ nguyên nhãn/kỳ vọng và kiểm trạng thái mở; không xóa assertion. Xin director soát luồng trước PR.
 
 

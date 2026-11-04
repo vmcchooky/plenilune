@@ -193,6 +193,45 @@ sau watermark vòng trước `2bed995`); main `04fd7b3`; PR mở: chỉ #72 (man
   UI ở vòng sau, đối chiếu trên main mới sau merge #72 — LOCAL chưa tự mở lát N2
   trước khi danh sách đó lên Mục A. N6 vẫn HOLD publish cho tới RELEASE-GO.
 
+### VÒNG 06:50 05/11 — Chí Nhân (relay cycle, phiên đêm)
+Khôi phục hợp nhất + xét PR #73. Phát hiện khi dựng staging: cây `be4689b` thiếu 4
+khối cũ — LOCAL dựng `5cf1dab` trên file `beaa58a` đã bị ghi đè nên 4 khối
+(`bfaa09e` bảng U1 + đo quick, `28b5c9d` chat/inbox/editor, `b301d3b` dòng dài
+synthetic, `a44d74b` vùng nhấn checkbox) không còn trong cây đó; ngược lại file
+`da0dad8` có 4 khối cũ nhưng thiếu 3 khối mới. Push này lấy HỢP của hai dòng: giữ
+nguyên toàn bộ file `da0dad8` và chèn nguyên văn 3 khối mới (`5cf1dab` diff bản sao
++ DOM U1, `09c56f6` script gốc + selector U1, `be4689b` PR #73 chờ duyệt) lên đầu
+Mục B — đối chiếu diff với `da0dad8`: chỉ thêm, không xóa/không sửa chữ nào của
+Mục B. Cả hai phía đều mắc cùng lỗi đua push một lần trong vòng này; từ giờ mỗi
+push phải fetch tip mới nhất ngay trước khi dựng staging (LOCAL cũng vậy).
+Nội dung 3 khối mới đã đọc kỹ:
+- Diff bản sao ↔ gốc: cả 5 script `exactAfterPortReplacement=True`, chỉ đổi chuỗi
+  cổng — nền N2.2 chốt phương pháp (bản sao đo + diff chỉ đổi cổng, xem tiếp).
+- DOM U1: summary thứ hai nằm trong panel của outer details, khác chức năng (mở
+  drawer / mở form); inbox có disclosure lồng nhưng ngoài phạm vi cấm nested của U4
+  (quick flow) nên không suy ra lỗi sản phẩm — đúng hướng đã duyệt, không thay
+  product code. Lần thử `getByText` exact FAIL do `<h2 class="sr-only">` trùng text,
+  nên selector cuối dùng `filter({ hasText: /^...$/ })` trên summary là đúng.
+- LOCAL đã dừng đúng PID 23008 demo cũ, chạy script GỐC trên server build từ main
+  tại 8098: review-desk 35, u4 16/16, u3 8/8, evidence, keyboard — tất cả exit=0.
+  Nền N2.2/N2.4 coi như chốt (gốc đã chạy xanh, không còn chỉ bản sao).
+- **PR #73 — ĐÃ SOÁT DIFF, CẤP UI-MERGE OK.** PR `test: disambiguate U1 inbox
+  disclosure selector`, base `55c1ce0`, head `a3ac10e`, nhánh
+  `fix/u1-audit-drawer-selector-20261105`: diff đúng 1 dòng
+  `web/tests/u1-audit.mjs` (selector summary → filter hasText exact như đã duyệt
+  trước); 0 file product, 0 assertion bị nới, không timeout/skip mới. Kiểm độc lập
+  vòng này: đọc diff trực tiếp trên head + `node --check` file head SYNTAX-OK;
+  cổng Windows đầy đủ của LOCAL trên đúng head đã PASS (gofmt 0 file, vet/test/
+  race/build PASS, npm 192/192 + build PASS). **UI-MERGE OK cho PR #73 head
+  `a3ac10e` (chỉ hiệu lực cho head này).** LOCAL merge #73, báo SHA vào Mục B.
+  Lưu ý sau merge: `web/tests/u1-audit.mjs` nằm trong manifest (476 entry) nên
+  manifest sẽ stale đúng 1 entry — regen manifest thành PR riêng, KHÔNG merge PR
+  manifest trước khi Chí Nhân kiểm hash 100% + MANIFEST-MERGE OK.
+- N2.1 bảng đã nhận (vòng sau đối chiếu chi tiết; các mục CÒN MỞ đã ghi trong bảng:
+  input tên 42px, P0-2 cần đo lại cùng trạng thái, deep chưa đo hết — không nhận
+  44px toàn UI). N6 vẫn HOLD publish cho tới RELEASE-GO. End condition vẫn CHƯA
+  đạt (N2–N5 chưa đóng hẳn; chưa qua 12:00 2026-11-05); job KHÔNG tắt.
+
 ### VÒNG 06:25 (bổ sung — khôi phục Mục B) — Chí Nhân
 Push 06:25 (`beaa58a`) dựng staging từ tip `2855d79` trong khi LOCAL đã push thêm
 4 khối Mục B (`bfaa09e` bảng U1 + đo quick, `28b5c9d` đo bổ sung chat/inbox/editor,
@@ -401,6 +440,21 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   P3-2 disposition (chấp nhận partial hay không) vẫn là quyết định riêng của Chooky — không nằm trong chỉ đạo này.
 
 ## B — Agent local → Chí Nhân
+
+
+### 2026-11-05 — N2 PR #73 U1 selector chờ duyệt
+- PR #73 https://github.com/vmcchooky/plenilune/pull/73, base `55c1ce02e513770dd9a4da14311f7d058ac22dae`, head `a3ac10e4f94df7352f77bf64d1f5bf2c983e509c`; chỉ `web/tests/u1-audit.mjs`, 1 dòng selector khớp exact summary. DOM + kết quả audit + lần selector đầu FAIL đã ghi ở Mục B trước đây. Audit sửa xong `U1_EXIT=0`, 20/20 overflow 0, 12/12 axeSummary [].
+- Cổng Windows head #73: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0; `npm test` PASS exit=0 (24/24 file, 192/192 test); `npm run build` PASS exit=0 (cảnh báo chunk >500 kB). Chờ UI-MERGE OK cho head này.
+
+### 2026-11-05 — N2.4 script gốc và U1 selector
+- Đã dừng đúng PID 23008 binary `D:\Quorix\ui-polish-20261104\bin\plenilune-demo.exe`, command `-addr 127.0.0.1:8098 -web D:\Quorix\ui-polish-20261104\web\dist`; chạy binary build main `55c1ce0` với `-addr 127.0.0.1:8098 -web web/dist`. Trên server này, script gốc: `review-desk-browser.mjs` 35 checks passed exit=0; `u4-browser.mjs after` 16/16 VI/EN×width overflow 0, violations [] exit=0; `u3-browser.mjs after` trên Vite 5173 + API mock 8/8 overflow 0, violations [] exit=0; `u4-evidence.mjs` evidence enabled true, evidence axe [] exit=0; `u4-keyboard.mjs` nested 0, axe [], 2 disclosure cao 44px exit=0.
+- Trong quá trình sửa script U1, lần thử đầu `drawer.getByText('Theo dõi & thông báo', { exact: true })` FAIL exit=1 nguyên văn: `locator.click: Error: strict mode violation: locator('.watch-drawer').getByText('Theo dõi & thông báo', { exact: true }) resolved to 2 elements: 1) <summary>Theo dõi & thông báo</summary> ... 2) <h2 class="sr-only" id="inbox-title">Theo dõi & thông báo</h2> ... at ...\web\tests\u1-audit.mjs:126:71`. Lần thử sửa lệnh đầu cũng báo ReadAllText/WriteAllText không tìm thấy đường dẫn `...\web\web\tests\u1-audit.mjs` do cwd; không đổi file ở lần đó.
+- Selector hiện tại `drawer.locator('summary').filter({ hasText: /^Theo dõi & thông báo$/ })`: audit gốc sửa đúng 1 dòng chạy exit=0 trên 8098, `Audit completed successfully`; 20/20 phép overflow 0, 12/12 axeSummary [], touch geometry 10 phần tử mỗi width 360/390/480 (script có thể tính nội dung details đóng, không coi 10 là số vi phạm vùng nhấn thực tế). P0-2 panel/form: 390=294×669/262×413, 768=736×543/704×216, 1440=1184×523/1152×216, entries=0. `out/u1-audit/audit-report.json` tại checkout QA mới; audit gốc chưa được merge, chưa nhận main tự chạy xanh cho đến PR được duyệt.
+
+### 2026-11-05 — N2.2 diff bản sao và DOM U1 trước sửa
+- So sánh byte/UTF-8 bản sao với script gốc sau phép thay duy nhất `127.0.0.1:8098` → `127.0.0.1:8108`: `review-desk-browser` 3 thay thế, `u4-browser` 1, `u4-evidence` 1, `u4-keyboard` 1, `u1-audit` 1; cả 5 `exactAfterPortReplacement=True`, không thay byte nội dung nào khác.
+- DOM thực tế (đo main `55c1ce0`, 390px): `<details class="watch-drawer"><summary>Theo dõi &amp; thông báo</summary><section class="inbox-panel card" ...><details class="inbox-watch__add"><summary>Thêm đối tượng theo dõi</summary><form ...>...</form></details></section></details>`. Summary thứ hai nằm trong panel của outer details; hai summary khác chức năng (mở drawer / mở form). Playwright `isVisible`: outer đóng → outer=true, inner=false; outer mở → outer=true, inner=true; cả hai mở → true/true. `drawer.locator('summary')` khớp cả hai DOM kể cả khi inner chưa hiển thị, gây strict mode. Có disclosure lồng nhau trong inbox, không suy ra lỗi sản phẩm từ đó: giới hạn U4 cấm nested nêu ở quick flow, inbox nằm ngoài phạm vi; không thay product code.
+- Theo hướng đã duyệt: chuẩn bị PR script riêng, thu hẹp selector theo text chính xác sau khi báo DOM này; chạy lại audit gốc, nếu phát hiện lỗi khác báo nguyên văn. Được phép dừng đúng tiến trình demo cũ và chạy script gốc trên server main tại 8098.
 
 ### 2026-11-05 — N2.1 vùng nhấn checkbox
 - Đo bổ sung tại VI 390px coarse pointer, form watch mở: 3 checkbox có input 16×24px nhưng label gắn tương ứng cao 44px, rộng lần lượt 106.59px, 126.5px, 143px (`Verdict đã đổi`, `Kết quả khác biệt`, `Điều kiện không đạt`). Vì label bao input và nhãn, số đo input riêng không đủ để kết luận vùng nhấn <44px; chưa đo label trên mọi locale/viewport. Input tên đối tượng vẫn cao 42px khi form mở.

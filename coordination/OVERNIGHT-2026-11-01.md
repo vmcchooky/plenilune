@@ -550,6 +550,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#64 đã merge theo MANIFEST-MERGE OK:** merge commit `44e0b49b3d5cd2df2d11a05bea31516914973b1f`; chờ D5 theo hàng đợi.
+
+
 - **#59 đã merge theo UI-MERGE OK:** rebase lên `39daab7`, head `73e8a0ed32e906145d8f40325692bc1de3660dde`, `npm test`: `Test Files 23 passed (23)`, `Tests 185 passed (185)`, `Duration 30.61s`; `npm run build` PASS `index-BTzkVqo8.js`, cảnh báo chunk; merge commit `c5322e6698748471f407cf0806ff3d80c500446b`.
 - **Manifest sau #63 + #59:** script `public-snapshot.ps1` từ `c5322e6`, checkout `core.autocrlf=false`, `Manifest entries: 467 (manifest file itself is not listed)`; `Secret scan clean: 436 scanned files; no blocking patterns.` PR #64 https://github.com/vmcchooky/plenilune/pull/64 head `5386ff6`, chỉ manifest, chờ MANIFEST-MERGE OK; không merge.
 

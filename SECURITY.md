@@ -1,7 +1,7 @@
 # Security policy
 
 Status: **active for the prepared public repository** (31 October 2026).
-Plenilune is licensed GPL-3.0-only; see [LICENSE](LICENSE) and [NOTICE](NOTICE).
+Plenilune is licensed under the Apache License, Version 2.0 (Apache-2.0); see [LICENSE](LICENSE) and [NOTICE](NOTICE).
 The curated public snapshot is described in
 [docs/public-catalog.md](docs/public-catalog.md). Remote push, deployment and
 publication remain owner actions; the local workflow does not perform them.
@@ -123,18 +123,18 @@ The key model is deliberately small:
 ## License and third-party boundary
 
 Plenilune's own source, including its Meta HTTP adapter and orchestration code,
-is GPL-3.0-only. Third-party components retain their own licenses; see
+is Apache-2.0. Third-party components retain their own licenses; see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and `third_party/licenses/`.
 
 Meta's model and API are a third-party service, not code distributed with
-Plenilune. They are governed by Meta's terms, not by Plenilune's GPL. As
+Plenilune. They are governed by Meta's terms, not by Plenilune's license. As
 reviewed on 31 October 2026, the relevant documents were the
 [Meta Model API Terms of Service](https://dev.meta.ai/legal/terms-of-service)
 (page dated 9 October 2026) and the
 [Meta Acceptable Use Policy](https://dev.meta.ai/legal/acceptable-use-policy).
 The terms describe the API as a service and include restrictions on resale and
 on using outputs to train competing models. This summary is not legal advice;
-review the current terms before enabling AI. The GPL does not relicense Meta's
+review the current terms before enabling AI. Plenilune's license does not relicense Meta's
 service, model, marks or outputs, and Plenilune is not endorsed by Meta.
 
 ## Data rules

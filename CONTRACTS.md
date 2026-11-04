@@ -393,8 +393,9 @@ feature `evidence_signing` và schema `plenilune.signature`.
 
 Đặc tả tích hợp đầy đủ cho MoonStorm nằm ở
 [docs/integration/moonstorm.md](docs/integration/moonstorm.md): mô hình
-subprocess (không bao giờ import thư viện Go — ranh giới GPL, trạng thái
-cổng pháp lý P2-6 ghi ở STATUS), cổng capabilities trước mọi job, pin
+subprocess (không bao giờ import thư viện Go — ranh giới hợp đồng tích
+hợp, giữ nguyên sau khi license chuyển sang Apache-2.0 ngày 04/11/2026;
+xem DISPOSITION-2026-11-04-license), cổng capabilities trước mọi job, pin
 schema + engine version + budget profile cho mỗi job với khóa
 idempotency là khóa cache của P2-1/P1-5, hai hàng đợi tách biệt với
 collection ưu tiên tuyệt đối, sự kiện kích hoạt (capture mới và

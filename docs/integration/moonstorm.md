@@ -8,19 +8,21 @@ schema hiện có: thứ tự gọi, pin phiên bản, quyền sở hữu ngân 
 toàn vẹn và chính sách lỗi. Client mẫu chạy được của đặc tả là
 `examples/moonstorm-client/` (Go, stdlib only).
 
-Trạng thái pháp lý (P2-6): **pending** — rà soát pháp lý GPL bằng văn bản
-chưa xong (xem bảng quyết định ở `docs/plan/STATUS.md`). Mẫu tích hợp dưới
-đây là mẫu thuận lợi nhất theo FSF FAQ (subprocess + JSON có version),
-nhưng trạng thái pending **chặn hành động phân phối** MoonStorm kèm
-Plenilune; nó không chặn việc soạn đặc tả này hay mọi hạng mục khác.
+Trạng thái pháp lý (P2-6): **đã khép** — ngày 04/11/2026 chủ dự án quyết
+định chuyển license của Plenilune từ GPL-3.0-only sang Apache-2.0 (xem
+`docs/plan/DISPOSITION-2026-11-04-license.md`), nên rào cản GPL từng chặn
+phân phối MoonStorm kèm Plenilune và từng là lý do của ranh giới subprocess
+không còn hiệu lực. Ranh giới subprocess dưới đây được giữ nguyên như một
+quyết định hợp đồng/kỹ thuật, không còn là yêu cầu pháp lý.
 
 ## 1. Mô hình tiến trình và ranh giới
 
 - Plenilune chạy như **subprocess**: MoonStorm exec binary `plenilune`,
   đưa JSON vào qua stdin/file, đọc JSON ở stdout và envelope lỗi ở stderr.
   **Không bao giờ import Plenilune thành thư viện Go vào MoonStorm** —
-  ranh giới này là một phần của hợp đồng, không phải lựa chọn kỹ thuật
-  tùy ý (xem P2-6).
+  ranh giới này là một phần của hợp đồng tích hợp (giữ nguyên như quyết
+  định kỹ thuật sau khi license chuyển Apache-2.0; xem P2-6 và
+  DISPOSITION-2026-11-04-license).
 - Phân chia sở hữu:
   - **MoonStorm giữ**: xác thực/ủy quyền người dùng, giải mã capture,
     kho artifact, audit log phía tích hợp, pool tiến trình và giới hạn

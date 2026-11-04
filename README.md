@@ -217,16 +217,18 @@ receipts, session files or browser state. The provider model is fixed to
 
 ## License
 
-Plenilune is licensed under the **GNU General Public License, version 3 only
-(GPL-3.0-only)**. The full text is in [LICENSE](LICENSE); the project copyright
+Plenilune is licensed under the **Apache License, Version 2.0
+(Apache-2.0)**. The full text is in [LICENSE](LICENSE); the project copyright
 and license boundary are in [NOTICE](NOTICE). Copyright (C) 2026 Võ Mạnh Cường
 (Chooky). Quorix Việt Nam is the project's brand.
 
-The GPL permits commercial use, including paid services and distribution; it
-does not prohibit competition. If you distribute Plenilune or a modified
-version, GPL-3.0 requires you to comply with its terms, including providing the
-corresponding source under GPL-3.0-only and preserving notices. No additional
-restrictions and no "or later" option are added.
+The License permits use, reproduction, modification and distribution,
+including commercial use and paid services; it does not prohibit
+competition. If you distribute Plenilune or a modified version, you must
+comply with the License, including giving recipients a copy of the License
+and preserving copyright and attribution notices. The License grants no
+trademark rights. (Before 4 November 2026 the project was published under
+GPL-3.0-only; copies obtained under the GPL keep those terms.)
 
 The license covers Plenilune's own source. Third-party components keep their
 own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and

@@ -181,15 +181,17 @@ Model provider cố định `muse-spark-1.3-contributor`; override/fallback bị
 
 ## Giấy phép
 
-Plenilune được phát hành theo **GNU General Public License, phiên bản 3 duy nhất
-(GPL-3.0-only)**. Toàn văn ở [LICENSE](LICENSE); thông báo bản quyền và ranh giới
+Plenilune được phát hành theo **Apache License, phiên bản 2.0
+(Apache-2.0)**. Toàn văn ở [LICENSE](LICENSE); thông báo bản quyền và ranh giới
 giấy phép ở [NOTICE](NOTICE). Bản quyền (C) 2026 Võ Mạnh Cường (Chooky). Quorix
 Việt Nam là thương hiệu của dự án.
 
-GPL cho phép sử dụng thương mại, kể cả dịch vụ trả phí và phân phối; GPL không
-cấm cạnh tranh. Nếu phân phối Plenilune hoặc bản sửa đổi, bạn phải tuân thủ
-GPL-3.0, gồm cung cấp source tương ứng theo GPL-3.0-only và giữ các thông báo.
-Không có điều khoản bổ sung và không có tùy chọn "or later".
+Apache License cho phép sử dụng, sửa đổi và phân phối, kể cả dịch vụ trả phí
+và phân phối thương mại; giấy phép không cấm cạnh tranh. Nếu phân phối
+Plenilune hoặc bản sửa đổi, bạn phải tuân thủ Apache License, gồm đính kèm
+bản sao giấy phép cho người nhận và giữ các thông báo bản quyền, ghi công.
+Giấy phép không cấp quyền thương hiệu. (Trước ngày 04/11/2026 dự án phát
+hành theo GPL-3.0-only; các bản đã nhận theo GPL giữ nguyên điều khoản đó.)
 
 Giấy phép chỉ áp dụng cho mã nguồn của Plenilune. Thành phần bên thứ ba giữ
 giấy phép riêng; xem [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) và

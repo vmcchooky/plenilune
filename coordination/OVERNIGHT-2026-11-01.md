@@ -583,6 +583,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D14 cập nhật sau chẩn đoán:** helper test nay click nút thật `Điều kiện & trạng thái` (`quick.obligations.title`, `aria-controls=quick-policy-panel`), kiểm `aria-expanded=true` và panel `hidden=false` trước khi tìm `Xem policy đã chuẩn hóa`; giữ nguyên nhãn/kỳ vọng khác, báo director duyệt luồng trước PR. `npm test`: `Test Files 23 passed (23)`, `Tests 185 passed (185)`, `Duration 17.31s`; build PASS `index-Bf1cwlnU.js`, cảnh báo chunk. Kiểm browser thực tế với server loopback synthetic: 2 locale × 8 viewport 360–1920 overflow 0, axe WCAG 2/2.1/2.2 A/AA 0 vi phạm màn quick; tại 390 coarse pointer, Enter mở toggle policy và outcome, cả hai ≥44px, `.quick-screen details details` 0, axe 0; deep evidence 390 axe 0. Các ảnh before/after 360/390/1440 VI/EN local `D:/Quorix/gate-46-20261102/out/u4-evidence/`. Chưa commit/push/PR; chờ director duyệt luồng test theo chỉ đạo.
+
+
 - **D14 chẩn đoán lần 3:** chạy riêng test (d) với bản sao test có ghi sự kiện `D:/Quorix/d14-diag-events.txt` / log `D:/Quorix/d14-diagnostic2.log`: `Test Files 1 passed (1)`, `Tests 1 passed | 8 skipped (9)`, `Duration 4.87s`. Nút helper đã click có nhãn `Xác định điều cần giữ`, `aria-controls=null`, `aria-expanded=null` — đây là hành động verdict `onPolicy`, KHÔNG phải toggle có aria-controls. Sau click panel `hidden=false`; preview tìm thấy, enabled, canonical preview tìm thấy, accept clicked, đang chờ repair rồi `repair found`. Do lượt này PASS, không quan sát được DOM tại thời điểm fail cũ và không thể xác định await đã timeout; không kết luận nguyên nhân timeout. Theo nhánh (b) chỉ đạo, chỉnh helper click đúng nút toggle hiển thị `Điều kiện & trạng thái`, `aria-controls=quick-policy-panel`, kiểm `aria-expanded=true` và panel hiện; giữ nhãn/assertion còn lại.
 
 

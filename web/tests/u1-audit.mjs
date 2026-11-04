@@ -123,7 +123,7 @@ try {
   {
     const drawer = page.locator('.watch-drawer');
     if (await drawer.count() > 0) {
-      await drawer.locator('summary').click();
+      await drawer.locator('summary').filter({ hasText: /^Theo dõi & thông báo$/ }).click();
       await page.waitForTimeout(300);
 
       for (const width of [390, 768, 1440]) {

@@ -141,6 +141,28 @@ mở phiên, chưa có Mục B mới); main `119e91d` (chưa đổi); PR mở: #
   bằng merge commit, báo SHA vào Mục B, rồi chạy chu trình regen manifest cho #70 như thường lệ.
   Thứ tự bắt buộc: N0 (gồm manifest) → merge #70 → manifest. Không đảo.
 
+### VÒNG 04:00 05/11 — Chí Nhân (relay cycle, phiên đêm)
+Trạng thái kiểm trực tiếp trên GitHub lúc mở vòng: coord tip `a846e89` (3 Mục B mới
+sau watermark vòng trước `e6c0880`); main `3400e7d`; PR mở: #70 head `412974f`,
+#71 head `4d4eb89`.
+- **N0 — #69 ĐÃ MERGE, kiểm chứng độc lập xong.** Merge commit `3400e7d`:
+  parent1 `119e91d`, parent2 `5ae054e` = đúng head đã cấp MERGE OK, không thêm
+  commit; diff `119e91d..3400e7d` chỉ 16 file docs/metadata (không code Go,
+  không logic web).
+- **MANIFEST-MERGE OK — PR #71 head `4d4eb89` (chỉ hiệu lực cho head này).**
+  PR gồm đúng 1 commit trên `3400e7d`, diff chỉ `docs/public-manifest.sha256`
+  (16+/15−). Kiểm sha256 trên NỘI DUNG THÔ của main `3400e7d` (git archive, đúng
+  luật chọn file của `scripts/public-snapshot.ps1`): **472/472 khớp, 0 lệch,
+  0 thiếu, 0 thừa** (472 = 471 cũ + 1 entry mới `docs/plan/DISPOSITION-2026-11-04-license.md`).
+  Cổng Windows của LOCAL trên head này đã PASS (gofmt 0 file, vet/test/race/build PASS).
+- **LOCAL làm ngay, theo thứ tự:** (1) merge #71 bằng merge commit, báo SHA vào
+  Mục B; (2) merge #70 theo UI-MERGE OK đã cấp cho head `412974f` (thứ tự N0
+  trước N1 nay đã thỏa), báo SHA vào Mục B; (3) regen manifest thành PR riêng
+  trên main mới, chờ MANIFEST-MERGE OK trước khi merge manifest. Nếu merge #70
+  gặp conflict thì DỪNG, ghi nguyên văn vào Mục B, chờ chỉ đạo — không tự giải quyết.
+- N2/N3/N4: Chí Nhân đăng danh sách lát cắt/dàn ý sau khi N0–N1 merge xong,
+  đối chiếu trên main mới. N6 vẫn HOLD publish cho tới RELEASE-GO.
+
 - 23:10 — PR **#25** `feat/ui-s1-tokens` @ `9bc94ec6` (base `main`) ĐÃ MỞ:
   UI lát 1 (token Neo 1+). Chờ cổng + kiểm tra hình ảnh như prompt.
 - 23:10 — PR **#26** `feat/ui-s2-s3-primitives-hierarchy` @ `93fe463e`

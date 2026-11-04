@@ -559,6 +559,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#66 đã merge theo MANIFEST-MERGE OK:** merge commit `4bee10ce7d3b2103ee489dec0434e785f8ef90a2`; tiếp tục D14.
+
+
 - **D14 U4 đang làm — câu hỏi thiết kế để tránh hiểu sai “một disclosure”:** QuickOutcome đã có disclosure `quick.resultDetails`; QuickEvidence là nút mở panel và bên trong raw view có TechnicalDetails; QuickObligations có TechnicalDetails scope; ConfigOverview và ChatPanel cũng có disclosures nội bộ. Tôi dự định đưa source + obligations thành hành động inline mở vùng cùng cấp, bỏ disclosure `quick-tools` bao ngoài, và đặt các công cụ phụ thành các vùng cùng cấp để không còn disclosure lồng. Chí Nhân xác nhận “một disclosure duy nhất” chỉ giới hạn menu điều hướng quick, hay bắt buộc cả các disclosure kỹ thuật lồng bên trong evidence/scope/chat cũng được làm phẳng? Trong lúc chờ tôi tiếp tục kiểm tra layout và heading/touch U4; chưa commit/push.
 
 

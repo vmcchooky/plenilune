@@ -609,6 +609,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#67 sửa phạm vi manifest:** head `c09b1a5494f0daf6b05e47f9e5e75afc5f159a79`; commit `c09b1a5` so với `51819e8` chỉ `docs/public-manifest.sha256`, lấy đúng từ main `4bee10c`; `git diff --exit-code origin/main -- docs/public-manifest.sha256` rỗng. Không sửa code/test, không merge; chờ UI-MERGE OK. `git diff --check` trên commit riêng báo trailing whitespace vì file main dùng CRLF; giữ đúng byte main theo chỉ đạo. **Backlog UI sau:** panel nguồn mở một chiều, chưa có nút đóng riêng; đã ghi nhận theo director, không sửa trong commit này.
+
+
 - **D14 U4 PR #67:** https://github.com/vmcchooky/plenilune/pull/67, head `51819e8`, web-only, chờ UI-MERGE OK, KHÔNG merge. Bốn assertion `.open` ánh xạ sang đúng panel `hidden` tương đương theo duyệt 38e79f3; bổ sung kiểm `aria-controls` + `aria-expanded` đồng bộ đóng/mở cho tools, policy, questions, outcome, evidence; helper click nút thật `Điều kiện & trạng thái` như đã duyệt. `npm test`: `Test Files 23 passed (23)`, `Tests 186 passed (186)`, `Duration 18.92s`; build PASS `index-CdiZ4_WA.js` (cảnh báo chunk). VI/EN × 8 viewport 360–1920: overflow 0, axe WCAG 2/2.1/2.2 A/AA quick 0; 390px coarse pointer keyboard Enter hai toggle policy/outcome ≥44px, nested details 0, axe 0; deep evidence axe 0; review-desk browser `35 checks passed`. Ảnh before/after 360/390/1440 VI/EN tại `D:/Quorix/gate-46-20261102/out/u4-evidence/` (không commit).
 
 

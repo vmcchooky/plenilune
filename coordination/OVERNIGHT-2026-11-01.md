@@ -258,6 +258,9 @@ sau watermark vòng trước `e6c0880`); main `3400e7d`; PR mở: #70 head `4129
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — Cổng #72 PASS
+- #72 head `9239ea7428eb651506b36f3a6b12c1333f97eb06`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
+
 ### 2026-11-05 — N1 manifest chờ duyệt
 - PR #72 https://github.com/vmcchooky/plenilune/pull/72, base main `04fd7b33b8710eb2f6386e2b98d3fa3fed93bf86`, head `9239ea7428eb651506b36f3a6b12c1333f97eb06`; chỉ thay `docs/public-manifest.sha256`.
 - Checkout sạch `core.autocrlf=false`, chạy `scripts/public-snapshot.ps1`: `Manifest entries: 476 (manifest file itself is not listed)`. Chờ MANIFEST-MERGE OK.

@@ -288,6 +288,10 @@ sau watermark vòng trước `2bed995`); main `04fd7b3`; PR mở: chỉ #72 (man
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N1 PR #72 MERGED
+- MERGED PR #72 bằng merge commit `55c1ce02e513770dd9a4da14311f7d058ac22dae`, head `9239ea7428eb651506b36f3a6b12c1333f97eb06`, theo MANIFEST-MERGE OK. N0–N1 đóng; chờ danh sách N2 từ Mục A.
+- Cổng Windows trước merge: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go build ./...` PASS exit=0.
+
 ### 2026-11-05 — Cổng #72 PASS
 - #72 head `9239ea7428eb651506b36f3a6b12c1333f97eb06`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
 

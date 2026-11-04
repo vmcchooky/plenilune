@@ -330,11 +330,19 @@ function DeltaEvidence({ review }: { review: Review }) {
       : 'Behavior comparison only; no accepted conditions or intent verdict yet.'}</p>
     <p><code>{comparison.comparison.report.verdict}</code></p>
     <div className="download-grid">
-      <button type="button" className="download-item" onClick={() => downloadText('before.acl', parsed.before, 'text/plain;charset=utf-8')}>{copy.downloadBefore}</button>
-      <button type="button" className="download-item" onClick={() => downloadText('after.acl', parsed.after, 'text/plain;charset=utf-8')}>{copy.downloadAfter}</button>
-      <button type="button" className="download-item" onClick={() => downloadText('comparison.json', comparison.raw, 'application/json')}>{t('evidence.downloadComparison')}</button>
+      <button type="button" className="download-item" onClick={() => downloadText('before.acl', parsed.before, 'text/plain;charset=utf-8')}>
+        <Icon name="file" size={18} /><span><strong>{copy.downloadBefore}</strong><small>before.acl</small></span><Icon name="download" size={16} />
+      </button>
+      <button type="button" className="download-item" onClick={() => downloadText('after.acl', parsed.after, 'text/plain;charset=utf-8')}>
+        <Icon name="file" size={18} /><span><strong>{copy.downloadAfter}</strong><small>after.acl</small></span><Icon name="download" size={16} />
+      </button>
+      <button type="button" className="download-item" onClick={() => downloadText('comparison.json', comparison.raw, 'application/json')}>
+        <Icon name="file" size={18} /><span><strong>{t('evidence.downloadComparison')}</strong><small>comparison.json</small></span><Icon name="download" size={16} />
+      </button>
       <AnalysisDownloads review={review} />
-      <button type="button" className="download-item" onClick={() => downloadText('replay-instructions.md', replayInstructions(locale, false, comparison.comparison.tool.version, Boolean(review.analysis)), 'text/markdown;charset=utf-8')}>{copy.instructions}</button>
+      <button type="button" className="download-item" onClick={() => downloadText('replay-instructions.md', replayInstructions(locale, false, comparison.comparison.tool.version, Boolean(review.analysis)), 'text/markdown;charset=utf-8')}>
+        <Icon name="file" size={18} /><span><strong>{copy.instructions}</strong><small>replay-instructions.md</small></span><Icon name="download" size={16} />
+      </button>
     </div>
     <AnalysisReplay review={review} />
     {review.comparisonReplay ? <p role="status">{replayLabel(t, review.comparisonReplay.result.status)} <code>{review.comparisonReplay.result.status}</code></p> : <p>{copy.unchecked}</p>}
@@ -371,13 +379,13 @@ export function AnalysisDownloads({ review }: { review: Review }) {
   );
 }
 
-export function AnalysisReplay({ review }: { review: Review }) {
+export function AnalysisReplay({ review, headingLevel = 2 }: { review: Review; headingLevel?: 2 | 3 }) {
   const { t } = useI18n();
   if (!review.analysis) return null;
   const replay = review.analysisReplay;
   return (
     <div className="replay-tool">
-      <h2>{t('evidence.replayAnalysis')}</h2>
+      {headingLevel === 3 ? <h3>{t('evidence.replayAnalysis')}</h3> : <h2>{t('evidence.replayAnalysis')}</h2>}
       {replay ? (
         <p>
           <StatusMark tone={replay.result.status === 'TIMING_SENSITIVE' ? 'warn' : 'good'} label={replayLabel(t, replay.result.status)} />

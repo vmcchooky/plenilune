@@ -101,7 +101,7 @@ export function StepRail(props: RailProps) {
                 ref={active ? activeRef : undefined}
                 className={`rail-step ${active ? 'rail-step--active' : ''}`}
                 disabled={disabled}
-                title={!step.enabled ? t('nav.unavailable') : disabled ? t('nav.busy') : undefined}
+                title={props.busy ? t('nav.busy') : !step.enabled ? t('nav.unavailable') : undefined}
                 aria-current={active ? 'step' : undefined}
                 onClick={() => props.onNavigate(step.id)}
               >

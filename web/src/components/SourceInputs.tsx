@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
+import { Select } from './Select';
 import { useI18n } from '../i18n';
 import type { Review } from '../hooks/useReview';
 import { logicalLineCount } from '../lib/conditions';
@@ -172,17 +173,16 @@ export function SampleBand({ review }: { review: Review }) {
       </div>
       <div className="sample-band__select">
         <label htmlFor="sample-select" className="sr-only">{t('source.sampleLegend')}</label>
-        <select
+        <Select
           id="sample-select"
           value={review.sampleId ?? 'blank'}
           disabled={busy}
-          onChange={(event) => review.selectSample(event.target.value)}
-        >
-          {review.samples.map((sample) => (
-            <option key={sample.id} value={sample.id}>{t(sample.nameKey)}</option>
-          ))}
-          <option value="blank">{t('source.sample.blank')}</option>
-        </select>
+          onChange={(next) => review.selectSample(next)}
+          options={[
+            ...review.samples.map((sample) => ({ value: sample.id, label: t(sample.nameKey) })),
+            { value: 'blank', label: t('source.sample.blank') },
+          ]}
+        />
       </div>
     </section>
   );

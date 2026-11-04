@@ -175,7 +175,7 @@ export function QuickEvidence({ review }: { review: Review }) {
                 {review.canceled === 'replayComparison' && <p className="banner banner--neutral">{t('common.canceled')}</p>}
               </div>
             )}
-            <AnalysisReplay review={review} />
+            <AnalysisReplay review={review} headingLevel={3} />
           </div>
         </div>
       )}

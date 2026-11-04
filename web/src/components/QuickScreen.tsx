@@ -51,7 +51,7 @@ function QuickObligations({ review }: { review: Review }) {
     const object = review.selectedObject;
     return (
       <section className="quick-obligations" aria-labelledby="quick-obligations-title">
-        <SectionHeading id="quick-obligations-title" title={t('quick.obligations.title')} note={t('quick.obligations.help')} />
+        <SectionHeading id="quick-obligations-title" title={t('quick.obligations.title')} note={t('quick.obligations.help')} srOnlyTitle />
         <p className="field-hint">
           {object && object.domain !== 'acl' ? t('quick.obligations.aclOnly') : t('quick.obligations.needObject')}
         </p>
@@ -66,6 +66,7 @@ function QuickObligations({ review }: { review: Review }) {
         title={t('quick.obligations.title')}
         note={t('quick.obligations.help')}
         aside={<ProvenanceTag>{t('cond.count', { count: draft.conditions.length })}</ProvenanceTag>}
+        srOnlyTitle
       />
 
       {accepted && report && (
@@ -264,7 +265,10 @@ export function QuickScreen({ review }: { review: Review }) {
           </section>
         </section>
       )}
-      <section className="review-disclosure quick-sources">
+      {/* Hidden as a whole while the sources panel is collapsed — otherwise the
+          section renders a border and padding around nothing (a dead strip
+          between the tools and obligations disclosures). */}
+      <section className="review-disclosure quick-sources" hidden={Boolean(review.analysis) && !sourceOpen}>
       <div id="quick-sources-panel" ref={sourceRef} tabIndex={-1} hidden={Boolean(review.analysis) && !sourceOpen}>
       <h2>{t('quick.sources')}</h2>
       <div
@@ -336,7 +340,7 @@ export function QuickScreen({ review }: { review: Review }) {
       {review.analysis && <section className="review-disclosure quick-questions">
         <button type="button" className="button button--quiet" aria-expanded={questionsOpen} aria-controls="quick-questions-panel" onClick={() => setQuestionsOpen(!questionsOpen)}>{t('chat.title')}</button>
         <div id="quick-questions-panel" hidden={!questionsOpen}>
-        <ChatPanel comparison={review.comparison?.comparison ?? null} analysis={review.analysis?.result ?? null} />
+        <ChatPanel comparison={review.comparison?.comparison ?? null} analysis={review.analysis?.result ?? null} headingSrOnly />
         </div>
       </section>}
     </div>

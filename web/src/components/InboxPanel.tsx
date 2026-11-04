@@ -4,6 +4,7 @@ import type { MessageKey } from '../i18n/messages.en';
 import { runtime } from '../lib/api';
 import { shortHash } from '../lib/format';
 import type { InboxEntry, TriggerCondition, Verdict, WatchRule } from '../lib/types';
+import { Select } from './Select';
 
 // P2-8 verdict inbox: the event-driven entry of the fast flow. The
 // server evaluates every completed analysis/comparison against the
@@ -175,10 +176,15 @@ export function InboxPanel({ refreshKey, onUnreadChange }: { refreshKey: string 
           </label>
           <label className="field">
             <span>{t('inbox.watch.domain.acl')} / {t('inbox.watch.domain.prefix-list')}</span>
-            <select value={domain} onChange={(event) => setDomain(event.target.value)}>
-              <option value="acl">{t('inbox.watch.domain.acl')}</option>
-              <option value="prefix-list">{t('inbox.watch.domain.prefix-list')}</option>
-            </select>
+            <Select
+              value={domain}
+              onChange={setDomain}
+              ariaLabel={`${t('inbox.watch.domain.acl')} / ${t('inbox.watch.domain.prefix-list')}`}
+              options={[
+                { value: 'acl', label: t('inbox.watch.domain.acl') },
+                { value: 'prefix-list', label: t('inbox.watch.domain.prefix-list') },
+              ]}
+            />
           </label>
           <fieldset className="inbox-watch__conditions">
             {CONDITIONS.map(({ id, key }) => (

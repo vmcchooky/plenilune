@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Verdict, Witness } from '../lib/types';
 import { Icon } from './Icon';
+import type { IconName } from './Icon';
 import '../styles/change-record.css';
 
 export interface ChangeRecordCopy {
@@ -17,6 +18,9 @@ interface ChangeRecordProps {
   proof?: ReactNode; scope?: ReactNode; notices?: ReactNode; details?: ReactNode;
   leadingContent?: ReactNode; onConditions?: () => void;
   secondaryAction?: { label: string; run: () => void };
+  // A stronger action than the conditions CTA (e.g. the budget retry on an
+  // inconclusive verdict): renders primary, conditions drops to secondary.
+  primaryAction?: { label: string; run: () => void; icon?: IconName };
 }
 
 // Presentation only: callers supply the engine result and callbacks. Selection,
@@ -24,7 +28,7 @@ interface ChangeRecordProps {
 export function ChangeRecord({ name, title, copy, witness, cause, groupCount = 0,
   verdict, verdictLabel, className = '', headingId = 'change-record-title', headingLevel = 2,
   proofId = 'change-record-proof', proof, scope, notices, details, leadingContent,
-  onConditions, secondaryAction }: ChangeRecordProps) {
+  onConditions, secondaryAction, primaryAction }: ChangeRecordProps) {
   const [proofOpen, setProofOpen] = useState(false);
   const Heading = headingLevel === 1 ? 'h1' : 'h2';
   const packet = witness?.packet;
@@ -69,8 +73,11 @@ export function ChangeRecord({ name, title, copy, witness, cause, groupCount = 0
         <Icon name="chevron" size={16} />{copy.proof}
       </button>}
       {secondaryAction && <button type="button" className="button button--quiet" onClick={secondaryAction.run}>{secondaryAction.label}</button>}
-      {onConditions && <button type="button" className="button button--primary study-conditions" onClick={onConditions}>
+      {onConditions && <button type="button" className={`button ${primaryAction ? 'button--secondary' : 'button--primary'} study-conditions`} onClick={onConditions}>
         {copy.conditions}<Icon name="arrow" size={16} />
+      </button>}
+      {primaryAction && <button type="button" className="button button--primary" onClick={primaryAction.run}>
+        {primaryAction.icon && <Icon name={primaryAction.icon} size={16} />}{primaryAction.label}
       </button>}
     </footer>
     {proof && <div className="record-refined__proof" id={proofId} hidden={!proofOpen}>{proof}</div>}

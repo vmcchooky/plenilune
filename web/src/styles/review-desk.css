@@ -16,7 +16,7 @@
 }
 .watch-drawer__count { margin-left: var(--space-3); }
 .watch-drawer[open] > summary { color: var(--ink); }
-.review-disclosure { border-top: var(--border-thin) solid var(--line); padding-top: var(--space-2); }
+.review-disclosure { border-top: var(--border-thin) solid var(--line); padding-top: var(--space-6); }
 .review-disclosure > summary { min-height: 44px; padding: var(--space-3) 0; font-weight: 600; cursor: pointer; }
 .review-disclosure > summary span { display: block; margin: var(--space-2) 0 0; font-size: var(--text-sm); font-weight: 400; color: var(--muted); }
 input[type="checkbox"], input[type="radio"] {
@@ -37,7 +37,7 @@ input[type="checkbox"], input[type="radio"] {
 button.badge { min-height: 32px; padding-inline: var(--space-3); }
 @media (pointer: coarse) { button.badge { min-height: 44px; } }
 @media (pointer: coarse) {
-  .workspace button, .workspace summary, .workspace select {
+  .workspace button, .workspace summary, .workspace .select-trigger {
     min-width: 44px;
     min-height: 44px;
   }
@@ -64,26 +64,25 @@ button.badge { min-height: 32px; padding-inline: var(--space-3); }
 /* The quick entry answers one question before offering optional review tools. */
 .quick-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-2) var(--space-4); }
 .quick-header h1 { margin: 0; font-size: var(--text-lg); }
-.quick-screen > .review-disclosure { padding-top: 0; }
 .quick-screen > .review-disclosure > summary { font-size: var(--text-body); font-weight: 500; }
-.quick-screen { gap: var(--space-3); }
+.quick-screen { gap: var(--space-6); }
 .quick-header { margin-bottom: var(--space-3); }
 .quick-screen .quick-evidence__toggle { font-weight: 500; }
 .quick-sources > .quick-dropzone, .quick-questions > .chat-panel { padding-block: var(--space-4); }
+
+/* Open panels breathe a little under their toggles. */
+.quick-questions > #quick-questions-panel,
+.quick-policy > #quick-policy-panel,
+.quick-tools > #quick-tools-panel { padding-top: var(--space-3); }
 
 .quick-tools > .review-disclosure { border-top: var(--border-thin) solid var(--line); }
 .quick-tools > .review-disclosure > summary { min-height: 44px; padding-block: var(--space-3); cursor: pointer; }
 .quick-tools > .quick-overview > .config-overview { margin-block: var(--space-4); }
 .quick-tools > .review-disclosure > .quick-obligations { padding-bottom: var(--space-6); }
 
-.workspace--quick .watch-drawer, .mode-bar--quick { max-width: var(--study-record-width); }
-
-/* F14 (audit 02/11): the quick record shares the page's left axis with the
-   workspace title instead of floating centered in the 928px column. It is a
-   flex item, so width:100% must come before the 720px cap (shrink-to-fit). */
-.quick-outcome.record-refined { width: 100%; max-width: 720px; margin-inline: 0 auto; }
-
-.workspace--quick .error-panel { max-width: var(--study-record-width); margin-inline: auto; }
+/* The quick rail matches the rest of the review: the 720px record cap
+   left the verdict card narrow beside full-width disclosures (owner
+   feedback 04/11/2026). The record now fills the step column. */
 
 /* F9: visible horizontal-scroll cue at the rail edges (mobile only). */
 .step-rail__cue { display: none; }

@@ -31,6 +31,14 @@ vi.mock('../src/lib/api', async (importOriginal) => {
 const artifact = <T,>(data: T): Artifact<T> => ({ data, raw: JSON.stringify(data) });
 const text = (key: keyof typeof viMessages): string => viMessages[key];
 
+// The sample picker is the custom listbox; open it and pick o option.
+function chooseSample(key: keyof typeof viMessages) {
+  const trigger = document.querySelector<HTMLButtonElement>('#sample-select');
+  expect(trigger).toBeTruthy();
+  fireEvent.click(trigger!);
+  fireEvent.click(screen.getByRole('option', { name: viMessages[key] }));
+}
+
 // What the accepted-policy comparison returns; tests override per scenario.
 let acceptedComparison: Comparison = comparison;
 
@@ -115,7 +123,7 @@ describe('P1-8 quick verdict path', () => {
     let finishInbox!: (doc: Artifact<InboxDocument>) => void;
     vi.mocked(runtime.listInbox).mockImplementation(() => new Promise(resolve => { finishInbox = resolve; }));
     renderApp();
-    fireEvent.change(document.querySelector('#sample-select')!, { target: { value: 'blank' } });
+    chooseSample('source.sample.blank');
     const drawer = document.querySelector<HTMLDetailsElement>('.watch-drawer')!;
     drawer.open = true;
     const name = screen.getByLabelText(text('inbox.watch.name')) as HTMLInputElement;
@@ -207,9 +215,8 @@ describe('P1-8 quick verdict path', () => {
 
   it('(b) reaches the verdict with no obligations at all and is never blocked', async () => {
     const { container } = renderApp();
-    const select = container.querySelector('#sample-select');
-    expect(select).toBeTruthy();
-    fireEvent.change(select!, { target: { value: 'blank' } });
+    expect(container.querySelector('#sample-select')).toBeTruthy();
+    chooseSample('source.sample.blank');
     fireEvent.change(screen.getByLabelText(text('source.before')), { target: { value: scenario.before } });
     fireEvent.change(screen.getByLabelText(text('source.after')), { target: { value: scenario.after } });
     await awaitVerdict();
@@ -278,6 +285,33 @@ describe('P1-8 quick verdict path', () => {
     await evaluateObligations();
     expect(await screen.findByText(text('quick.repair.title'), undefined, { timeout: 5000 })).toBeTruthy();
     expect(screen.getByText(text('repair.manual.title'))).toBeTruthy();
+  });
+
+  it('(f) offers the default-budget retry on a budget-limited inconclusive verdict', { timeout: 30000 }, async () => {
+    // Deep and quick share one rule: verdict INCONCLUSIVE while the run
+    // carried options → the retry becomes the primary action, using the
+    // existing result.primaryRetry label and compareWithDefaultBudget.
+    vi.mocked(runtime.compare).mockImplementation(async (_before, _after, _conditions, options) =>
+      artifact(options
+        ? { ...comparison, report: { ...comparison.report, verdict: 'INCONCLUSIVE', search_complete: false, reason: 'operation_limit', witnesses: [], obligations: [] } }
+        : comparison));
+    renderApp();
+    chooseSample('source.sample.budget');
+    await screen.findByText('Chưa kết luận', { selector: 'code.badge' }, { timeout: 5000 });
+    const retry = await screen.findByRole('button', { name: text('result.primaryRetry') });
+    expect(retry.className).toContain('button--primary');
+    // The conditions path stays available, as a secondary action.
+    expect(screen.getByRole('button', { name: text('quick.checkIntent') }).className).toContain('button--secondary');
+    const before = vi.mocked(runtime.compare).mock.calls.length;
+    fireEvent.click(retry);
+    await awaitVerdict();
+    // The retry ran without the option override and now compares with the
+    // default budget, exactly like the deep flow's compareWithDefaultBudget.
+    const calls = vi.mocked(runtime.compare).mock.calls.slice(before);
+    expect(calls.length).toBeGreaterThan(0);
+    expect(calls[0][3]).toBeUndefined();
+    expect(screen.queryByRole('button', { name: text('result.primaryRetry') })).toBeNull();
+    expect(screen.getByText('Khác biệt')).toBeTruthy();
   });
 
   it('(e) reaches deep review mode via the switch and its stages still render', { timeout: 20000 }, async () => {

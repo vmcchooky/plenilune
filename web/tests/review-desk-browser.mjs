@@ -71,7 +71,8 @@ try {
   await p.keyboard.press('Enter');
   assert.equal(await p.locator('[aria-controls="quick-policy-panel"]').getAttribute('aria-expanded'), 'true');
   await p.getByRole('button', { name: 'Xem / sửa cấu hình', exact: true }).click();
-  await p.locator('#sample-select').selectOption('blank');
+  await p.locator('#sample-select').click();
+  await p.getByRole('option', { name: 'Bắt đầu với nội dung trống' }).click();
   await check(p, 'vi-empty');
   await p.locator('#before-acl').fill('ip access-list extended MGMT\n 10 permit tcp any');
   await p.locator('#after-acl').fill('ip access-list extended MGMT\n 10 permit tcp any');

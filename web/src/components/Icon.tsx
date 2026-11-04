@@ -15,6 +15,7 @@ export type IconName =
   | 'packet'
   | 'repair'
   | 'chevron'
+  | 'chevronDown'
   | 'info'
   | 'search'
   | 'plus'
@@ -44,6 +45,7 @@ export function Icon({ name, size = 18, className }: IconProps) {
     packet: <><rect x="3" y="5" width="18" height="14" rx="1.5" /><path d="M7 9h10M7 13h5M15 13h2M7 17h3" /></>,
     repair: <><path d="m14.5 5.5 4-4a5 5 0 0 0-6.4 6.4l-6.6 6.6a2.1 2.1 0 0 0 3 3l6.6-6.6a5 5 0 0 0 6.4-6.4Z" /><path d="m15.5 15.5 5 5" /></>,
     chevron: <path d="m9 5 7 7-7 7" />,
+    chevronDown: <path d="m6 9.5 6 6 6-6" />,
     info: <><circle cx="12" cy="12" r="8.5" /><path d="M12 11v5.5" /><path d="M12 7.8v.2" /></>,
     search: <><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.5 15.5 4.5 4.5" /></>,
     plus: <><path d="M12 5v14" /><path d="M5 12h14" /></>,

@@ -543,6 +543,10 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#59 đã merge theo UI-MERGE OK:** rebase lên `39daab7`, head `73e8a0ed32e906145d8f40325692bc1de3660dde`, `npm test`: `Test Files 23 passed (23)`, `Tests 185 passed (185)`, `Duration 30.61s`; `npm run build` PASS `index-BTzkVqo8.js`, cảnh báo chunk; merge commit `c5322e6698748471f407cf0806ff3d80c500446b`.
+- **Manifest sau #63 + #59:** script `public-snapshot.ps1` từ `c5322e6`, checkout `core.autocrlf=false`, `Manifest entries: 467 (manifest file itself is not listed)`; `Secret scan clean: 436 scanned files; no blocking patterns.` PR #64 https://github.com/vmcchooky/plenilune/pull/64 head `5386ff6`, chỉ manifest, chờ MANIFEST-MERGE OK; không merge.
+
+
 - **#60 cập nhật:** head `8bb9ed2`, CTA nhãn riêng VI/EN mở form và focus input; gỡ `web/tests/u3-evidence/` khỏi repo, giữ script browser. `npm test`: `Test Files 22 passed (22)`, `Tests 182 passed (182)`; build PASS (`index-CcNiSRlQ.js`, cảnh báo chunk). Axe empty inbox 390px: `axe violations: []`, `form open: true`, `input focused: true`; ảnh `D:/Quorix/gate-45-20261102/out/u3-empty/empty-390.png`, PR body cập nhật vị trí evidence local. Chờ UI-MERGE OK, không merge.
 
 - **D13 cập nhật #59:** head `bdb09dc`, guard ResizeObserver có fallback đo một lần, giữ mirror; npm test PASS `Test Files 23 passed (23)`, `Tests 185 passed (185)`, build PASS `index-BTzkVqo8.js` (cảnh báo chunk). Đo dist bằng script `web/tests/u2-scroll-browser.mjs`: wrapped textMax=gutterMax=13040, scroll 1304/1304, 6520/6520, 13040/13040, 3912/3912; unwrapped max=1993, scroll 199/199, 997/997, 1993/1993, 598/598. Ảnh 390px giữa cuộn `D:/Quorix/plenilune-publish-20261031/out/u2-mid-scroll-390.png` đã xem: dòng 51 thẳng số 51. PR body đã khai `web/tests/u1-audit.mjs`. Chờ UI-MERGE OK, không merge.

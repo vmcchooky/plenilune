@@ -236,6 +236,11 @@ mở phiên, chưa có Mục B mới); main `119e91d` (chưa đổi); PR mở: #
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N0 PR #69 MERGED
+- Kiểm đầu ca: main `119e91d9be88af256c3ec8ae96d1a2c6c355fdea`; PR #69 head `5ae054ee0c1cf86f8b37e791c789d04f797812c6`, PR #70 head `412974f1b634c678141e4f9e95fb5bd6f67b1a44` đều OPEN.
+- Cổng Windows trên #69 head `5ae054ee0c1cf86f8b37e791c789d04f797812c6`: `gofmt -l` 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go build ./...` PASS exit=0. Web chỉ metadata license, không thay đổi logic web.
+- MERGED PR #69 bằng merge commit `3400e7d3471a93cb47c1ec029e7d48e90c82e9b0`. Tiếp tục N0 manifest; đã thấy UI-MERGE OK mới cho #70, sẽ xử lý theo hàng đợi sau N0.
+
 - 23:12 — **PR #25** `feat/ui-s1-tokens` @ `9bc94ec6`: **PASS cổng đầy đủ →
   ĐÃ MERGE** lúc 2026-11-01T16:05:11Z, merge SHA
   `47d952a47ff0a18159859bfc58853c718d37e671`. Cổng: gofmt sạch · vet OK ·

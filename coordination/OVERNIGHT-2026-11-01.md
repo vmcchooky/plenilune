@@ -563,8 +563,27 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 - **TRẢ LỜI D14 — npm test ĐỎ (Mục B `60949a2`, 11:11):** Đã đọc báo cáo: nhánh local `feat/ui-u4-hierarchy` chưa commit/push, `npm test` exit 1, `tests/p18quick.test.tsx` 8 failed / 177 passed, `ReferenceError: showObjectSelection is not defined` tại `QuickScreen.tsx:253:27`. LOCAL dừng và không tự sửa — ĐÚNG kỷ luật (không nới test/timeout, không sửa ẩu). **Chỉ đạo:** đây là lỗi sản phẩm do đặt sai phạm vi khi làm phẳng lớp quick, không phải lỗi test và không làm thay đổi quyết định phạm vi ở mục 11:00 trên (mục đó đã nằm trên coord, LOCAL đọc trước khi sửa tiếp). Sửa đúng gốc: (1) chạy lại chỉ `p18quick` với output ghi ra file để có log đầy đủ, xác nhận 8 lỗi cùng một gốc `showObjectSelection` chứ không phải nhiều gốc khác nhau; (2) đối chiếu nơi `showObjectSelection` được định nghĩa (state/prop) với dòng 253 đang dùng nó — hoặc đưa khối dùng nó về đúng phạm vi định nghĩa, hoặc nâng state lên phạm vi chung nếu cả hành động inline và vùng mở đều cần nó; (3) CẤM: thêm biến giả/global cho qua, đổi tên ẩu, bỏ qua/skipped `p18quick`, nới timeout. Sau sửa: `npm test` toàn bộ + `npm run build` xanh mới được mở PR U4; vẫn KHÔNG tự merge, chờ UI-MERGE OK. Nếu log đầy đủ lộ thêm gốc lỗi khác ngoài `showObjectSelection`, báo lại Mục B trước khi sửa tiếp.
 
+- **XÁC NHẬN KHÔI PHỤC (vòng 11:00, bổ sung lần 2):** Push `69367ad` của Chí Nhân lại rơi vào cùng lớp race như 10:20 — staging dựng từ tip trước `3373b8d` nên cây của nó thiếu khối báo cáo cổng đỏ mà LOCAL vừa khôi phục ở `3373b8d`. Push này khôi phục nguyên văn khối đó từ `3373b8d` (không sửa một chữ trong Mục B) và giữ nguyên cả hai mục A trước đó. Chỉ đạo cụ thể cho cổng đỏ vẫn là mục “TRẢ LỜI D14 — npm test ĐỎ” ở trên, không đổi — LOCAL cứ làm theo đó, không cần hỏi lại. Chí Nhân xin lỗi vì race lặp lại; các vòng sau sẽ dựng staging từ tip ngay trước push và kiểm lại cây sau push.
+
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
+
+- **D14 U4 — npm test ĐỎ, dừng:** nhánh local `feat/ui-u4-hierarchy`, chưa commit/push. Trong khi làm phẳng lớp quick, tôi đặt `showObjectSelection` sai phạm vi; lỗi sản phẩm xuất hiện sau thay đổi. `npm test` exit 1; output bị tool cắt, không có log đầy đủ và không chạy lại. Phần chính nguyên văn:
+```text
+ ❯ tests/p18quick.test.tsx (9 tests | 8 failed) 40924ms
+ReferenceError: showObjectSelection is not defined
+ ❯ QuickScreen src/components/QuickScreen.tsx:253:27
+ Test Files  1 failed | 22 passed (23)
+      Tests  8 failed | 177 passed (185)
+     Errors  8 errors
+   Start at  11:10:03
+   Duration  47.72s (environment 50%, tests 37%, import 10%, transform 2%)
+```
+  Không sửa code, không nới test/timeout, không chạy lại; xin chỉ đạo tiếp. Script baseline và ảnh local `D:/Quorix/gate-46-20261102/out/u4-evidence/`; U4 chưa hoàn thành.
+
+
+*(Khôi phục nguyên văn từ 60949a2 sau cập nhật Mục A ghi đè; xin chỉ đạo cụ thể cho cổng đỏ trước khi sửa.)*
+
 
 - **#66 đã merge theo MANIFEST-MERGE OK:** merge commit `4bee10ce7d3b2103ee489dec0434e785f8ef90a2`; tiếp tục D14.
 

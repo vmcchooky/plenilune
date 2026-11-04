@@ -1,0 +1,114 @@
+{
+  "schema": "plenilune.obligations/v1",
+  "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+  "obligations": [
+    {
+      "id": "OB-1",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "tcp",
+        "src_cidr": "0.0.0.0/0",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": [
+          {
+            "lo": 23,
+            "hi": 23
+          }
+        ]
+      }
+    },
+    {
+      "id": "OB-2",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "udp",
+        "src_cidr": "0.0.0.0/0",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": [
+          {
+            "lo": 69,
+            "hi": 69
+          }
+        ]
+      }
+    },
+    {
+      "id": "OB-3",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "tcp",
+        "src_cidr": "0.0.0.0/0",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": [
+          {
+            "lo": 513,
+            "hi": 513
+          }
+        ]
+      }
+    },
+    {
+      "id": "OB-4",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "tcp",
+        "src_cidr": "0.0.0.0/0",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": [
+          {
+            "lo": 514,
+            "hi": 514
+          }
+        ]
+      }
+    },
+    {
+      "id": "OB-5",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "tcp",
+        "src_cidr": "0.0.0.0/0",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": [
+          {
+            "lo": 111,
+            "hi": 111
+          }
+        ]
+      }
+    },
+    {
+      "id": "OB-6",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "udp",
+        "src_cidr": "0.0.0.0/0",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": [
+          {
+            "lo": 111,
+            "hi": 111
+          }
+        ]
+      }
+    }
+  ]
+}

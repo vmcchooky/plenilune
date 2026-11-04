@@ -1,0 +1,110 @@
+{
+  "schema": "plenilune.obligations/v1",
+  "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+  "obligations": [
+    {
+      "id": "OB-1",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "100.64.0.0/10",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-2",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "192.0.0.0/24",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-3",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "192.0.2.0/24",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-4",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "198.18.0.0/15",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-5",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "198.51.100.0/24",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-6",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "203.0.113.0/24",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-7",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "224.0.0.0/4",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-8",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "240.0.0.0/4",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    }
+  ]
+}

@@ -125,9 +125,11 @@ export function OfflineReviewPanel() {
           ? result.status === 'TIMING_SENSITIVE' ? copy.timing : copy.matched : copy.unchecked}
         {result && <> · <code>{result.status}</code></>}
       </p>
-      <button type="button" className="button button--secondary" disabled={busy || !files.before || !files.after || !files.receipt || Object.values(reading).some(Boolean)}
-        onClick={() => { void replay(); }}>{copy.run}</button>
-      {busy && <button type="button" className="button button--quiet" onClick={() => { invalidate(); setCanceled(true); }}>{copy.cancel}</button>}
+      <div className="raw-actions">
+        <button type="button" className="button button--secondary" disabled={busy || !files.before || !files.after || !files.receipt || Object.values(reading).some(Boolean)}
+          onClick={() => { void replay(); }}>{copy.run}</button>
+        {busy && <button type="button" className="button button--quiet" onClick={() => { invalidate(); setCanceled(true); }}>{copy.cancel}</button>}
+      </div>
     </section>
   );
 }

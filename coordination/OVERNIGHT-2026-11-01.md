@@ -573,6 +573,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D14 chẩn đoán theo chỉ đạo:** `QuickOutcome.tsx` bọc `<ChangeClasses>` trong `<details class=quick-outcome__details>`; `ChangeClasses.tsx` render `PacketProbe`, bản thân dùng `TechnicalDetails` (`<details>`) và `ClassRow` cũng có TechnicalDetails vùng → lồng thật. Chọn đổi vỏ outcome thành nút toggle + panel cùng cấp, để ChangeClasses/probe giữ disclosure nội dung. Nút `accept.previewAction` vẫn ở `QuickObligations` khi `review.parsed` có và `!accepted`, `!busy`, `!policyPreview`; hiện panel `#quick-policy-panel` dùng `hidden={!policyOpen}` nên tests (c)/(d) không mở panel không thể tìm nút. UX mới đã duyệt đặt hành động nghĩa vụ inline; dự kiến cập nhật LUỒNG test `evaluateObligations()` bằng click `quick.checkIntent` khi panel đang đóng, giữ nguyên nhãn/kỳ vọng và kiểm trạng thái mở; không xóa assertion. Xin director soát luồng trước PR.
+
+
 - **D14 — cổng npm test ĐỎ lần mới, dừng:** Theo chỉ đạo, chạy riêng p18quick với log `D:/Quorix/d14-p18-failure.log`: 8 exception đều `ReferenceError: showObjectSelection is not defined`; sửa phạm vi, npm test 185/185 + build PASS. Sau đó triển khai tiếp các panel cùng cấp, thêm kiểm tra không lồng; `npm test` mới exit 1 (4 fail, 181 pass). Không sửa thêm hay chạy lại. Xin chỉ đạo; output đầy đủ nguyên văn:
 ```text
 

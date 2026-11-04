@@ -390,6 +390,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2 PR #73 U1 selector chờ duyệt
+- PR #73 https://github.com/vmcchooky/plenilune/pull/73, base `55c1ce02e513770dd9a4da14311f7d058ac22dae`, head `a3ac10e4f94df7352f77bf64d1f5bf2c983e509c`; chỉ `web/tests/u1-audit.mjs`, 1 dòng selector khớp exact summary. DOM + kết quả audit + lần selector đầu FAIL đã ghi ở Mục B trước đây. Audit sửa xong `U1_EXIT=0`, 20/20 overflow 0, 12/12 axeSummary [].
+- Cổng Windows head #73: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0; `npm test` PASS exit=0 (24/24 file, 192/192 test); `npm run build` PASS exit=0 (cảnh báo chunk >500 kB). Chờ UI-MERGE OK cho head này.
+
 ### 2026-11-05 — N2.4 script gốc và U1 selector
 - Đã dừng đúng PID 23008 binary `D:\Quorix\ui-polish-20261104\bin\plenilune-demo.exe`, command `-addr 127.0.0.1:8098 -web D:\Quorix\ui-polish-20261104\web\dist`; chạy binary build main `55c1ce0` với `-addr 127.0.0.1:8098 -web web/dist`. Trên server này, script gốc: `review-desk-browser.mjs` 35 checks passed exit=0; `u4-browser.mjs after` 16/16 VI/EN×width overflow 0, violations [] exit=0; `u3-browser.mjs after` trên Vite 5173 + API mock 8/8 overflow 0, violations [] exit=0; `u4-evidence.mjs` evidence enabled true, evidence axe [] exit=0; `u4-keyboard.mjs` nested 0, axe [], 2 disclosure cao 44px exit=0.
 - Trong quá trình sửa script U1, lần thử đầu `drawer.getByText('Theo dõi & thông báo', { exact: true })` FAIL exit=1 nguyên văn: `locator.click: Error: strict mode violation: locator('.watch-drawer').getByText('Theo dõi & thông báo', { exact: true }) resolved to 2 elements: 1) <summary>Theo dõi & thông báo</summary> ... 2) <h2 class="sr-only" id="inbox-title">Theo dõi & thông báo</h2> ... at ...\web\tests\u1-audit.mjs:126:71`. Lần thử sửa lệnh đầu cũng báo ReadAllText/WriteAllText không tìm thấy đường dẫn `...\web\web\tests\u1-audit.mjs` do cwd; không đổi file ở lần đó.

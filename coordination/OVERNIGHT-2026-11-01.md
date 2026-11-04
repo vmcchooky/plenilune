@@ -595,6 +595,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D14 cập nhật trước PR — xin xác nhận cách ánh xạ assertion UI:** Ngoài click toggle đã duyệt, chuyển cấu trúc `<details>` thành nút + panel khiến 4 assertion cũ đọc `.open` trên `quick-sources`, `quick-policy`, `quick-questions`, `quick-outcome__details` không còn áp dụng. Tôi đã thay bằng kiểm `hidden` tương đương (đóng ban đầu, mở đúng qua hành động, giữ nguồn mở sau mở điều kiện, outcome đóng khi chưa yêu cầu), không giảm điều kiện; thêm assertion không `details details`. Vì chỉ đạo ghi “không đổi assertion”, xin director xác nhận ánh xạ này trước PR. Có sửa `web/tests/review-desk-browser.mjs` tương ứng UI, giữ kiểm đóng/mở và keyboard; browser suite `35 checks passed`. `npm test` PASS 23 files/185 tests, build PASS `index-CdiZ4_WA.js`; after VI/EN 8 viewport overflow 0/axe 0; 390px keyboard Enter mở 2 panel, kích thước nút ≥44px, quick nested details 0, deep evidence axe 0. Evidence local `D:/Quorix/gate-46-20261102/out/u4-evidence/`. Chưa commit/push/PR.
+
+
 - **D14 cập nhật sau chẩn đoán:** helper test nay click nút thật `Điều kiện & trạng thái` (`quick.obligations.title`, `aria-controls=quick-policy-panel`), kiểm `aria-expanded=true` và panel `hidden=false` trước khi tìm `Xem policy đã chuẩn hóa`; giữ nguyên nhãn/kỳ vọng khác, báo director duyệt luồng trước PR. `npm test`: `Test Files 23 passed (23)`, `Tests 185 passed (185)`, `Duration 17.31s`; build PASS `index-Bf1cwlnU.js`, cảnh báo chunk. Kiểm browser thực tế với server loopback synthetic: 2 locale × 8 viewport 360–1920 overflow 0, axe WCAG 2/2.1/2.2 A/AA 0 vi phạm màn quick; tại 390 coarse pointer, Enter mở toggle policy và outcome, cả hai ≥44px, `.quick-screen details details` 0, axe 0; deep evidence 390 axe 0. Các ảnh before/after 360/390/1440 VI/EN local `D:/Quorix/gate-46-20261102/out/u4-evidence/`. Chưa commit/push/PR; chờ director duyệt luồng test theo chỉ đạo.
 
 

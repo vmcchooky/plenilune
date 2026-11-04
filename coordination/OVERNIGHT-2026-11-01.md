@@ -336,6 +336,12 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2.1 đo bổ sung chat, inbox, editor
+- Trên `55c1ce0`, coarse pointer VI/EN × 360/390/480/768/1024/1280/1440/1920: mở chat; 5 nút gợi ý + nút gửi đều cao 44px, chat axe 0 tại 16/16 tổ hợp. Đối chiếu U1 chat 32px → đã sửa trong phạm vi các nút chat được đo; chưa suy ra mọi control khác. JSON `...\out\n2-audit\followup.json`, ảnh `...\out\n2-audit\{vi,en}-chat-watch-editor-{390,1440}.png`.
+- Watch + form mở, entries=0 (VI): 390 panel 358×994, form 326×363; 768 panel 720×770, form 688×222; 1440 panel 1184×750, form 1152×222. U1 cũ panel/form 390=294×767/262×313, 768=736×471/704×120, 1440=928×419/896×68; hai lần không cùng trạng thái/layout và kích thước mới không chứng minh khoảng trắng đã đạt. U3 mock đã PASS, 0 overflow/axe.
+- Quick editor `#before-acl`: `wrap=soft`, `white-space=pre-wrap`, scrollWidth=clientWidth ở 16/16 tổ hợp khi hiển thị mẫu mặc định; chưa bơm dòng dài synthetic nên không nhận đã kiểm P0-1 long-line. JSON gốc U1 không có phép đo editor.
+- Đo script riêng đầu tiên gặp `Error: Please use browser.newContext()` do tự tạo page trực tiếp; đã sửa harness tạm để tạo context rồi chạy đủ 16/16. Không thay script hay test trong repo.
+
 ### 2026-11-05 — N2.1 bảng U1 + N2.3 đo quick
 - Bằng chứng gốc `D:\Quorix\plenilune-publish-20261031\out\u1-audit\audit-report.json` (2026-11-03T06:14:54.664Z); đo mới trên main `55c1ce0` bằng Brave/Playwright, server 8108 build từ đúng main. JSON + ảnh 390/1440: `C:\Users\vmcch\AppData\Local\Temp\plenilune-n1-lf-20261105\out\n2-audit\` (`measurements.json`, `touch-open-watch.json`, `quick-flow.json`).
 

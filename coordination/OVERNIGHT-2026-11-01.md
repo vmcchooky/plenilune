@@ -571,51 +571,12 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 - **CHỈ ĐẠO D14 LẦN 2:** (a) Chẩn đoán trước khi sửa: xác nhận probe đang lồng trong `<details>` nào (đọc DOM tree) và nút “Xem policy đã chuẩn hóa” còn tồn tại trong JSX không, nằm ở panel/component nào, điều kiện render nào — báo ngắn kết quả chẩn đoán vào Mục B cùng lần sửa, không sửa mù. (b) Sửa gốc 1: đưa probe TechnicalDetails ra khỏi `quick-outcome__details` thành panel cùng cấp, HOẶC đổi vỏ outcome từ `<details>` sang `<section>` + nút toggle riêng — chọn phương án giữ verdict-first (kết quả ban đầu vẫn ngắn, probe chỉ mở khi yêu cầu) và giữ tối đa 1 disclosure nội dung/panel mở. Cấm giữ lồng rồi sửa test. (c) Sửa gốc 2: khôi phục nút “Xem policy đã chuẩn hóa” đúng nhãn, tới được trong luồng test (c)/(d) mà không cần bước ẩn không công bố. Nếu nút cố tình dời sau một bước mở panel hợp lệ theo UX mới thì bước đó phải thuộc luồng đã duyệt và chỉ được cập nhật LUỒNG test (thêm click mở panel), KHÔNG đổi nhãn/kỳ vọng — và phải báo rõ thay đổi luồng này vào Mục B để Chí Nhân duyệt trước khi mở PR. Cấm: đổi nhãn nút cho khớp, xóa assertion, skip test, biến giả, nới timeout. (d) Sau sửa: `npm test` toàn bộ + `npm run build` xanh, kiểm tra không-lồng vẫn đứng, mới commit/push nhánh `feat/ui-u4-hierarchy` và mở PR U4 web-only; KHÔNG tự merge, chờ UI-MERGE OK. Nếu chẩn đoán lộ gốc thứ ba ngoài 2 gốc trên, dừng và báo Mục B trước khi sửa tiếp.
 - **THỨ TỰ HÀNG ĐỢI KHÔNG ĐỔI:** PR U4 → UI-MERGE OK → merge → regen manifest một lần → UI stream về trạng thái cuối. End condition chưa đạt (U4 chưa có PR; chưa qua 12:00 2026-11-05). Job KHÔNG tắt.
 
+- **VÒNG RELAY 12:00 04/11 (Mục A) — DUYỆT CHẨN ĐOÁN D14 + DUYỆT CÓ ĐIỀU KIỆN LUỒNG TEST TRƯỚC PR:** Fetch coord đúng tip `1000180` (vượt watermark `7ba287b`): 1 mục B mới. GitHub: main vẫn `4bee10c` (merge #66), không còn PR mở — không có merge mới để kiểm chứng. Ghi nhận chẩn đoán đúng chỉ đạo lần 2: lồng thật — `QuickOutcome.tsx` bọc `<ChangeClasses>` trong `<details class=quick-outcome__details>`, bên trong `PacketProbe`/`ClassRow` dùng `TechnicalDetails` (`<details>`) → assertion không-lồng đúng, không được nới hay xóa để qua cổng.
+- **QUYẾT ĐỊNH (director):** (1) CHẤP THUẬN đổi vỏ outcome sang nút toggle + panel cùng cấp, giữ disclosure nội dung trong ChangeClasses/probe — đúng phương án đã duyệt ở chỉ đạo lần 2, giữ verdict-first (kết quả ban đầu vẫn ngắn, probe chỉ mở khi yêu cầu); toggle phải là `<button>` thật với aria-expanded/aria-controls, panel là sibling (section/div), dùng được bằng bàn phím. (2) DUYỆT CÓ ĐIỀU KIỆN cập nhật LUỒNG test `evaluateObligations()`: chỉ được thêm bước click mở panel bằng nút người dùng thật nhìn thấy, giữ nguyên nhãn “Xem policy đã chuẩn hóa” và toàn bộ assertion/kỳ vọng, thêm kiểm trạng thái mở (panel hiện / aria-expanded=true) trước khi tìm nút; không xóa assertion, không đổi nhãn, không skip, không nới timeout. Điều kiện bắt buộc trước PR: LOCAL ghi rõ vào Mục B (hoặc mô tả PR) nút được click là nút nào — nhãn hiển thị + aria-controls trỏ tới `#quick-policy-panel` — vì tên key `quick.checkIntent` chưa đủ chứng minh đó là toggle của panel chứa nút; nếu click đó không phải bước mở panel chứa nút mà là một hành động khác thì KHÔNG được dùng để qua cổng, phải báo lại để duyệt lại, vì đó sẽ là che hồi quy chứ không phải mô phỏng luồng người dùng. (3) Lưu ý UX: nút preview chỉ tới được sau khi mở panel là chấp nhận được cho luồng (c)/(d) sau verdict (progressive disclosure), không chấp nhận nếu verdict ban đầu bị che hay toggle khó thấy; giữ toggle luôn hiển thị, ≥44px, dùng được bằng bàn phím.
+- **CHỈ ĐẠO TIẾP:** triển khai theo quyết định trên → `npm test` toàn bộ + `npm run build` xanh, kiểm tra không-lồng vẫn đứng → commit/push nhánh `feat/ui-u4-hierarchy` → mở PR U4 web-only kèm bằng chứng thường lệ (ảnh trước/sau 360/390 + desktop, VI/EN, axe, overflow); KHÔNG tự merge — UI-MERGE OK chỉ cấp sau khi Chí Nhân soát PR (vòng này CHƯA cấp UI-MERGE OK vì chưa có PR). Nếu cổng lộ gốc thứ ba, dừng và báo Mục B trước khi sửa tiếp.
+- **THỨ TỰ HÀNG ĐỢI KHÔNG ĐỔI:** PR U4 → UI-MERGE OK → merge → regen manifest một lần → UI stream về trạng thái cuối. End condition chưa đạt (U4 chưa có PR; chưa qua 12:00 2026-11-05). Job KHÔNG tắt.
+
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
-
-- **D14 cổng mới ĐỎ, dừng:** đã đổi vỏ outcome thành nút/panel, thêm click mở panel vào luồng test như báo `1000180`; `npm test` exit 1, không chạy build, không sửa thêm. Xin chỉ đạo. Output nguyên văn:
-```text
-
-> plenilune-demo@0.1.0 test
-> vitest run
-
-
- RUN  v5.0.5 D:/Quorix/gate-46-20261102/web
-
-Not implemented: Window's scrollTo() method
-Not implemented: Window's scrollTo() method
- ❯ tests/p18quick.test.tsx (9 tests | 1 failed) 35682ms
-   ❯ P1-8 quick verdict path (9)
-     × (d) shows the contextual repair section for DIFFERENT with a violated obligation 5646ms
-
-⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
-
- FAIL  tests/p18quick.test.tsx > P1-8 quick verdict path > (d) shows the contextual repair section for DIFFERENT with a violated obligation
-Error: Test timed out in 5000ms.
-If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
- ❯ tests/p18quick.test.tsx:245:3
-    243|   });
-    244|
-    245|   it('(d) shows the contextual repair section for DIFFERENT with a vio…
-       |   ^
-    246|     renderApp();
-    247|     await awaitVerdict();
-
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
-
-
- Test Files  1 failed | 22 passed (23)
-      Tests  1 failed | 184 passed (185)
-   Start at  12:00:47
-   Duration  52.60s (environment 71%, tests 18%, import 10%, transform 1%)
-
-Environment  jsdom was created 23 times · 233.09s total, 71% of tracked time
-             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
-             learn more: https://vitest.dev/guide/improving-performance#test-environments
-
-
-```
-
 
 - **D14 chẩn đoán theo chỉ đạo:** `QuickOutcome.tsx` bọc `<ChangeClasses>` trong `<details class=quick-outcome__details>`; `ChangeClasses.tsx` render `PacketProbe`, bản thân dùng `TechnicalDetails` (`<details>`) và `ClassRow` cũng có TechnicalDetails vùng → lồng thật. Chọn đổi vỏ outcome thành nút toggle + panel cùng cấp, để ChangeClasses/probe giữ disclosure nội dung. Nút `accept.previewAction` vẫn ở `QuickObligations` khi `review.parsed` có và `!accepted`, `!busy`, `!policyPreview`; hiện panel `#quick-policy-panel` dùng `hidden={!policyOpen}` nên tests (c)/(d) không mở panel không thể tìm nút. UX mới đã duyệt đặt hành động nghĩa vụ inline; dự kiến cập nhật LUỒNG test `evaluateObligations()` bằng click `quick.checkIntent` khi panel đang đóng, giữ nguyên nhãn/kỳ vọng và kiểm trạng thái mở; không xóa assertion. Xin director soát luồng trước PR.
 

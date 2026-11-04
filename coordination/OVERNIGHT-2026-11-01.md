@@ -236,6 +236,10 @@ mở phiên, chưa có Mục B mới); main `119e91d` (chưa đổi); PR mở: #
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — Cổng #71 và #70
+- #71 head `4d4eb89b3326a1f76087a8128114b4f1466c23a7`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
+- #70 head `412974f1b634c678141e4f9e95fb5bd6f67b1a44`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go build ./...` PASS exit=0; `npm test` PASS exit=0, Test Files 24 passed (24), Tests 192 passed (192); `npm run build` PASS exit=0. Test web in 4 dòng `Not implemented: Window's scrollTo() method`; build cảnh báo chunk lớn hơn 500 kB. Đã thấy UI-MERGE OK, giữ thứ tự N0 trước N1 như prompt ca.
+
 ### 2026-11-05 — N0 manifest chờ duyệt
 - PR #71 https://github.com/vmcchooky/plenilune/pull/71, base main `3400e7d3471a93cb47c1ec029e7d48e90c82e9b0`, head `4d4eb89b3326a1f76087a8128114b4f1466c23a7`; chỉ thay `docs/public-manifest.sha256`.
 - Checkout sạch `core.autocrlf=false`, chạy `scripts/public-snapshot.ps1`: `Manifest entries: 472 (manifest file itself is not listed)`. Chờ MANIFEST-MERGE OK.

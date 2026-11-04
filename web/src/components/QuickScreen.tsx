@@ -265,7 +265,10 @@ export function QuickScreen({ review }: { review: Review }) {
           </section>
         </section>
       )}
-      <section className="review-disclosure quick-sources">
+      {/* Hidden as a whole while the sources panel is collapsed — otherwise the
+          section renders a border and padding around nothing (a dead strip
+          between the tools and obligations disclosures). */}
+      <section className="review-disclosure quick-sources" hidden={Boolean(review.analysis) && !sourceOpen}>
       <div id="quick-sources-panel" ref={sourceRef} tabIndex={-1} hidden={Boolean(review.analysis) && !sourceOpen}>
       <h2>{t('quick.sources')}</h2>
       <div

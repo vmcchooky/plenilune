@@ -16,7 +16,7 @@
 }
 .watch-drawer__count { margin-left: var(--space-3); }
 .watch-drawer[open] > summary { color: var(--ink); }
-.review-disclosure { border-top: var(--border-thin) solid var(--line); padding-top: var(--space-8); }
+.review-disclosure { border-top: var(--border-thin) solid var(--line); padding-top: var(--space-6); }
 .review-disclosure > summary { min-height: 44px; padding: var(--space-3) 0; font-weight: 600; cursor: pointer; }
 .review-disclosure > summary span { display: block; margin: var(--space-2) 0 0; font-size: var(--text-sm); font-weight: 400; color: var(--muted); }
 input[type="checkbox"], input[type="radio"] {
@@ -65,7 +65,7 @@ button.badge { min-height: 32px; padding-inline: var(--space-3); }
 .quick-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-2) var(--space-4); }
 .quick-header h1 { margin: 0; font-size: var(--text-lg); }
 .quick-screen > .review-disclosure > summary { font-size: var(--text-body); font-weight: 500; }
-.quick-screen { gap: var(--space-8); }
+.quick-screen { gap: var(--space-6); }
 .quick-header { margin-bottom: var(--space-3); }
 .quick-screen .quick-evidence__toggle { font-weight: 500; }
 .quick-sources > .quick-dropzone, .quick-questions > .chat-panel { padding-block: var(--space-4); }

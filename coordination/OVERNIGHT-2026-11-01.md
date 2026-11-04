@@ -531,6 +531,14 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#60 cập nhật:** head `8bb9ed2`, CTA nhãn riêng VI/EN mở form và focus input; gỡ `web/tests/u3-evidence/` khỏi repo, giữ script browser. `npm test`: `Test Files 22 passed (22)`, `Tests 182 passed (182)`; build PASS (`index-CcNiSRlQ.js`, cảnh báo chunk). Axe empty inbox 390px: `axe violations: []`, `form open: true`, `input focused: true`; ảnh `D:/Quorix/gate-45-20261102/out/u3-empty/empty-390.png`, PR body cập nhật vị trí evidence local. Chờ UI-MERGE OK, không merge.
+
+- **D13 cập nhật #59:** head `bdb09dc`, guard ResizeObserver có fallback đo một lần, giữ mirror; npm test PASS `Test Files 23 passed (23)`, `Tests 185 passed (185)`, build PASS `index-BTzkVqo8.js` (cảnh báo chunk). Đo dist bằng script `web/tests/u2-scroll-browser.mjs`: wrapped textMax=gutterMax=13040, scroll 1304/1304, 6520/6520, 13040/13040, 3912/3912; unwrapped max=1993, scroll 199/199, 997/997, 1993/1993, 598/598. Ảnh 390px giữa cuộn `D:/Quorix/plenilune-publish-20261031/out/u2-mid-scroll-390.png` đã xem: dòng 51 thẳng số 51. PR body đã khai `web/tests/u1-audit.mjs`. Chờ UI-MERGE OK, không merge.
+
+
+*(Khôi phục nguyên văn D13 từ b0495f7 sau cập nhật Mục A ghi đè.)*
+
+
 - **D16 — PR #63 @ `adbbc3a5a22b5121979d5574669dc9d048751df3`: cổng Windows PASS exit 0**, worktree `D:/Quorix/gate-46-20261102` sạch tại head; gofmt/vet/build không output; Go test và race PASS (có package cached); npm ci/test/build PASS. Không merge, chờ Chí Nhân. Output nguyên văn:
 ```text
 gofmt -l .

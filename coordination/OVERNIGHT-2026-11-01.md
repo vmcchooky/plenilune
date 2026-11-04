@@ -553,6 +553,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#60 chuẩn bị trong lúc chờ D5:** rebase local lên `44e0b49`, head local `de2ae0808143d0d6fb2359d033c32d4bf5153e5e`; xung đột CSS do commit CRLF cũ đã giải quyết giữ CSS U2 của main và bổ sung quy tắc U3, `git diff --check` sạch, diff 6 file web. `npm test`: `Test Files 23 passed (23)`, `Tests 185 passed (185)`, `Duration 30.07s`; build PASS `index-D5pitK52.js` (cảnh báo chunk). Chưa push hoặc merge; sau D5 sẽ rebase lên main lúc đó và gate theo chỉ đạo.
+
+
 - **#64 đã merge theo MANIFEST-MERGE OK:** merge commit `44e0b49b3d5cd2df2d11a05bea31516914973b1f`; chờ D5 theo hàng đợi.
 
 

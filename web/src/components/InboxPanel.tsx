@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useI18n } from '../i18n';
 import type { MessageKey } from '../i18n/messages.en';
 import { runtime } from '../lib/api';
@@ -27,6 +27,7 @@ function verdictTone(verdict?: Verdict): string {
 
 export function InboxPanel({ refreshKey, onUnreadChange }: { refreshKey: string | null; onUnreadChange?: (count: number) => void }) {
   const { t } = useI18n();
+  const watchDetails = useRef<HTMLDetailsElement>(null);
   const [entries, setEntries] = useState<InboxEntry[]>([]);
   const [unread, setUnread] = useState(0);
   useEffect(() => { onUnreadChange?.(unread); }, [unread, onUnreadChange]);
@@ -100,13 +101,14 @@ export function InboxPanel({ refreshKey, onUnreadChange }: { refreshKey: string 
         )}
       </div>
       {entries.length === 0 ? (
-        <p className="inbox-panel__empty">{t('inbox.empty')}</p>
+        <div className="inbox-panel__empty"><p>{t('inbox.empty')}</p><button type="button" className="button button--secondary" onClick={() => { if (watchDetails.current) { watchDetails.current.open = true; watchDetails.current.querySelector('input')?.focus(); } }}>{t('inbox.watch.first')}</button></div>
       ) : (
         <ul className="inbox-list">
           {entries.map((entry) => (
             <li key={entry.id} className={`inbox-entry${entry.read ? '' : ' inbox-entry--unread'}`}>
               <div className="inbox-entry__head">
                 <strong className="inbox-entry__name">{entry.name}</strong>
+                <span className="badge">{t(`inbox.watch.domain.${entry.domain}` as MessageKey)}</span>
                 <span className="badge">{t(`inbox.condition.${entry.condition}` as MessageKey)}</span>
                 {entry.verdict && <code className={verdictTone(entry.verdict)}>{entry.verdict}</code>}
                 {entry.stale && <span className="badge badge--warn">{t('inbox.stale')}</span>}
@@ -157,6 +159,8 @@ export function InboxPanel({ refreshKey, onUnreadChange }: { refreshKey: string 
             ))}
           </ul>
         )}
+        <details className="inbox-watch__add" ref={watchDetails}>
+          <summary>{t('inbox.watch.formLegend')}</summary>
         <form
           className="inbox-watch__form"
           aria-label={t('inbox.watch.formLegend')}
@@ -194,6 +198,7 @@ export function InboxPanel({ refreshKey, onUnreadChange }: { refreshKey: string 
             {t('inbox.watch.add')}
           </button>
         </form>
+        </details>
       </div>
     </section>
   );

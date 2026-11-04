@@ -75,6 +75,7 @@ const en = {
   'inbox.artifact': 'Artifact {digest}',
   'inbox.watch.title': 'Watched objects',
   'inbox.watch.help': 'Pin an object by name; triggers are judged against its last recorded result.',
+  'inbox.watch.first': 'Watch your first object',
   'inbox.watch.formLegend': 'Add a watched object',
   'inbox.watch.name': 'Object name (e.g. an ACL name)',
   'inbox.watch.domain.acl': 'ACL',

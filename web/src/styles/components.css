@@ -2126,3 +2126,17 @@
   gap: var(--space-1);
   font-size: var(--text-sm);
 }
+
+/* U3: verdicts lead; watch creation is an optional disclosure. */
+.inbox-panel, .inbox-list, .inbox-entry, .inbox-watch { min-width: 0; }
+.inbox-panel__empty { padding: var(--space-4); border: var(--border-thin) solid var(--line); border-radius: var(--radius-md); }
+.inbox-entry { display: grid; gap: var(--space-3); border: var(--border-thin) solid var(--line); }
+.inbox-entry__head { flex-wrap: wrap; min-width: 0; }
+.inbox-entry__name, .inbox-entry__meta, .watch-list__item { overflow-wrap: anywhere; min-width: 0; }
+.inbox-entry__meta { align-items: baseline; }
+.inbox-entry > button { justify-self: start; min-height: 44px; }
+.inbox-watch__add > summary { cursor: pointer; min-height: 44px; padding: var(--space-3) 0; font-weight: 600; }
+.inbox-watch__form { padding: var(--space-3); background: var(--surface-2); border-radius: var(--radius-md); }
+.inbox-watch__form .field { min-width: 0; flex: 1 1 200px; }
+.inbox-watch__form input, .inbox-watch__form select { max-width: 100%; }
+.inbox-watch__conditions { flex: 1 1 100%; }

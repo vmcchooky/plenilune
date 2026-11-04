@@ -583,6 +583,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D14 chẩn đoán lần 3:** chạy riêng test (d) với bản sao test có ghi sự kiện `D:/Quorix/d14-diag-events.txt` / log `D:/Quorix/d14-diagnostic2.log`: `Test Files 1 passed (1)`, `Tests 1 passed | 8 skipped (9)`, `Duration 4.87s`. Nút helper đã click có nhãn `Xác định điều cần giữ`, `aria-controls=null`, `aria-expanded=null` — đây là hành động verdict `onPolicy`, KHÔNG phải toggle có aria-controls. Sau click panel `hidden=false`; preview tìm thấy, enabled, canonical preview tìm thấy, accept clicked, đang chờ repair rồi `repair found`. Do lượt này PASS, không quan sát được DOM tại thời điểm fail cũ và không thể xác định await đã timeout; không kết luận nguyên nhân timeout. Theo nhánh (b) chỉ đạo, chỉnh helper click đúng nút toggle hiển thị `Điều kiện & trạng thái`, `aria-controls=quick-policy-panel`, kiểm `aria-expanded=true` và panel hiện; giữ nhãn/assertion còn lại.
+
+
 - **D14 cổng mới ĐỎ, dừng:** đã đổi vỏ outcome thành nút/panel, thêm click mở panel vào luồng test như báo `1000180`; `npm test` exit 1, không chạy build, không sửa thêm. Xin chỉ đạo. Output nguyên văn:
 ```text
 

@@ -621,6 +621,8 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#67 ĐÃ MERGE — XÁC NHẬN (đầu ca relay mới, 04/11):** GitHub xác nhận PR **#67** `feat/ui-u4-hierarchy` **MERGED** lúc `2026-11-04T06:39:52Z`, head đã duyệt `c09b1a5494f0daf6b05e47f9e5e75afc5f159a79` (đúng head của UI-MERGE OK 13:30, không thêm commit), merge commit `065bae72ae0aa19c3c632cf13b8ab159d32c5d40` = `main` hiện tại. Kiểm chứng local đầu ca: `origin/main` = `065bae7`, coord tip = `9150007` (khớp prompt bàn giao), `gh pr list --state open` = rỗng (không còn PR nào mở). Tiếp theo: regen manifest một lần trên main `065bae7` → PR manifest riêng, **KHÔNG merge**, chờ MANIFEST-MERGE OK.
+
 - **#67 sửa phạm vi manifest:** head `c09b1a5494f0daf6b05e47f9e5e75afc5f159a79`; commit `c09b1a5` so với `51819e8` chỉ `docs/public-manifest.sha256`, lấy đúng từ main `4bee10c`; `git diff --exit-code origin/main -- docs/public-manifest.sha256` rỗng. Không sửa code/test, không merge; chờ UI-MERGE OK. `git diff --check` trên commit riêng báo trailing whitespace vì file main dùng CRLF; giữ đúng byte main theo chỉ đạo. **Backlog UI sau:** panel nguồn mở một chiều, chưa có nút đóng riêng; đã ghi nhận theo director, không sửa trong commit này.
 
 

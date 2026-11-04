@@ -34,6 +34,17 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [review.stage, mode]);
 
+  // Mode switch replaces the whole screen — refocus the step heading so
+  // keyboard and screen-reader users land on the new context, matching
+  // deep mode's stage-change behavior.
+  const previousMode = useRef(mode);
+  useEffect(() => {
+    if (previousMode.current === mode) return;
+    previousMode.current = mode;
+    document.getElementById('step-heading')?.focus();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [mode]);
+
   const watchDrawer = (
     <details className="watch-drawer" ref={inboxRef} key="watch-drawer">
       <summary>{t('inbox.title')}{unread > 0 && <span className="badge badge--warn watch-drawer__count">{t('inbox.unread', { count: unread })}</span>}</summary>
@@ -81,9 +92,12 @@ export function App() {
           analysis={review.analysis?.result ?? null}
           selection={review.selection}
           canConditions={Boolean(parsed)}
-          canResult={Boolean(review.comparison)}
+          // An analysis-only path (prefix-list, unsupported, unselected
+          // multi-object) renders AnalysisOnly — the rail must not block
+          // it just because no comparison exists yet.
+          canResult={Boolean(review.comparison || review.analysis)}
           canRepair={review.canRepair}
-          canEvidence={Boolean(review.comparison)}
+          canEvidence={Boolean(review.comparison || review.analysis)}
           busy={review.busy !== null}
           onNavigate={review.navigate}
         />}

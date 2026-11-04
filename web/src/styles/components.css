@@ -1326,6 +1326,7 @@
 }
 
 .replay-tool + .replay-tool { padding-left: var(--space-4); border-left: 1px solid var(--line); }
+.replay-tool > .button { align-self: flex-start; }
 .replay-tool h3 { margin: 0; font-size: var(--text-body); }
 
 .replay-tool p {

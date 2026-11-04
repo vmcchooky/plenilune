@@ -379,13 +379,13 @@ export function AnalysisDownloads({ review }: { review: Review }) {
   );
 }
 
-export function AnalysisReplay({ review }: { review: Review }) {
+export function AnalysisReplay({ review, headingLevel = 2 }: { review: Review; headingLevel?: 2 | 3 }) {
   const { t } = useI18n();
   if (!review.analysis) return null;
   const replay = review.analysisReplay;
   return (
     <div className="replay-tool">
-      <h2>{t('evidence.replayAnalysis')}</h2>
+      {headingLevel === 3 ? <h3>{t('evidence.replayAnalysis')}</h3> : <h2>{t('evidence.replayAnalysis')}</h2>}
       {replay ? (
         <p>
           <StatusMark tone={replay.result.status === 'TIMING_SENSITIVE' ? 'warn' : 'good'} label={replayLabel(t, replay.result.status)} />

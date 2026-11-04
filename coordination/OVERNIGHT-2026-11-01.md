@@ -193,6 +193,18 @@ sau watermark vòng trước `2bed995`); main `04fd7b3`; PR mở: chỉ #72 (man
   UI ở vòng sau, đối chiếu trên main mới sau merge #72 — LOCAL chưa tự mở lát N2
   trước khi danh sách đó lên Mục A. N6 vẫn HOLD publish cho tới RELEASE-GO.
 
+### VÒNG 06:25 (bổ sung — khôi phục Mục B) — Chí Nhân
+Push 06:25 (`beaa58a`) dựng staging từ tip `2855d79` trong khi LOCAL đã push thêm
+4 khối Mục B (`bfaa09e` bảng U1 + đo quick, `28b5c9d` đo bổ sung chat/inbox/editor,
+`b301d3b` dòng dài synthetic, `a44d74b` vùng nhấn checkbox), nên push đó đã ghi đè
+mất cả 4 khối. Push này KHÔI PHỤC NGUYÊN VĂN cả 4 khối (đã đối chiếu diff với
+`a44d74b`: phần Mục B khôi phục trùng byte với 4 commit đó, không sửa chữ nào của
+Mục B) và giữ nguyên mục 06:25. Mục 06:25 được viết trước khi thấy 4 khối này —
+vòng sau Chí Nhân sẽ đối chiếu lại các chỉ đạo trong đó (diff bản sao, chẩn đoán
+DOM u1, bảng U1, đo quick) với nội dung 4 khối đã khôi phục; LOCAL không cần làm
+lại những gì 4 khối đã báo. Bài học quy trình: trước mỗi push phải fetch lại tip
+và dựng staging từ tip mới nhất, không dùng staging từ đầu vòng.
+
 ### VÒNG 06:25 05/11 — Chí Nhân (relay cycle, phiên đêm)
 Trạng thái kiểm trực tiếp trên GitHub lúc mở vòng: coord tip `2855d79` (1 Mục B mới
 sau watermark vòng trước `9ace0ec`: LOCAL báo nền N2 + lỗi script U1); main vẫn
@@ -390,19 +402,32 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
-### 2026-11-05 — N2 PR #73 U1 selector chờ duyệt
-- PR #73 https://github.com/vmcchooky/plenilune/pull/73, base `55c1ce02e513770dd9a4da14311f7d058ac22dae`, head `a3ac10e4f94df7352f77bf64d1f5bf2c983e509c`; chỉ `web/tests/u1-audit.mjs`, 1 dòng selector khớp exact summary. DOM + kết quả audit + lần selector đầu FAIL đã ghi ở Mục B trước đây. Audit sửa xong `U1_EXIT=0`, 20/20 overflow 0, 12/12 axeSummary [].
-- Cổng Windows head #73: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0; `npm test` PASS exit=0 (24/24 file, 192/192 test); `npm run build` PASS exit=0 (cảnh báo chunk >500 kB). Chờ UI-MERGE OK cho head này.
+### 2026-11-05 — N2.1 vùng nhấn checkbox
+- Đo bổ sung tại VI 390px coarse pointer, form watch mở: 3 checkbox có input 16×24px nhưng label gắn tương ứng cao 44px, rộng lần lượt 106.59px, 126.5px, 143px (`Verdict đã đổi`, `Kết quả khác biệt`, `Điều kiện không đạt`). Vì label bao input và nhãn, số đo input riêng không đủ để kết luận vùng nhấn <44px; chưa đo label trên mọi locale/viewport. Input tên đối tượng vẫn cao 42px khi form mở.
 
-### 2026-11-05 — N2.4 script gốc và U1 selector
-- Đã dừng đúng PID 23008 binary `D:\Quorix\ui-polish-20261104\bin\plenilune-demo.exe`, command `-addr 127.0.0.1:8098 -web D:\Quorix\ui-polish-20261104\web\dist`; chạy binary build main `55c1ce0` với `-addr 127.0.0.1:8098 -web web/dist`. Trên server này, script gốc: `review-desk-browser.mjs` 35 checks passed exit=0; `u4-browser.mjs after` 16/16 VI/EN×width overflow 0, violations [] exit=0; `u3-browser.mjs after` trên Vite 5173 + API mock 8/8 overflow 0, violations [] exit=0; `u4-evidence.mjs` evidence enabled true, evidence axe [] exit=0; `u4-keyboard.mjs` nested 0, axe [], 2 disclosure cao 44px exit=0.
-- Trong quá trình sửa script U1, lần thử đầu `drawer.getByText('Theo dõi & thông báo', { exact: true })` FAIL exit=1 nguyên văn: `locator.click: Error: strict mode violation: locator('.watch-drawer').getByText('Theo dõi & thông báo', { exact: true }) resolved to 2 elements: 1) <summary>Theo dõi & thông báo</summary> ... 2) <h2 class="sr-only" id="inbox-title">Theo dõi & thông báo</h2> ... at ...\web\tests\u1-audit.mjs:126:71`. Lần thử sửa lệnh đầu cũng báo ReadAllText/WriteAllText không tìm thấy đường dẫn `...\web\web\tests\u1-audit.mjs` do cwd; không đổi file ở lần đó.
-- Selector hiện tại `drawer.locator('summary').filter({ hasText: /^Theo dõi & thông báo$/ })`: audit gốc sửa đúng 1 dòng chạy exit=0 trên 8098, `Audit completed successfully`; 20/20 phép overflow 0, 12/12 axeSummary [], touch geometry 10 phần tử mỗi width 360/390/480 (script có thể tính nội dung details đóng, không coi 10 là số vi phạm vùng nhấn thực tế). P0-2 panel/form: 390=294×669/262×413, 768=736×543/704×216, 1440=1184×523/1152×216, entries=0. `out/u1-audit/audit-report.json` tại checkout QA mới; audit gốc chưa được merge, chưa nhận main tự chạy xanh cho đến PR được duyệt.
+### 2026-11-05 — N2.1 P0-1 dòng dài synthetic
+- Main `55c1ce0`: điền `#before-acl` bằng ACL synthetic có dòng remark 500 ký tự liên tiếp; VI/EN × 360/390/480/768/1024/1280/1440/1920 = 16/16 trường hợp `scrollWidth=clientWidth`, `wrap=soft`, `white-space=pre-wrap`, document overflow 0; scroll dọc xuất hiện (ví dụ 390: clientHeight 240 / scrollHeight 400). Chi tiết `C:\Users\vmcch\AppData\Local\Temp\plenilune-n1-lf-20261105\out\n2-audit\long-line.json`. P0-1 đạt phép thử dòng dài synthetic này; U1 gốc thiếu số editor nên không thể định lượng mức cải thiện.
 
-### 2026-11-05 — N2.2 diff bản sao và DOM U1 trước sửa
-- So sánh byte/UTF-8 bản sao với script gốc sau phép thay duy nhất `127.0.0.1:8098` → `127.0.0.1:8108`: `review-desk-browser` 3 thay thế, `u4-browser` 1, `u4-evidence` 1, `u4-keyboard` 1, `u1-audit` 1; cả 5 `exactAfterPortReplacement=True`, không thay byte nội dung nào khác.
-- DOM thực tế (đo main `55c1ce0`, 390px): `<details class="watch-drawer"><summary>Theo dõi &amp; thông báo</summary><section class="inbox-panel card" ...><details class="inbox-watch__add"><summary>Thêm đối tượng theo dõi</summary><form ...>...</form></details></section></details>`. Summary thứ hai nằm trong panel của outer details; hai summary khác chức năng (mở drawer / mở form). Playwright `isVisible`: outer đóng → outer=true, inner=false; outer mở → outer=true, inner=true; cả hai mở → true/true. `drawer.locator('summary')` khớp cả hai DOM kể cả khi inner chưa hiển thị, gây strict mode. Có disclosure lồng nhau trong inbox, không suy ra lỗi sản phẩm từ đó: giới hạn U4 cấm nested nêu ở quick flow, inbox nằm ngoài phạm vi; không thay product code.
-- Theo hướng đã duyệt: chuẩn bị PR script riêng, thu hẹp selector theo text chính xác sau khi báo DOM này; chạy lại audit gốc, nếu phát hiện lỗi khác báo nguyên văn. Được phép dừng đúng tiến trình demo cũ và chạy script gốc trên server main tại 8098.
+### 2026-11-05 — N2.1 đo bổ sung chat, inbox, editor
+- Trên `55c1ce0`, coarse pointer VI/EN × 360/390/480/768/1024/1280/1440/1920: mở chat; 5 nút gợi ý + nút gửi đều cao 44px, chat axe 0 tại 16/16 tổ hợp. Đối chiếu U1 chat 32px → đã sửa trong phạm vi các nút chat được đo; chưa suy ra mọi control khác. JSON `...\out\n2-audit\followup.json`, ảnh `...\out\n2-audit\{vi,en}-chat-watch-editor-{390,1440}.png`.
+- Watch + form mở, entries=0 (VI): 390 panel 358×994, form 326×363; 768 panel 720×770, form 688×222; 1440 panel 1184×750, form 1152×222. U1 cũ panel/form 390=294×767/262×313, 768=736×471/704×120, 1440=928×419/896×68; hai lần không cùng trạng thái/layout và kích thước mới không chứng minh khoảng trắng đã đạt. U3 mock đã PASS, 0 overflow/axe.
+- Quick editor `#before-acl`: `wrap=soft`, `white-space=pre-wrap`, scrollWidth=clientWidth ở 16/16 tổ hợp khi hiển thị mẫu mặc định; chưa bơm dòng dài synthetic nên không nhận đã kiểm P0-1 long-line. JSON gốc U1 không có phép đo editor.
+- Đo script riêng đầu tiên gặp `Error: Please use browser.newContext()` do tự tạo page trực tiếp; đã sửa harness tạm để tạo context rồi chạy đủ 16/16. Không thay script hay test trong repo.
+
+### 2026-11-05 — N2.1 bảng U1 + N2.3 đo quick
+- Bằng chứng gốc `D:\Quorix\plenilune-publish-20261031\out\u1-audit\audit-report.json` (2026-11-03T06:14:54.664Z); đo mới trên main `55c1ce0` bằng Brave/Playwright, server 8108 build từ đúng main. JSON + ảnh 390/1440: `C:\Users\vmcch\AppData\Local\Temp\plenilune-n1-lf-20261105\out\n2-audit\` (`measurements.json`, `touch-open-watch.json`, `quick-flow.json`).
+
+| Finding / dữ liệu U1 gốc | Đối chiếu trên main mới | Trạng thái |
+|---|---|---|
+| Quick overflow 0: 8 width; deep source/conditions/result/evidence overflow 0: 3 width | U4 16 tổ hợp VI/EN × 8 width 360–1920 overflow 0; review-desk 35/35, deep source/result được lấy mẫu | Giữ đạt ở trạng thái đã đo; không suy ra toàn bộ deep |
+| `heading-order` moderate tại deep-evidence 1440 | Đo axe đầy đủ quick + deep-evidence, VI/EN × 8 width 360–1920: 0 violation (32 trạng thái), kèm ảnh 390/1440 | Đã sửa trong trạng thái tái hiện; không nhận đã kiểm mọi nhánh evidence |
+| Touch: 63 phần tử hình học <44 ở mỗi width 360/390/480 trong U1, gồm các nút 40px, chat 32px, input 42px | Coarse pointer, quick + evidence VI/EN × 8 width: không có nút hiện hữu <44 tại trạng thái mặc định; bản đo hình học ban đầu đếm nhầm 4 input nằm trong details đóng. Mở watch + form: 1 input tên cao 42px, 3 checkbox 16×24px trên mọi width/locale; các checkbox có label gắn, chưa đo diện tích nhấn label. `web/DESIGN.md` ghi checkbox 24px là ngoại lệ chủ ý; keyboard script đo 2 disclosure cao 44px. Chưa đo đầy đủ chat/deep đã mở. | CÒN MỞ: đánh giá mục tiêu thực tế của input/label và chat/deep; không nhận 44px toàn UI |
+| P0-2 inbox: panel/form 390=294×767/262×313, 768=736×471/704×120, 1440=928×419/896×68, entries=0 | U3 mock 8 width overflow 0, inbox axe 0; cream QA mô tả form inset 16px/gap 16px, empty-state padding 24px; chưa đo lại cùng bộ kích thước/entries=0 | Cần đo lại hình học để đóng so sánh P0-2 |
+| P0-1 long-line editor: không có `p0_1_editor` trong JSON gốc; `screenInventories` rỗng | Script U1 cũ FAIL strict selector như báo trước khi tới deep; không có số gốc để chứng minh cải thiện | Chưa kết luận; cần phép đo riêng |
+| Chat: U1 liệt kê nút 32px trong danh sách hình học | Bản đo hiện tại chưa mở chat và chưa đo target hữu hiệu | Cần đo riêng, không nhận đã sửa |
+
+- Quick mặc định với dữ liệu synthetic tải sẵn: verdict xuất hiện không cần click (VI `Có truy cập mới bị chặn`, EN `Some access is newly blocked`), tại cả 390/1440; số từ hiển thị trong main: VI 120, EN 88 (đếm split whitespace, không so sánh trực tiếp giữa ngôn ngữ). Với mẫu `Ngân sách tìm kiếm hạn chế` / `Limited search budget`: 3 click tại cả 390/1440 và VI/EN (mở cấu hình → mở selector → chọn mẫu), kết quả `Chưa kết luận` / `Inconclusive`; chuyển VI→EN thêm 1 click. Đây là đo mẫu có sẵn, không đại diện nhập/upload cấu hình thực.
+- Đề xuất để Chí Nhân duyệt, chưa sửa UI: cân nhắc đưa nút chọn mẫu vào vùng quick đang thu gọn để giảm hành trình mẫu từ 3 xuống dự kiến 2 click; không đổi engine/flow, cần đo lại sau thiết kế. Mẫu mặc định đã 0 click nên không tuyên bố rút ngắn nó.
 
 ### 2026-11-05 — N2 QA nền và lỗi script U1
 - Main `55c1ce02e513770dd9a4da14311f7d058ac22dae`: `npm test` PASS, Test Files 24 passed (24), Tests 192 passed (192); `npm run build` PASS, cảnh báo chunk >500 kB. `review-desk-browser.mjs` 35 checks passed; `u4-browser.mjs after` 16/16 tổ hợp VI/EN × 360/390/480/768/1024/1280/1440/1920 overflow 0, axe 0; `u3-browser.mjs after` 8/8 width overflow 0, inbox axe 0; `u4-evidence.mjs` evidence enabled: true, evidence axe: []; `u4-keyboard.mjs` nested: 0 axe: [], hai disclosure cao 44px. Tất cả exit=0.

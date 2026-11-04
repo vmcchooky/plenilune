@@ -568,6 +568,2310 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D14 — cổng npm test ĐỎ lần mới, dừng:** Theo chỉ đạo, chạy riêng p18quick với log `D:/Quorix/d14-p18-failure.log`: 8 exception đều `ReferenceError: showObjectSelection is not defined`; sửa phạm vi, npm test 185/185 + build PASS. Sau đó triển khai tiếp các panel cùng cấp, thêm kiểm tra không lồng; `npm test` mới exit 1 (4 fail, 181 pass). Không sửa thêm hay chạy lại. Xin chỉ đạo; output đầy đủ nguyên văn:
+```text
+
+> plenilune-demo@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 D:/Quorix/gate-46-20261102/web
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ tests/p18quick.test.tsx (9 tests | 4 failed) 9486ms
+   ❯ P1-8 quick verdict path (9)
+     × keeps the initial quick result short and reveals editors only on request 768ms
+     × (c) edits obligations inline and updates the status listing in place 1605ms
+     × (d) hides repair for EQUIVALENT and shows it for DIFFERENT with a violated obligation 1429ms
+     × (d) shows the contextual repair section for DIFFERENT with a violated obligation 1186ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/p18quick.test.tsx > P1-8 quick verdict path > keeps the initial quick result short and reveals editors only on request
+AssertionError: expected <details …(1)>…(2)</details> to be null
+
+- Expected:
+null
+
++ Received:
+<details
+  class="technical-details"
+>
+  <summary>
+    <svg
+      aria-hidden="true"
+      class="technical-details__chevron"
+      fill="none"
+      height="15"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="1.6"
+      viewBox="0 0 24 24"
+      width="15"
+    >
+      <path
+        d="m9 5 7 7-7 7"
+      />
+    </svg>
+    <span>
+      Thử một gói tin
+    </span>
+  </summary>
+  <div
+    class="technical-details__body"
+  >
+    <p
+      class="field-hint"
+    >
+      Đánh giá đúng một gói trên từng phiên bản. Đây là giải thích một điểm, không phải chứng minh.
+    </p>
+    <form
+      class="probe-form"
+    >
+      <div
+        class="field"
+      >
+        <label
+          for="probe-protocol"
+        >
+          Giao thức (số)
+        </label>
+        <input
+          id="probe-protocol"
+          inputmode="numeric"
+          spellcheck="false"
+          value="6"
+        />
+      </div>
+      <div
+        class="field"
+      >
+        <label
+          for="probe-src"
+        >
+          IP nguồn
+        </label>
+        <input
+          id="probe-src"
+          inputmode="decimal"
+          spellcheck="false"
+          value="192.0.2.10"
+        />
+      </div>
+      <div
+        class="field"
+      >
+        <label
+          for="probe-sport"
+        >
+          Cổng nguồn
+        </label>
+        <input
+          id="probe-sport"
+          inputmode="numeric"
+          spellcheck="false"
+          value="0"
+        />
+      </div>
+      <div
+        class="field"
+      >
+        <label
+          for="probe-dst"
+        >
+          IP đích
+        </label>
+        <input
+          id="probe-dst"
+          inputmode="decimal"
+          spellcheck="false"
+          value="198.51.100.10"
+        />
+      </div>
+      <div
+        class="field"
+      >
+        <label
+          for="probe-dport"
+        >
+          Cổng đích
+        </label>
+        <input
+          id="probe-dport"
+          inputmode="numeric"
+          spellcheck="false"
+          value="22"
+        />
+      </div>
+      <button
+        class="button button--secondary button--small"
+        type="submit"
+      >
+        Kiểm tra gói
+      </button>
+    </form>
+  </div>
+</details>
+
+ ❯ tests/p18quick.test.tsx:140:69
+    138|     expect(policy.closest('.quick-tools')).toBeNull();
+    139|     expect(document.querySelector<HTMLElement>('#quick-questions-panel…
+    140|     expect(document.querySelector('.quick-screen details details')).to…
+       |                                                                     ^
+    141|     expect(document.querySelector('.quick-outcome__example')?.textCont…
+    142|     fireEvent.click(screen.getByRole('button', { name: text('quick.sou…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/p18quick.test.tsx > P1-8 quick verdict path > (c) edits obligations inline and updates the status listing in place
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Xem policy đã chuẩn hóa"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "Bỏ qua điều hướng":
+  <a
+    class="skip-link"
+    href="#main"
+  />
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  <header
+    class="topbar"
+  />
+
+  Name "":
+  <header
+    class="quick-header"
+  />
+
+  Name "":
+  <header
+    class="record-refined__context quick-outcome__identity"
+  />
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong
+    class="record-refined__status record-refined__status--deny"
+  />
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong />
+
+  --------------------------------------------------
+  group:
+
+  Name "Ngôn ngữ giao diện":
+  <div
+    aria-label="Ngôn ngữ giao diện"
+    class="language-switch"
+    role="group"
+  />
+
+  Name "Chế độ duyệt":
+  <div
+    aria-label="Chế độ duyệt"
+    class="mode-switch"
+    role="group"
+  />
+
+  Name "":
+  <details
+    class="quick-outcome__details record-refined__details"
+  />
+
+  Name "":
+  <details
+    class="technical-details"
+  />
+
+  Name "":
+  <details
+    class="watch-drawer"
+  />
+
+  Name "":
+  <details
+    class="inbox-watch__add"
+  />
+
+  Name "":
+  <fieldset
+    class="inbox-watch__conditions"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "VI — Chuyển sang tiếng Việt":
+  <button
+    aria-label="VI — Chuyển sang tiếng Việt"
+    aria-pressed="true"
+    class="is-active"
+    title="Chuyển sang tiếng Việt"
+    type="button"
+  />
+
+  Name "EN — Chuyển sang tiếng Anh":
+  <button
+    aria-label="EN — Chuyển sang tiếng Anh"
+    aria-pressed="false"
+    class=""
+    title="Chuyển sang tiếng Anh"
+    type="button"
+  />
+
+  Name "Kết luận nhanh":
+  <button
+    aria-pressed="true"
+    class="is-active"
+    type="button"
+  />
+
+  Name "Duyệt sâu":
+  <button
+    aria-pressed="false"
+    class=""
+    type="button"
+  />
+
+  Name "Xem / sửa cấu hình":
+  <button
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Xác định điều cần giữ":
+  <button
+    class="button button--primary study-conditions"
+    type="button"
+  />
+
+  Name "Thử gói này":
+  <button
+    class="button button--quiet button--small"
+    type="button"
+  />
+
+  Name "Kiểm tra gói":
+  <button
+    class="button button--secondary button--small"
+    type="submit"
+  />
+
+  Name "Điều kiện, bằng chứng & công cụ khác":
+  <button
+    aria-controls="quick-tools-panel"
+    aria-expanded="false"
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Điều kiện & trạng thái":
+  <button
+    aria-controls="quick-policy-panel"
+    aria-expanded="false"
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Bằng chứng & chia sẻTóm tắt ticket (.md)":
+  <button
+    aria-controls="quick-evidence-panel"
+    aria-expanded="false"
+    class="quick-evidence__toggle"
+    type="button"
+  />
+
+  Name "Hỏi về kết quả này":
+  <button
+    aria-controls="quick-questions-panel"
+    aria-expanded="false"
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Làm mới":
+  <button
+    class="button button--quiet button--small"
+    type="button"
+  />
+
+  Name "Theo dõi đối tượng đầu tiên":
+  <button
+    class="button button--secondary"
+    type="button"
+  />
+
+  Name "Theo dõi":
+  <button
+    class="button button--secondary button--small"
+    disabled=""
+    type="submit"
+  />
+
+  --------------------------------------------------
+  region:
+
+  Name "Không gian duyệt thay đổi":
+  <div
+    aria-label="Không gian duyệt thay đổi"
+    class="mode-bar mode-bar--quick"
+    role="region"
+  />
+
+  Name "Có truy cập mới bị chặn":
+  <section
+    aria-labelledby="quick-verdict-title"
+    class="record-refined quick-outcome"
+  />
+
+  Name "Gói ví dụ":
+  <section
+    aria-label="Gói ví dụ"
+    class="record-refined__packet quick-outcome__example"
+  />
+
+  Name "Hành vi thay đổi":
+  <section
+    aria-labelledby="changes-title"
+    class="change-classes"
+  />
+
+  Name "Theo dõi & thông báo":
+  <section
+    aria-labelledby="inbox-title"
+    class="inbox-panel card"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="workspace-label"
+  />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p
+    class="change-classes__summary"
+  />
+
+  Name "":
+  <p
+    class="field-hint"
+  />
+
+  Name "":
+  <p
+    class="field-hint"
+  />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p
+    class="inbox-watch__help"
+  />
+
+  Name "":
+  <p
+    class="inbox-panel__empty"
+  />
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  <main
+    class="main"
+    id="main"
+    tabindex="-1"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Duyệt thay đổi cấu hình":
+  <h1
+    id="step-heading"
+    tabindex="-1"
+  />
+
+  Name "Có truy cập mới bị chặn":
+  <h2
+    class="record-refined__title"
+    id="quick-verdict-title"
+  />
+
+  Name "Hành vi thay đổi":
+  <h2
+    id="changes-title"
+  />
+
+  Name "Theo dõi & thông báo":
+  <h2
+    class="sr-only"
+    id="inbox-title"
+  />
+
+  Name "Đối tượng đang theo dõi":
+  <h3 />
+
+  --------------------------------------------------
+  code:
+
+  Name "":
+  <code
+    class="badge badge--bad"
+  />
+
+  Name "":
+  <code />
+
+  Name "":
+  <code
+    class="change-class__region"
+  />
+
+  Name "":
+  <code />
+
+  Name "":
+  <code />
+
+  Name "":
+  <code />
+
+  --------------------------------------------------
+  emphasis:
+
+  Name "":
+  <em />
+
+  Name "":
+  <em />
+
+  --------------------------------------------------
+  contentinfo:
+
+  Name "":
+  <footer
+    class="record-refined__actions"
+  />
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  <ol
+    class="change-class-list"
+  />
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  <li
+    class="card change-class change-class--newly_denied"
+  />
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  <dt />
+
+  Name "":
+  <dt />
+
+  Name "":
+  <dt />
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  <dd />
+
+  Name "":
+  <dd />
+
+  Name "":
+  <dd />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Giao thức (số)":
+  <input
+    id="probe-protocol"
+    inputmode="numeric"
+    spellcheck="false"
+    value="6"
+  />
+
+  Name "IP nguồn":
+  <input
+    id="probe-src"
+    inputmode="decimal"
+    spellcheck="false"
+    value="192.0.2.10"
+  />
+
+  Name "Cổng nguồn":
+  <input
+    id="probe-sport"
+    inputmode="numeric"
+    spellcheck="false"
+    value="0"
+  />
+
+  Name "IP đích":
+  <input
+    id="probe-dst"
+    inputmode="decimal"
+    spellcheck="false"
+    value="198.51.100.10"
+  />
+
+  Name "Cổng đích":
+  <input
+    id="probe-dport"
+    inputmode="numeric"
+    spellcheck="false"
+    value="22"
+  />
+
+  Name "Tên đối tượng (ví dụ tên ACL)":
+  <input
+    value=""
+  />
+
+  --------------------------------------------------
+  form:
+
+  Name "Thêm đối tượng theo dõi":
+  <form
+    aria-label="Thêm đối tượng theo dõi"
+    class="inbox-watch__form"
+  />
+
+  --------------------------------------------------
+  combobox:
+
+  Name "ACL / Prefix list":
+  <select />
+
+  --------------------------------------------------
+  option:
+
+  Name "ACL":
+  <option
+    value="acl"
+  />
+
+  Name "Prefix list":
+  <option
+    value="prefix-list"
+  />
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "Verdict đã đổi":
+  <input
+    checked=""
+    type="checkbox"
+  />
+
+  Name "Kết quả khác biệt":
+  <input
+    type="checkbox"
+  />
+
+  Name "Điều kiện không đạt":
+  <input
+    type="checkbox"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="app"
+    >
+      <a
+        class="skip-link"
+        href="#main"
+      >
+        Bỏ qua điều hướng
+      </a>
+      <header
+        class="topbar"
+      >
+        <div
+          class="wordmark"
+        >
+          <span
+            aria-hidden="true"
+            class="wordmark__mark"
+          >
+            <svg
+              aria-hidden="true"
+              fill="currentColor"
+              focusable="false"
+              height="20"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M12.4 3.2a6.4 6.4 0 0 0 8.4 10.4 8.9 8.9 0 1 1-8.4-10.4Z"
+              />
+            </svg>
+          </span>
+          <span
+            class="wordmark__text"
+          >
+            <strong>
+              Plenilune
+            </strong>
+            <span>
+              Kiểm chứng thay đổi cấu hình
+            </span>
+          </span>
+        </div>
+        <div
+          class="topbar__right"
+        >
+          <span
+            class="runtime-indicator runtime-indicator--online"
+            title="Máy chủ cục bộ"
+          >
+            <span
+              aria-hidden="true"
+              class="runtime-indicator__dot"
+            />
+            <span
+              class="runtime-indicator__text"
+            >
+              Máy chủ cục bộ
+            </span>
+          </span>
+          <span
+            class="ai-indicator ai-indicator--neutral"
+            title="AI chỉ đề xuất. Engine tất định quyết định kết quả."
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="14"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.6"
+              viewBox="0 0 24 24"
+              width="14"
+            >
+              <rect
+                height="10.5"
+                rx="1.5"
+                width="14"
+                x="5"
+                y="10"
+              />
+              <path
+                d="M8 10V7.5a4 4 0 0 1 8 0V10"
+              />
+            </svg>
+            <span
+              class="ai-indicator__text"
+            >
+              AI tắt
+            </span>
+          </span>
+          <div
+            aria-label="Ngôn ngữ giao diện"
+            class="language-switch"
+            role="group"
+          >
+            <button
+              aria-label="VI — Chuyển sang tiếng Việt"
+              aria-pressed="true"
+              class="is-active"
+              title="Chuyển sang tiếng Việt"
+              type="button"
+            >
+              VI
+            </button>
+            <button
+              aria-label="EN — Chuyển sang tiếng Anh"
+              aria-pressed="false"
+              class=""
+              title="Chuyển sang tiếng Anh"
+              type="button"
+            >
+              EN
+            </button>
+          </div>
+        </div>
+      </header>
+      <div
+        aria-label="Không gian duyệt thay đổi"
+        class="mode-bar mode-bar--quick"
+        role="region"
+      >
+        <p
+          class="workspace-label"
+        >
+          Không gian duyệt thay đổi
+        </p>
+        <div
+          class="workspace-actions"
+        >
+          <div
+            aria-label="Chế độ duyệt"
+            class="mode-switch"
+            role="group"
+          >
+            <button
+              aria-pressed="true"
+              class="is-active"
+              type="button"
+            >
+              Kết luận nhanh
+            </button>
+            <button
+              aria-pressed="false"
+              class=""
+              type="button"
+            >
+              Duyệt sâu
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="workspace workspace--quick"
+      >
+        <main
+          class="main"
+          id="main"
+          tabindex="-1"
+        >
+          <div
+            class="step quick-screen"
+          >
+            <header
+              class="quick-header"
+            >
+              <h1
+                id="step-heading"
+                tabindex="-1"
+              >
+                Duyệt thay đổi cấu hình
+              </h1>
+              <span
+                class="provenance provenance--neutral"
+              >
+                <svg
+                  aria-hidden="true"
+                  fill="none"
+                  height="14"
+...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ evaluateObligations tests/p18quick.test.tsx:97:32
+     95|   // Editor controls stay disabled while a run is settling (busy state…
+     96|   // a click on a disabled button is a no-op: wait for the button to e…
+     97|   const previewButton = screen.getByRole('button', { name: text('accep…
+       |                                ^
+     98|   await waitFor(() => {
+     99|     expect((previewButton as HTMLButtonElement).disabled).toBe(false);
+ ❯ tests/p18quick.test.tsx:199:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/p18quick.test.tsx > P1-8 quick verdict path > (d) hides repair for EQUIVALENT and shows it for DIFFERENT with a violated obligation
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Xem policy đã chuẩn hóa"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "Bỏ qua điều hướng":
+  <a
+    class="skip-link"
+    href="#main"
+  />
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  <header
+    class="topbar"
+  />
+
+  Name "":
+  <header
+    class="quick-header"
+  />
+
+  Name "":
+  <header
+    class="record-refined__context quick-outcome__identity"
+  />
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong
+    class="record-refined__status record-refined__status--deny"
+  />
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong />
+
+  --------------------------------------------------
+  group:
+
+  Name "Ngôn ngữ giao diện":
+  <div
+    aria-label="Ngôn ngữ giao diện"
+    class="language-switch"
+    role="group"
+  />
+
+  Name "Chế độ duyệt":
+  <div
+    aria-label="Chế độ duyệt"
+    class="mode-switch"
+    role="group"
+  />
+
+  Name "":
+  <details
+    class="quick-outcome__details record-refined__details"
+  />
+
+  Name "":
+  <details
+    class="technical-details"
+  />
+
+  Name "":
+  <details
+    class="watch-drawer"
+  />
+
+  Name "":
+  <details
+    class="inbox-watch__add"
+  />
+
+  Name "":
+  <fieldset
+    class="inbox-watch__conditions"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "VI — Chuyển sang tiếng Việt":
+  <button
+    aria-label="VI — Chuyển sang tiếng Việt"
+    aria-pressed="true"
+    class="is-active"
+    title="Chuyển sang tiếng Việt"
+    type="button"
+  />
+
+  Name "EN — Chuyển sang tiếng Anh":
+  <button
+    aria-label="EN — Chuyển sang tiếng Anh"
+    aria-pressed="false"
+    class=""
+    title="Chuyển sang tiếng Anh"
+    type="button"
+  />
+
+  Name "Kết luận nhanh":
+  <button
+    aria-pressed="true"
+    class="is-active"
+    type="button"
+  />
+
+  Name "Duyệt sâu":
+  <button
+    aria-pressed="false"
+    class=""
+    type="button"
+  />
+
+  Name "Xem / sửa cấu hình":
+  <button
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Xác định điều cần giữ":
+  <button
+    class="button button--primary study-conditions"
+    type="button"
+  />
+
+  Name "Thử gói này":
+  <button
+    class="button button--quiet button--small"
+    type="button"
+  />
+
+  Name "Kiểm tra gói":
+  <button
+    class="button button--secondary button--small"
+    type="submit"
+  />
+
+  Name "Điều kiện, bằng chứng & công cụ khác":
+  <button
+    aria-controls="quick-tools-panel"
+    aria-expanded="false"
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Điều kiện & trạng thái":
+  <button
+    aria-controls="quick-policy-panel"
+    aria-expanded="false"
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Bằng chứng & chia sẻTóm tắt ticket (.md)":
+  <button
+    aria-controls="quick-evidence-panel"
+    aria-expanded="false"
+    class="quick-evidence__toggle"
+    type="button"
+  />
+
+  Name "Hỏi về kết quả này":
+  <button
+    aria-controls="quick-questions-panel"
+    aria-expanded="false"
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Làm mới":
+  <button
+    class="button button--quiet button--small"
+    type="button"
+  />
+
+  Name "Theo dõi đối tượng đầu tiên":
+  <button
+    class="button button--secondary"
+    type="button"
+  />
+
+  Name "Theo dõi":
+  <button
+    class="button button--secondary button--small"
+    disabled=""
+    type="submit"
+  />
+
+  --------------------------------------------------
+  region:
+
+  Name "Không gian duyệt thay đổi":
+  <div
+    aria-label="Không gian duyệt thay đổi"
+    class="mode-bar mode-bar--quick"
+    role="region"
+  />
+
+  Name "Có truy cập mới bị chặn":
+  <section
+    aria-labelledby="quick-verdict-title"
+    class="record-refined quick-outcome"
+  />
+
+  Name "Gói ví dụ":
+  <section
+    aria-label="Gói ví dụ"
+    class="record-refined__packet quick-outcome__example"
+  />
+
+  Name "Hành vi thay đổi":
+  <section
+    aria-labelledby="changes-title"
+    class="change-classes"
+  />
+
+  Name "Theo dõi & thông báo":
+  <section
+    aria-labelledby="inbox-title"
+    class="inbox-panel card"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="workspace-label"
+  />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p
+    class="change-classes__summary"
+  />
+
+  Name "":
+  <p
+    class="field-hint"
+  />
+
+  Name "":
+  <p
+    class="field-hint"
+  />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p
+    class="inbox-watch__help"
+  />
+
+  Name "":
+  <p
+    class="inbox-panel__empty"
+  />
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  <main
+    class="main"
+    id="main"
+    tabindex="-1"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Duyệt thay đổi cấu hình":
+  <h1
+    id="step-heading"
+    tabindex="-1"
+  />
+
+  Name "Có truy cập mới bị chặn":
+  <h2
+    class="record-refined__title"
+    id="quick-verdict-title"
+  />
+
+  Name "Hành vi thay đổi":
+  <h2
+    id="changes-title"
+  />
+
+  Name "Theo dõi & thông báo":
+  <h2
+    class="sr-only"
+    id="inbox-title"
+  />
+
+  Name "Đối tượng đang theo dõi":
+  <h3 />
+
+  --------------------------------------------------
+  code:
+
+  Name "":
+  <code
+    class="badge badge--bad"
+  />
+
+  Name "":
+  <code />
+
+  Name "":
+  <code
+    class="change-class__region"
+  />
+
+  Name "":
+  <code />
+
+  Name "":
+  <code />
+
+  Name "":
+  <code />
+
+  --------------------------------------------------
+  emphasis:
+
+  Name "":
+  <em />
+
+  Name "":
+  <em />
+
+  --------------------------------------------------
+  contentinfo:
+
+  Name "":
+  <footer
+    class="record-refined__actions"
+  />
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  <ol
+    class="change-class-list"
+  />
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  <li
+    class="card change-class change-class--newly_denied"
+  />
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  <dt />
+
+  Name "":
+  <dt />
+
+  Name "":
+  <dt />
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  <dd />
+
+  Name "":
+  <dd />
+
+  Name "":
+  <dd />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Giao thức (số)":
+  <input
+    id="probe-protocol"
+    inputmode="numeric"
+    spellcheck="false"
+    value="6"
+  />
+
+  Name "IP nguồn":
+  <input
+    id="probe-src"
+    inputmode="decimal"
+    spellcheck="false"
+    value="192.0.2.10"
+  />
+
+  Name "Cổng nguồn":
+  <input
+    id="probe-sport"
+    inputmode="numeric"
+    spellcheck="false"
+    value="0"
+  />
+
+  Name "IP đích":
+  <input
+    id="probe-dst"
+    inputmode="decimal"
+    spellcheck="false"
+    value="198.51.100.10"
+  />
+
+  Name "Cổng đích":
+  <input
+    id="probe-dport"
+    inputmode="numeric"
+    spellcheck="false"
+    value="22"
+  />
+
+  Name "Tên đối tượng (ví dụ tên ACL)":
+  <input
+    value=""
+  />
+
+  --------------------------------------------------
+  form:
+
+  Name "Thêm đối tượng theo dõi":
+  <form
+    aria-label="Thêm đối tượng theo dõi"
+    class="inbox-watch__form"
+  />
+
+  --------------------------------------------------
+  combobox:
+
+  Name "ACL / Prefix list":
+  <select />
+
+  --------------------------------------------------
+  option:
+
+  Name "ACL":
+  <option
+    value="acl"
+  />
+
+  Name "Prefix list":
+  <option
+    value="prefix-list"
+  />
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "Verdict đã đổi":
+  <input
+    checked=""
+    type="checkbox"
+  />
+
+  Name "Kết quả khác biệt":
+  <input
+    type="checkbox"
+  />
+
+  Name "Điều kiện không đạt":
+  <input
+    type="checkbox"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="app"
+    >
+      <a
+        class="skip-link"
+        href="#main"
+      >
+        Bỏ qua điều hướng
+      </a>
+      <header
+        class="topbar"
+      >
+        <div
+          class="wordmark"
+        >
+          <span
+            aria-hidden="true"
+            class="wordmark__mark"
+          >
+            <svg
+              aria-hidden="true"
+              fill="currentColor"
+              focusable="false"
+              height="20"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M12.4 3.2a6.4 6.4 0 0 0 8.4 10.4 8.9 8.9 0 1 1-8.4-10.4Z"
+              />
+            </svg>
+          </span>
+          <span
+            class="wordmark__text"
+          >
+            <strong>
+              Plenilune
+            </strong>
+            <span>
+              Kiểm chứng thay đổi cấu hình
+            </span>
+          </span>
+        </div>
+        <div
+          class="topbar__right"
+        >
+          <span
+            class="runtime-indicator runtime-indicator--online"
+            title="Máy chủ cục bộ"
+          >
+            <span
+              aria-hidden="true"
+              class="runtime-indicator__dot"
+            />
+            <span
+              class="runtime-indicator__text"
+            >
+              Máy chủ cục bộ
+            </span>
+          </span>
+          <span
+            class="ai-indicator ai-indicator--neutral"
+            title="AI chỉ đề xuất. Engine tất định quyết định kết quả."
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="14"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.6"
+              viewBox="0 0 24 24"
+              width="14"
+            >
+              <rect
+                height="10.5"
+                rx="1.5"
+                width="14"
+                x="5"
+                y="10"
+              />
+              <path
+                d="M8 10V7.5a4 4 0 0 1 8 0V10"
+              />
+            </svg>
+            <span
+              class="ai-indicator__text"
+            >
+              AI tắt
+            </span>
+          </span>
+          <div
+            aria-label="Ngôn ngữ giao diện"
+            class="language-switch"
+            role="group"
+          >
+            <button
+              aria-label="VI — Chuyển sang tiếng Việt"
+              aria-pressed="true"
+              class="is-active"
+              title="Chuyển sang tiếng Việt"
+              type="button"
+            >
+              VI
+            </button>
+            <button
+              aria-label="EN — Chuyển sang tiếng Anh"
+              aria-pressed="false"
+              class=""
+              title="Chuyển sang tiếng Anh"
+              type="button"
+            >
+              EN
+            </button>
+          </div>
+        </div>
+      </header>
+      <div
+        aria-label="Không gian duyệt thay đổi"
+        class="mode-bar mode-bar--quick"
+        role="region"
+      >
+        <p
+          class="workspace-label"
+        >
+          Không gian duyệt thay đổi
+        </p>
+        <div
+          class="workspace-actions"
+        >
+          <div
+            aria-label="Chế độ duyệt"
+            class="mode-switch"
+            role="group"
+          >
+            <button
+              aria-pressed="true"
+              class="is-active"
+              type="button"
+            >
+              Kết luận nhanh
+            </button>
+            <button
+              aria-pressed="false"
+              class=""
+              type="button"
+            >
+              Duyệt sâu
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="workspace workspace--quick"
+      >
+        <main
+          class="main"
+          id="main"
+          tabindex="-1"
+        >
+          <div
+            class="step quick-screen"
+          >
+            <header
+              class="quick-header"
+            >
+              <h1
+                id="step-heading"
+                tabindex="-1"
+              >
+                Duyệt thay đổi cấu hình
+              </h1>
+              <span
+                class="provenance provenance--neutral"
+              >
+                <svg
+                  aria-hidden="true"
+                  fill="none"
+                  height="14"
+...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ evaluateObligations tests/p18quick.test.tsx:97:32
+     95|   // Editor controls stay disabled while a run is settling (busy state…
+     96|   // a click on a disabled button is a no-op: wait for the button to e…
+     97|   const previewButton = screen.getByRole('button', { name: text('accep…
+       |                                ^
+     98|   await waitFor(() => {
+     99|     expect((previewButton as HTMLButtonElement).disabled).toBe(false);
+ ❯ tests/p18quick.test.tsx:232:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/p18quick.test.tsx > P1-8 quick verdict path > (d) shows the contextual repair section for DIFFERENT with a violated obligation
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Xem policy đã chuẩn hóa"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "Bỏ qua điều hướng":
+  <a
+    class="skip-link"
+    href="#main"
+  />
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  <header
+    class="topbar"
+  />
+
+  Name "":
+  <header
+    class="quick-header"
+  />
+
+  Name "":
+  <header
+    class="record-refined__context quick-outcome__identity"
+  />
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong
+    class="record-refined__status record-refined__status--deny"
+  />
+
+  Name "":
+  <strong />
+
+  Name "":
+  <strong />
+
+  --------------------------------------------------
+  group:
+
+  Name "Ngôn ngữ giao diện":
+  <div
+    aria-label="Ngôn ngữ giao diện"
+    class="language-switch"
+    role="group"
+  />
+
+  Name "Chế độ duyệt":
+  <div
+    aria-label="Chế độ duyệt"
+    class="mode-switch"
+    role="group"
+  />
+
+  Name "":
+  <details
+    class="quick-outcome__details record-refined__details"
+  />
+
+  Name "":
+  <details
+    class="technical-details"
+  />
+
+  Name "":
+  <details
+    class="watch-drawer"
+  />
+
+  Name "":
+  <details
+    class="inbox-watch__add"
+  />
+
+  Name "":
+  <fieldset
+    class="inbox-watch__conditions"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "VI — Chuyển sang tiếng Việt":
+  <button
+    aria-label="VI — Chuyển sang tiếng Việt"
+    aria-pressed="true"
+    class="is-active"
+    title="Chuyển sang tiếng Việt"
+    type="button"
+  />
+
+  Name "EN — Chuyển sang tiếng Anh":
+  <button
+    aria-label="EN — Chuyển sang tiếng Anh"
+    aria-pressed="false"
+    class=""
+    title="Chuyển sang tiếng Anh"
+    type="button"
+  />
+
+  Name "Kết luận nhanh":
+  <button
+    aria-pressed="true"
+    class="is-active"
+    type="button"
+  />
+
+  Name "Duyệt sâu":
+  <button
+    aria-pressed="false"
+    class=""
+    type="button"
+  />
+
+  Name "Xem / sửa cấu hình":
+  <button
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Xác định điều cần giữ":
+  <button
+    class="button button--primary study-conditions"
+    type="button"
+  />
+
+  Name "Thử gói này":
+  <button
+    class="button button--quiet button--small"
+    type="button"
+  />
+
+  Name "Kiểm tra gói":
+  <button
+    class="button button--secondary button--small"
+    type="submit"
+  />
+
+  Name "Điều kiện, bằng chứng & công cụ khác":
+  <button
+    aria-controls="quick-tools-panel"
+    aria-expanded="false"
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Điều kiện & trạng thái":
+  <button
+    aria-controls="quick-policy-panel"
+    aria-expanded="false"
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Bằng chứng & chia sẻTóm tắt ticket (.md)":
+  <button
+    aria-controls="quick-evidence-panel"
+    aria-expanded="false"
+    class="quick-evidence__toggle"
+    type="button"
+  />
+
+  Name "Hỏi về kết quả này":
+  <button
+    aria-controls="quick-questions-panel"
+    aria-expanded="false"
+    class="button button--quiet"
+    type="button"
+  />
+
+  Name "Làm mới":
+  <button
+    class="button button--quiet button--small"
+    type="button"
+  />
+
+  Name "Theo dõi đối tượng đầu tiên":
+  <button
+    class="button button--secondary"
+    type="button"
+  />
+
+  Name "Theo dõi":
+  <button
+    class="button button--secondary button--small"
+    disabled=""
+    type="submit"
+  />
+
+  --------------------------------------------------
+  region:
+
+  Name "Không gian duyệt thay đổi":
+  <div
+    aria-label="Không gian duyệt thay đổi"
+    class="mode-bar mode-bar--quick"
+    role="region"
+  />
+
+  Name "Có truy cập mới bị chặn":
+  <section
+    aria-labelledby="quick-verdict-title"
+    class="record-refined quick-outcome"
+  />
+
+  Name "Gói ví dụ":
+  <section
+    aria-label="Gói ví dụ"
+    class="record-refined__packet quick-outcome__example"
+  />
+
+  Name "Hành vi thay đổi":
+  <section
+    aria-labelledby="changes-title"
+    class="change-classes"
+  />
+
+  Name "Theo dõi & thông báo":
+  <section
+    aria-labelledby="inbox-title"
+    class="inbox-panel card"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="workspace-label"
+  />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p
+    class="change-classes__summary"
+  />
+
+  Name "":
+  <p
+    class="field-hint"
+  />
+
+  Name "":
+  <p
+    class="field-hint"
+  />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p
+    class="inbox-watch__help"
+  />
+
+  Name "":
+  <p
+    class="inbox-panel__empty"
+  />
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  <main
+    class="main"
+    id="main"
+    tabindex="-1"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Duyệt thay đổi cấu hình":
+  <h1
+    id="step-heading"
+    tabindex="-1"
+  />
+
+  Name "Có truy cập mới bị chặn":
+  <h2
+    class="record-refined__title"
+    id="quick-verdict-title"
+  />
+
+  Name "Hành vi thay đổi":
+  <h2
+    id="changes-title"
+  />
+
+  Name "Theo dõi & thông báo":
+  <h2
+    class="sr-only"
+    id="inbox-title"
+  />
+
+  Name "Đối tượng đang theo dõi":
+  <h3 />
+
+  --------------------------------------------------
+  code:
+
+  Name "":
+  <code
+    class="badge badge--bad"
+  />
+
+  Name "":
+  <code />
+
+  Name "":
+  <code
+    class="change-class__region"
+  />
+
+  Name "":
+  <code />
+
+  Name "":
+  <code />
+
+  Name "":
+  <code />
+
+  --------------------------------------------------
+  emphasis:
+
+  Name "":
+  <em />
+
+  Name "":
+  <em />
+
+  --------------------------------------------------
+  contentinfo:
+
+  Name "":
+  <footer
+    class="record-refined__actions"
+  />
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  <ol
+    class="change-class-list"
+  />
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  <li
+    class="card change-class change-class--newly_denied"
+  />
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  <dt />
+
+  Name "":
+  <dt />
+
+  Name "":
+  <dt />
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  <dd />
+
+  Name "":
+  <dd />
+
+  Name "":
+  <dd />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Giao thức (số)":
+  <input
+    id="probe-protocol"
+    inputmode="numeric"
+    spellcheck="false"
+    value="6"
+  />
+
+  Name "IP nguồn":
+  <input
+    id="probe-src"
+    inputmode="decimal"
+    spellcheck="false"
+    value="192.0.2.10"
+  />
+
+  Name "Cổng nguồn":
+  <input
+    id="probe-sport"
+    inputmode="numeric"
+    spellcheck="false"
+    value="0"
+  />
+
+  Name "IP đích":
+  <input
+    id="probe-dst"
+    inputmode="decimal"
+    spellcheck="false"
+    value="198.51.100.10"
+  />
+
+  Name "Cổng đích":
+  <input
+    id="probe-dport"
+    inputmode="numeric"
+    spellcheck="false"
+    value="22"
+  />
+
+  Name "Tên đối tượng (ví dụ tên ACL)":
+  <input
+    value=""
+  />
+
+  --------------------------------------------------
+  form:
+
+  Name "Thêm đối tượng theo dõi":
+  <form
+    aria-label="Thêm đối tượng theo dõi"
+    class="inbox-watch__form"
+  />
+
+  --------------------------------------------------
+  combobox:
+
+  Name "ACL / Prefix list":
+  <select />
+
+  --------------------------------------------------
+  option:
+
+  Name "ACL":
+  <option
+    value="acl"
+  />
+
+  Name "Prefix list":
+  <option
+    value="prefix-list"
+  />
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "Verdict đã đổi":
+  <input
+    checked=""
+    type="checkbox"
+  />
+
+  Name "Kết quả khác biệt":
+  <input
+    type="checkbox"
+  />
+
+  Name "Điều kiện không đạt":
+  <input
+    type="checkbox"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="app"
+    >
+      <a
+        class="skip-link"
+        href="#main"
+      >
+        Bỏ qua điều hướng
+      </a>
+      <header
+        class="topbar"
+      >
+        <div
+          class="wordmark"
+        >
+          <span
+            aria-hidden="true"
+            class="wordmark__mark"
+          >
+            <svg
+              aria-hidden="true"
+              fill="currentColor"
+              focusable="false"
+              height="20"
+              viewBox="0 0 24 24"
+              width="20"
+            >
+              <path
+                d="M12.4 3.2a6.4 6.4 0 0 0 8.4 10.4 8.9 8.9 0 1 1-8.4-10.4Z"
+              />
+            </svg>
+          </span>
+          <span
+            class="wordmark__text"
+          >
+            <strong>
+              Plenilune
+            </strong>
+            <span>
+              Kiểm chứng thay đổi cấu hình
+            </span>
+          </span>
+        </div>
+        <div
+          class="topbar__right"
+        >
+          <span
+            class="runtime-indicator runtime-indicator--online"
+            title="Máy chủ cục bộ"
+          >
+            <span
+              aria-hidden="true"
+              class="runtime-indicator__dot"
+            />
+            <span
+              class="runtime-indicator__text"
+            >
+              Máy chủ cục bộ
+            </span>
+          </span>
+          <span
+            class="ai-indicator ai-indicator--neutral"
+            title="AI chỉ đề xuất. Engine tất định quyết định kết quả."
+          >
+            <svg
+              aria-hidden="true"
+              fill="none"
+              height="14"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.6"
+              viewBox="0 0 24 24"
+              width="14"
+            >
+              <rect
+                height="10.5"
+                rx="1.5"
+                width="14"
+                x="5"
+                y="10"
+              />
+              <path
+                d="M8 10V7.5a4 4 0 0 1 8 0V10"
+              />
+            </svg>
+            <span
+              class="ai-indicator__text"
+            >
+              AI tắt
+            </span>
+          </span>
+          <div
+            aria-label="Ngôn ngữ giao diện"
+            class="language-switch"
+            role="group"
+          >
+            <button
+              aria-label="VI — Chuyển sang tiếng Việt"
+              aria-pressed="true"
+              class="is-active"
+              title="Chuyển sang tiếng Việt"
+              type="button"
+            >
+              VI
+            </button>
+            <button
+              aria-label="EN — Chuyển sang tiếng Anh"
+              aria-pressed="false"
+              class=""
+              title="Chuyển sang tiếng Anh"
+              type="button"
+            >
+              EN
+            </button>
+          </div>
+        </div>
+      </header>
+      <div
+        aria-label="Không gian duyệt thay đổi"
+        class="mode-bar mode-bar--quick"
+        role="region"
+      >
+        <p
+          class="workspace-label"
+        >
+          Không gian duyệt thay đổi
+        </p>
+        <div
+          class="workspace-actions"
+        >
+          <div
+            aria-label="Chế độ duyệt"
+            class="mode-switch"
+            role="group"
+          >
+            <button
+              aria-pressed="true"
+              class="is-active"
+              type="button"
+            >
+              Kết luận nhanh
+            </button>
+            <button
+              aria-pressed="false"
+              class=""
+              type="button"
+            >
+              Duyệt sâu
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="workspace workspace--quick"
+      >
+        <main
+          class="main"
+          id="main"
+          tabindex="-1"
+        >
+          <div
+            class="step quick-screen"
+          >
+            <header
+              class="quick-header"
+            >
+              <h1
+                id="step-heading"
+                tabindex="-1"
+              >
+                Duyệt thay đổi cấu hình
+              </h1>
+              <span
+                class="provenance provenance--neutral"
+              >
+                <svg
+                  aria-hidden="true"
+                  fill="none"
+                  height="14"
+...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ evaluateObligations tests/p18quick.test.tsx:97:32
+     95|   // Editor controls stay disabled while a run is settling (busy state…
+     96|   // a click on a disabled button is a no-op: wait for the button to e…
+     97|   const previewButton = screen.getByRole('button', { name: text('accep…
+       |                                ^
+     98|   await waitFor(() => {
+     99|     expect((previewButton as HTMLButtonElement).disabled).toBe(false);
+ ❯ tests/p18quick.test.tsx:244:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed | 22 passed (23)
+      Tests  4 failed | 181 passed (185)
+   Start at  11:42:19
+   Duration  13.00s (environment 70%, tests 20%, import 9%, transform 1%)
+
+Environment  jsdom was created 23 times · 53.60s total, 70% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+
+```
+
+
 - **D14 U4 — npm test ĐỎ, dừng:** nhánh local `feat/ui-u4-hierarchy`, chưa commit/push. Trong khi làm phẳng lớp quick, tôi đặt `showObjectSelection` sai phạm vi; lỗi sản phẩm xuất hiện sau thay đổi. `npm test` exit 1; output bị tool cắt, không có log đầy đủ và không chạy lại. Phần chính nguyên văn:
 ```text
  ❯ tests/p18quick.test.tsx (9 tests | 8 failed) 40924ms

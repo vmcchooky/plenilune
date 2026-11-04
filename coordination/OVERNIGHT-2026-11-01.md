@@ -336,6 +336,20 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2 QA nền và lỗi script U1
+- Main `55c1ce02e513770dd9a4da14311f7d058ac22dae`: `npm test` PASS, Test Files 24 passed (24), Tests 192 passed (192); `npm run build` PASS, cảnh báo chunk >500 kB. `review-desk-browser.mjs` 35 checks passed; `u4-browser.mjs after` 16/16 tổ hợp VI/EN × 360/390/480/768/1024/1280/1440/1920 overflow 0, axe 0; `u3-browser.mjs after` 8/8 width overflow 0, inbox axe 0; `u4-evidence.mjs` evidence enabled: true, evidence axe: []; `u4-keyboard.mjs` nested: 0 axe: [], hai disclosure cao 44px. Tất cả exit=0.
+- Cổng 8098 đã có tiến trình `D:\Quorix\ui-polish-20261104\bin\plenilune-demo.exe` từ checkout cũ, không dừng tiến trình đó. Để đo đúng main mới, dùng bản SAO TẠM của từng script 8098, chỉ thay `127.0.0.1:8098` thành `127.0.0.1:8108` trỏ Go server build từ `55c1ce0`; `u3-browser.mjs` chạy nguyên bản trên Vite 5173 với API inbox mock. Vì URL cố định, đây không phải xác nhận nguyên bản script 8098 đã chạy trên main mới.
+- `u1-audit.mjs` bản sao đổi cổng: FAIL exit=1. Nguyên văn:
+```text
+locator.click: Error: strict mode violation: locator('.watch-drawer').locator('summary') resolved to 2 elements:
+    1) <summary>Theo dõi & thông báo</summary> aka locator('summary').filter({ hasText: 'Theo dõi & thông báo' })
+    2) <summary>Thêm đối tượng theo dõi</summary> aka getByText('Thêm đối tượng theo dõi')
+Call log:
+  - waiting for locator('.watch-drawer').locator('summary')
+    at ...\web\tests\.qa-u1-audit.mjs:126:39
+```
+- Các script QA được trích dẫn trong `docs/design/qa/*.md` đều tồn tại trên main (review-desk, u3, u4, u4-evidence, u4-keyboard); kết quả chạy nêu trên. U1 không kết thúc và chưa được xem là PASS. Đang đo độc lập heading-order/touch targets VI/EN, lập bảng U1 và đo quick mode.
+
 ### 2026-11-05 — N1 PR #72 MERGED
 - MERGED PR #72 bằng merge commit `55c1ce02e513770dd9a4da14311f7d058ac22dae`, head `9239ea7428eb651506b36f3a6b12c1333f97eb06`, theo MANIFEST-MERGE OK. N0–N1 đóng; chờ danh sách N2 từ Mục A.
 - Cổng Windows trước merge: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go build ./...` PASS exit=0.

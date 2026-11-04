@@ -576,7 +576,56 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 - **CHỈ ĐẠO TIẾP:** triển khai theo quyết định trên → `npm test` toàn bộ + `npm run build` xanh, kiểm tra không-lồng vẫn đứng → commit/push nhánh `feat/ui-u4-hierarchy` → mở PR U4 web-only kèm bằng chứng thường lệ (ảnh trước/sau 360/390 + desktop, VI/EN, axe, overflow); KHÔNG tự merge — UI-MERGE OK chỉ cấp sau khi Chí Nhân soát PR (vòng này CHƯA cấp UI-MERGE OK vì chưa có PR). Nếu cổng lộ gốc thứ ba, dừng và báo Mục B trước khi sửa tiếp.
 - **THỨ TỰ HÀNG ĐỢI KHÔNG ĐỔI:** PR U4 → UI-MERGE OK → merge → regen manifest một lần → UI stream về trạng thái cuối. End condition chưa đạt (U4 chưa có PR; chưa qua 12:00 2026-11-05). Job KHÔNG tắt.
 
+- **VÒNG RELAY 12:15 04/11 (Mục A) — KHÔI PHỤC MỤC B `2ee17af` + CHỈ ĐẠO D14 LẦN 3:** Fetch coord đúng tip `322e4a4` (= watermark vòng 12:00, không có Mục B mới sau đó). GitHub: main vẫn `4bee10c` (merge #66), không còn PR mở — không có merge mới để kiểm chứng. PHÁT HIỆN: push Mục A vòng 12:00 (`322e4a4`, dựng staging từ tip `1000180` trước khi LOCAL push `2ee17af` lúc 12:01:56) đã GHI ĐÈ khối Mục B mới nhất của LOCAL — báo cáo cổng đỏ “D14 cổng mới ĐỎ, dừng” (1 fail / 184 pass, test (d) timeout) biến mất khỏi tip (kiểm bằng grep: 0 lần “cổng mới ĐỎ” ở tip, trong khi ở `2ee17af` có đủ). Đây là lần tái phát thứ ba của lỗi đua fetch-push đã ghi ở các vòng trước; vòng này KHẮC PHỤC: khối Mục B đó được khôi phục NGUYÊN VĂN ngay dưới tiêu đề Mục B (trích từ commit `2ee17af`, không sửa một chữ trong output cổng), và Mục A 12:00 thực ra CHƯA TỪNG thấy báo cáo này (fetch tip `1000180`) — nên chỉ đạo lần 3 dưới đây mới là câu trả lời đầu tiên cho nó. Kỷ luật đã giữ của LOCAL (“không sửa thêm, không chạy build” khi cổng đỏ) là đúng.
+- **PHÂN TÍCH CỔNG ĐỎ MỚI (1 fail / 184 pass, chỉ còn test (d)):** tiến bộ thật — từ 4 fail về 1 fail: assertion không-lồng đã xanh, (c) đã qua; chỉ còn (d) “shows the contextual repair section for DIFFERENT with a violated obligation” timeout 5000ms. Timeout ở mức test (không phải assertion sai giá trị) nghĩa là một await không bao giờ resolve. Nghi phạm số một, đúng như điều kiện bắt buộc ở vòng 12:00: click mới thêm trong `evaluateObligations()` — nếu nút được click qua key `quick.checkIntent` KHÔNG phải toggle của `#quick-policy-panel` thì panel vẫn `hidden`, `findByRole` nút “Xem policy đã chuẩn hóa” chờ tới timeout. Nghi phạm số hai: click đúng toggle, panel mở, nhưng section repair không render cho DIFFERENT + violated obligation trong vỏ panel mới (hồi quy sản phẩm ở khâu ghép panel).
+- **CHỈ ĐẠO D14 LẦN 3 — CHẨN ĐOÁN TRƯỚC KHI SỬA:** (a) Chạy riêng test (d), báo vào Mục B: nút đã click có nhãn hiển thị gì + aria-controls trỏ tới đâu (có phải `#quick-policy-panel` không); sau click panel ở trạng thái nào (aria-expanded, còn `hidden` không); await nào trong (d) không resolve (bước cuối cùng qua được + DOM tại lúc fail). (b) Nếu nút click không phải toggle của panel chứa nút → sửa LUỒNG test để click đúng toggle thật của người dùng, báo rõ hiệu chỉnh này vào Mục B trước PR (vẫn giữ nguyên nhãn + toàn bộ assertion). (c) Nếu click đúng và panel mở mà (d) vẫn timeout → section repair không render trong vỏ mới: DỪNG, báo DOM/state, không vòng qua bằng test. (d) CẤM: nới timeout (kể cả testTimeout cục bộ), skip test, xóa/đổi assertion hay nhãn nút. (e) Sau sửa: `npm test` toàn bộ + `npm run build` xanh, kiểm tra không-lồng vẫn đứng → commit/push nhánh `feat/ui-u4-hierarchy` → mở PR U4 web-only kèm bằng chứng thường lệ; KHÔNG tự merge — vòng này CHƯA cấp UI-MERGE OK vì chưa có PR.
+- **THỨ TỰ HÀNG ĐỢI KHÔNG ĐỔI:** khôi phục Mục B xong → LOCAL chẩn đoán lần 3 → PR U4 → UI-MERGE OK → merge → regen manifest một lần → UI stream về trạng thái cuối. End condition chưa đạt (U4 chưa có PR; chưa qua 12:00 2026-11-05). Job KHÔNG tắt.
+
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
+
+- **D14 cổng mới ĐỎ, dừng:** đã đổi vỏ outcome thành nút/panel, thêm click mở panel vào luồng test như báo `1000180`; `npm test` exit 1, không chạy build, không sửa thêm. Xin chỉ đạo. Output nguyên văn:
+```text
+
+> plenilune-demo@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 D:/Quorix/gate-46-20261102/web
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+ ❯ tests/p18quick.test.tsx (9 tests | 1 failed) 35682ms
+   ❯ P1-8 quick verdict path (9)
+     × (d) shows the contextual repair section for DIFFERENT with a violated obligation 5646ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/p18quick.test.tsx > P1-8 quick verdict path > (d) shows the contextual repair section for DIFFERENT with a violated obligation
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/p18quick.test.tsx:245:3
+    243|   });
+    244|
+    245|   it('(d) shows the contextual repair section for DIFFERENT with a vio…
+       |   ^
+    246|     renderApp();
+    247|     await awaitVerdict();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 22 passed (23)
+      Tests  1 failed | 184 passed (185)
+   Start at  12:00:47
+   Duration  52.60s (environment 71%, tests 18%, import 10%, transform 1%)
+
+Environment  jsdom was created 23 times · 233.09s total, 71% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+
+```
+
 
 - **D14 chẩn đoán theo chỉ đạo:** `QuickOutcome.tsx` bọc `<ChangeClasses>` trong `<details class=quick-outcome__details>`; `ChangeClasses.tsx` render `PacketProbe`, bản thân dùng `TechnicalDetails` (`<details>`) và `ClassRow` cũng có TechnicalDetails vùng → lồng thật. Chọn đổi vỏ outcome thành nút toggle + panel cùng cấp, để ChangeClasses/probe giữ disclosure nội dung. Nút `accept.previewAction` vẫn ở `QuickObligations` khi `review.parsed` có và `!accepted`, `!busy`, `!policyPreview`; hiện panel `#quick-policy-panel` dùng `hidden={!policyOpen}` nên tests (c)/(d) không mở panel không thể tìm nút. UX mới đã duyệt đặt hành động nghĩa vụ inline; dự kiến cập nhật LUỒNG test `evaluateObligations()` bằng click `quick.checkIntent` khi panel đang đóng, giữ nguyên nhãn/kỳ vọng và kiểm trạng thái mở; không xóa assertion. Xin director soát luồng trước PR.
 

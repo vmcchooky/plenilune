@@ -34,6 +34,71 @@ lại cổng; không tự sửa code.
 
 ## A — Chí Nhân → agent local
 
+### SESSION ĐÊM 2026-11-05 — HOÀN THIỆN UI + P3-1..P3-8 + README + DỌN REPO + RELEASE
+**(MỚI NHẤT — ĐỌC TRƯỚC TIÊN. Thay mọi chỉ đạo cũ còn treo, trừ KỶ LUẬT CỔNG và giao thức ghi vẫn giữ nguyên.)**
+
+Chỉ đạo của chủ sở hữu 2026-11-05 00:03: mở phiên đêm mới (AI local MỚI, session mới).
+Cả hai phía poll ~5 phút. Mục tiêu của phiên, theo thứ tự:
+(1) hoàn thiện UI mới cho xong; (2) rà soát + hoàn thiện mọi điểm còn dở trong các
+mục tính tới P3-8; (3) README; (4) loại các thành phần không cần thiết khỏi repo
+GitHub bằng .gitignore + gỡ tracking (không xóa file trên đĩa, không viết lại lịch sử);
+(5) tạo bản release (chuẩn bị trọn gói, chờ RELEASE-GO mới publish — xem N6).
+
+Trạng thái tại lúc mở phiên (Chí Nhân đã kiểm trực tiếp trên GitHub):
+- main = `119e91d` (chưa đổi).
+- PR **#69** (license GPL-3.0-only → Apache-2.0, do Chí Nhân soạn + đẩy) đang MỞ.
+- PR **#70** (UI polish cream + CTA INCONCLUSIVE, head `412974f`) đang MỞ — chính là
+  kết quả ca trước của phía local. Chí Nhân đang review; LOCAL không tự merge.
+- coord tip lúc mở phiên: `f517e31`.
+
+Kỷ luật không đổi: báo cáo Mục B nguyên văn, entry mới lên ĐẦU Mục B; không sửa
+Mục A/STATUS; cổng Windows đầy đủ (gofmt, vet, test, race, build; web: npm test +
+build khi đụng web); merge CHỈ khi có dòng OK tương ứng ở Mục A (MERGE OK /
+UI-MERGE OK / MANIFEST-MERGE OK); manifest chỉ regen bằng script, PR riêng sau
+merge, không regen trong nhánh feature; quy tắc flake ở docs/plan/01-agent-protocol.md
+§2; guardrails thắng mọi kế hoạch; dữ liệu synthetic; không hai agent cùng checkout.
+
+HÀNG ĐỢI:
+- **N0 — License + manifest (LOCAL làm ngay):** merge PR #69 theo MERGE OK đã cấp
+  dưới đây → báo SHA merge vào Mục B → mở PR regen manifest trên main mới → báo
+  head vào Mục B → chờ MANIFEST-MERGE OK (Chí Nhân kiểm hash) → merge.
+- **N1 — UI #70 (Chí Nhân review):** LOCAL chờ. Nếu Mục A có chỉ đạo sửa trên
+  nhánh của #70: sửa, chạy cổng, đẩy, báo cáo. Khi có UI-MERGE OK: merge #70 →
+  chu trình regen manifest như N0.
+- **N2 — Hoàn thiện UI:** Chí Nhân sẽ đăng danh sách lát cắt đo được (phần còn lại
+  của audit U1 + QA walkthrough) thành chỉ đạo N2.x tại Mục A. LOCAL làm từng lát:
+  nhánh riêng, cổng đầy đủ, mở PR, báo cáo Mục B, chờ UI-MERGE OK. Quyết định vị
+  giác thuộc Chí Nhân; tranh biện ghi ở Mục B kèm bằng chứng (số đo/ảnh), không tự ý đổi.
+- **N3 — Hoàn thiện P3-1..P3-8:** Chí Nhân đăng danh sách rà soát (STATUS đối chiếu
+  cây thật: docs lệch, TODO/FIXME, examples, CHANGELOG — gồm mục license Apache-2.0).
+  LOCAL làm PR nhỏ theo danh sách. PHẠM VI: docs/tests/examples. Cấm đụng ngữ nghĩa
+  engine/verdict; gặp mục nào cần đụng → dừng, báo Mục B, chờ chỉ đạo.
+- **N4 — README:** Chí Nhân đăng dàn ý đích tại Mục A. LOCAL đối chiếu từng claim
+  với cây thật + CHẠY THẬT quick-start trên Windows, sửa README.md + README.vi.md
+  trong một PR; Chí Nhân kiểm lại trước khi cấp MERGE OK.
+- **N5 — Dọn repo:** gỡ tracking trên main: `coordination/` (14 file) và
+  `docs/handoff/` (9 file); `design-system/tokens.css` CHỈ khi đã grep chứng minh
+  web/ không tham chiếu + build vẫn xanh. Cách làm: `git rm -r --cached` + thêm
+  `/coordination/` và `/docs/handoff/` vào .gitignore — file vẫn nguyên trên đĩa,
+  TUYỆT ĐỐI không viết lại lịch sử. Một PR; Chí Nhân kiểm danh sách file trước
+  MERGE OK; regen manifest sau merge (các file này rời manifest).
+- **N6 — Release (chuẩn bị, HOLD publish):** khi N0–N5 đã merge + manifest cuối đã
+  trên main: LOCAL build binary release từ commit main cuối (Windows + Linux,
+  -trimpath; kiểm `--version` in 1.0.0 + commit + modified=false), tạo SHA256SUMS,
+  soạn release notes từ CHANGELOG (có ghi license Apache-2.0), báo cáo toàn bộ
+  vào Mục B. **KHÔNG tag, KHÔNG publish** cho tới khi Mục A có dòng **RELEASE-GO**
+  (lời của chủ sở hữu truyền qua Chí Nhân).
+
+CHỈ ĐẠO ĐÃ CẤP NGAY:
+- **MERGE OK — PR #69:** Chí Nhân đã kiểm toàn bộ diff + cây file khớp hash tại
+  lúc đẩy (tree `9fb0ff82…`); chỉ docs/metadata, cổng = trạng thái xanh của main.
+  LOCAL: merge #69 bằng merge commit, báo SHA vào Mục B, chạy tiếp N0.
+- PR #70: chờ review, không merge, không sửa khi chưa có chỉ đạo.
+
+Điểm dừng: mốc STAND-DOWN tại Mục A, hoặc hết hàng VÀ Chí Nhân xác nhận kết ca
+tại Mục A. Báo cáo Mục B ở MỌI mốc merge (quy tắc hiển thị của chủ sở hữu).
+
+
 - 23:10 — PR **#25** `feat/ui-s1-tokens` @ `9bc94ec6` (base `main`) ĐÃ MỞ:
   UI lát 1 (token Neo 1+). Chờ cổng + kiểm tra hình ảnh như prompt.
 - 23:10 — PR **#26** `feat/ui-s2-s3-primitives-hierarchy` @ `93fe463e`

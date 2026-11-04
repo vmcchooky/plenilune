@@ -32,6 +32,10 @@ function QuickOutcomeRecord({ review, data, onPolicy, onSource, detailsOpen, set
       : changed ? t(witness.after.action === 'deny' ? 'quick.newDeny' : 'quick.newPermit') : verdictTitle(t, verdict);
   const violated = report?.obligations.some(o => o.status === 'VIOLATED');
   const pending = report?.obligations.some(o => o.status === 'INCONCLUSIVE');
+  // Same condition and handler as the deep result step: a budget-limited
+  // inconclusive verdict offers the default-budget retry as the primary
+  // action, and the conditions CTA drops to secondary.
+  const canRetryDefault = verdict === 'INCONCLUSIVE' && Boolean(review.comparison?.options);
   const copy = {
     aclObject: 'ACL', before: t('changes.before'), after: t('changes.after'),
     permit: actionLabel(t, 'permit'), deny: actionLabel(t, 'deny'),
@@ -45,6 +49,9 @@ function QuickOutcomeRecord({ review, data, onPolicy, onSource, detailsOpen, set
     witness={witness} cause={quickOutcomeCause(data, witness)}
     onConditions={review.parsed ? onPolicy : undefined}
     secondaryAction={{ label: t('quick.sources'), run: onSource }}
+    primaryAction={canRetryDefault
+      ? { label: t('result.primaryRetry'), run: () => { void review.compareWithDefaultBudget(); }, icon: 'replay' }
+      : undefined}
     notices={<>
       {(verdict === 'INCONCLUSIVE' || complete === false || partial) && <p className="banner banner--warn" role="status">{verdictBody(t, 'INCONCLUSIVE', data.reason)}</p>}
       {(data.truncated || changes?.classes_truncated || changes?.complete === false) && <p className="banner banner--warn">{t('quick.morePending')}</p>}

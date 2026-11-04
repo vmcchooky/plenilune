@@ -287,6 +287,33 @@ describe('P1-8 quick verdict path', () => {
     expect(screen.getByText(text('repair.manual.title'))).toBeTruthy();
   });
 
+  it('(f) offers the default-budget retry on a budget-limited inconclusive verdict', { timeout: 30000 }, async () => {
+    // Deep and quick share one rule: verdict INCONCLUSIVE while the run
+    // carried options → the retry becomes the primary action, using the
+    // existing result.primaryRetry label and compareWithDefaultBudget.
+    vi.mocked(runtime.compare).mockImplementation(async (_before, _after, _conditions, options) =>
+      artifact(options
+        ? { ...comparison, report: { ...comparison.report, verdict: 'INCONCLUSIVE', search_complete: false, reason: 'operation_limit', witnesses: [], obligations: [] } }
+        : comparison));
+    renderApp();
+    chooseSample('source.sample.budget');
+    await screen.findByText('Chưa kết luận', { selector: 'code.badge' }, { timeout: 5000 });
+    const retry = await screen.findByRole('button', { name: text('result.primaryRetry') });
+    expect(retry.className).toContain('button--primary');
+    // The conditions path stays available, as a secondary action.
+    expect(screen.getByRole('button', { name: text('quick.checkIntent') }).className).toContain('button--secondary');
+    const before = vi.mocked(runtime.compare).mock.calls.length;
+    fireEvent.click(retry);
+    await awaitVerdict();
+    // The retry ran without the option override and now compares with the
+    // default budget, exactly like the deep flow's compareWithDefaultBudget.
+    const calls = vi.mocked(runtime.compare).mock.calls.slice(before);
+    expect(calls.length).toBeGreaterThan(0);
+    expect(calls[0][3]).toBeUndefined();
+    expect(screen.queryByRole('button', { name: text('result.primaryRetry') })).toBeNull();
+    expect(screen.getByText('Khác biệt')).toBeTruthy();
+  });
+
   it('(e) reaches deep review mode via the switch and its stages still render', { timeout: 20000 }, async () => {
     renderApp();
     await awaitVerdict();

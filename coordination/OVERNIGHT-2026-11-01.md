@@ -336,6 +336,21 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2.1 bảng U1 + N2.3 đo quick
+- Bằng chứng gốc `D:\Quorix\plenilune-publish-20261031\out\u1-audit\audit-report.json` (2026-11-03T06:14:54.664Z); đo mới trên main `55c1ce0` bằng Brave/Playwright, server 8108 build từ đúng main. JSON + ảnh 390/1440: `C:\Users\vmcch\AppData\Local\Temp\plenilune-n1-lf-20261105\out\n2-audit\` (`measurements.json`, `touch-open-watch.json`, `quick-flow.json`).
+
+| Finding / dữ liệu U1 gốc | Đối chiếu trên main mới | Trạng thái |
+|---|---|---|
+| Quick overflow 0: 8 width; deep source/conditions/result/evidence overflow 0: 3 width | U4 16 tổ hợp VI/EN × 8 width 360–1920 overflow 0; review-desk 35/35, deep source/result được lấy mẫu | Giữ đạt ở trạng thái đã đo; không suy ra toàn bộ deep |
+| `heading-order` moderate tại deep-evidence 1440 | Đo axe đầy đủ quick + deep-evidence, VI/EN × 8 width 360–1920: 0 violation (32 trạng thái), kèm ảnh 390/1440 | Đã sửa trong trạng thái tái hiện; không nhận đã kiểm mọi nhánh evidence |
+| Touch: 63 phần tử hình học <44 ở mỗi width 360/390/480 trong U1, gồm các nút 40px, chat 32px, input 42px | Coarse pointer, quick + evidence VI/EN × 8 width: không có nút hiện hữu <44 tại trạng thái mặc định; bản đo hình học ban đầu đếm nhầm 4 input nằm trong details đóng. Mở watch + form: 1 input tên cao 42px, 3 checkbox 16×24px trên mọi width/locale; các checkbox có label gắn, chưa đo diện tích nhấn label. `web/DESIGN.md` ghi checkbox 24px là ngoại lệ chủ ý; keyboard script đo 2 disclosure cao 44px. Chưa đo đầy đủ chat/deep đã mở. | CÒN MỞ: đánh giá mục tiêu thực tế của input/label và chat/deep; không nhận 44px toàn UI |
+| P0-2 inbox: panel/form 390=294×767/262×313, 768=736×471/704×120, 1440=928×419/896×68, entries=0 | U3 mock 8 width overflow 0, inbox axe 0; cream QA mô tả form inset 16px/gap 16px, empty-state padding 24px; chưa đo lại cùng bộ kích thước/entries=0 | Cần đo lại hình học để đóng so sánh P0-2 |
+| P0-1 long-line editor: không có `p0_1_editor` trong JSON gốc; `screenInventories` rỗng | Script U1 cũ FAIL strict selector như báo trước khi tới deep; không có số gốc để chứng minh cải thiện | Chưa kết luận; cần phép đo riêng |
+| Chat: U1 liệt kê nút 32px trong danh sách hình học | Bản đo hiện tại chưa mở chat và chưa đo target hữu hiệu | Cần đo riêng, không nhận đã sửa |
+
+- Quick mặc định với dữ liệu synthetic tải sẵn: verdict xuất hiện không cần click (VI `Có truy cập mới bị chặn`, EN `Some access is newly blocked`), tại cả 390/1440; số từ hiển thị trong main: VI 120, EN 88 (đếm split whitespace, không so sánh trực tiếp giữa ngôn ngữ). Với mẫu `Ngân sách tìm kiếm hạn chế` / `Limited search budget`: 3 click tại cả 390/1440 và VI/EN (mở cấu hình → mở selector → chọn mẫu), kết quả `Chưa kết luận` / `Inconclusive`; chuyển VI→EN thêm 1 click. Đây là đo mẫu có sẵn, không đại diện nhập/upload cấu hình thực.
+- Đề xuất để Chí Nhân duyệt, chưa sửa UI: cân nhắc đưa nút chọn mẫu vào vùng quick đang thu gọn để giảm hành trình mẫu từ 3 xuống dự kiến 2 click; không đổi engine/flow, cần đo lại sau thiết kế. Mẫu mặc định đã 0 click nên không tuyên bố rút ngắn nó.
+
 ### 2026-11-05 — N2 QA nền và lỗi script U1
 - Main `55c1ce02e513770dd9a4da14311f7d058ac22dae`: `npm test` PASS, Test Files 24 passed (24), Tests 192 passed (192); `npm run build` PASS, cảnh báo chunk >500 kB. `review-desk-browser.mjs` 35 checks passed; `u4-browser.mjs after` 16/16 tổ hợp VI/EN × 360/390/480/768/1024/1280/1440/1920 overflow 0, axe 0; `u3-browser.mjs after` 8/8 width overflow 0, inbox axe 0; `u4-evidence.mjs` evidence enabled: true, evidence axe: []; `u4-keyboard.mjs` nested: 0 axe: [], hai disclosure cao 44px. Tất cả exit=0.
 - Cổng 8098 đã có tiến trình `D:\Quorix\ui-polish-20261104\bin\plenilune-demo.exe` từ checkout cũ, không dừng tiến trình đó. Để đo đúng main mới, dùng bản SAO TẠM của từng script 8098, chỉ thay `127.0.0.1:8098` thành `127.0.0.1:8108` trỏ Go server build từ `55c1ce0`; `u3-browser.mjs` chạy nguyên bản trên Vite 5173 với API inbox mock. Vì URL cố định, đây không phải xác nhận nguyên bản script 8098 đã chạy trên main mới.

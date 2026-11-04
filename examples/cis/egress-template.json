@@ -1,0 +1,21 @@
+{
+  "schema": "plenilune.obligations/v1",
+  "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+  "obligations": [
+    {
+      "id": "OB-1",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "0.0.0.0/0",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [
+          "198.51.100.0/24"
+        ],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    }
+  ]
+}

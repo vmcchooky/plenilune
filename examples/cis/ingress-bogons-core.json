@@ -1,0 +1,84 @@
+{
+  "schema": "plenilune.obligations/v1",
+  "scope": "ipv4-unfragmented-or-initial-with-complete-l4/v1",
+  "obligations": [
+    {
+      "id": "OB-1",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "0.0.0.0/8",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-2",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "10.0.0.0/8",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-3",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "127.0.0.0/8",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-4",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "169.254.0.0/16",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-5",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "172.16.0.0/12",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    },
+    {
+      "id": "OB-6",
+      "kind": "must_deny",
+      "match": {
+        "protocol": "ip",
+        "src_cidr": "192.168.0.0/16",
+        "dst_cidr": "0.0.0.0/0",
+        "exclude_src": [],
+        "exclude_dst": [],
+        "src_ports": [],
+        "dst_ports": []
+      }
+    }
+  ]
+}

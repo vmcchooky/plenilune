@@ -2,14 +2,15 @@
 
 Status: **owner-approved public snapshot** (31 October 2026). The owner
 approved creating the public repository `vmcchooky/plenilune` and pushing this
-snapshot under GPL-3.0-only. This catalog defines the snapshot; publication is
+snapshot under GPL-3.0-only; the license changed to Apache-2.0 on 4 November 2026 by owner decision. This catalog defines the snapshot; publication is
 performed from a separate publish checkout created from it.
 
 ## Publication gate
 
-1. **License:** GPL-3.0-only selected; [LICENSE](../LICENSE) contains the
-   verbatim GPLv3 text and [NOTICE](../NOTICE) records the project copyright and
-   license boundary. Done 31 October 2026.
+1. **License:** Apache-2.0 (owner decision 4 November 2026, changed from
+   GPL-3.0-only selected 31 October 2026); [LICENSE](../LICENSE) contains the
+   verbatim Apache License 2.0 text and [NOTICE](../NOTICE) records the
+   project copyright and license boundary.
 2. **Security contact:** `chooky@quorix.io.vn` is assigned in
    [SECURITY.md](../SECURITY.md). Done 31 October 2026.
 3. **Owner review:** the owner authorized the public repository and push on
@@ -37,8 +38,8 @@ publication step.
 | Path | Notes |
 |---|---|
 | `README.md`, `README.vi.md` | Public entry points; license and security contact are explicit |
-| `LICENSE` | Verbatim GNU GPLv3 text; project copyright is recorded separately in `NOTICE` |
-| `NOTICE` | Project copyright, GPL-3.0-only boundary and trademark/service disclaimers |
+| `LICENSE` | Verbatim Apache License 2.0 text; project copyright is recorded separately in `NOTICE` |
+| `NOTICE` | Project copyright, Apache-2.0 boundary and trademark/service disclaimers |
 | `SECURITY.md` | Local security model and private reporting contact |
 | `THIRD_PARTY_NOTICES.md` | Dependency inventory, runtime/development split and Meta service boundary |
 | `third_party/licenses/**` | Verbatim license texts for distributed runtime components (React family, Go) |

@@ -6,7 +6,7 @@ governs its component; the lockfile is the authority for exact npm versions.
 
 ## License boundary
 
-Plenilune's own source is GPL-3.0-only; see [LICENSE](LICENSE) and
+Plenilune's own source is Apache-2.0; see [LICENSE](LICENSE) and
 [NOTICE](NOTICE). Third-party components retain their own copyrights and
 licenses. Nothing in Plenilune's license or this inventory relicenses a
 third-party component. Meta's model and API are a separate service, not code
@@ -46,7 +46,7 @@ binary and is distributed under the Go project's BSD-3-Clause license
 (copyright The Go Authors). A verbatim copy from Go 1.26.7 is at
 `third_party/licenses/go/LICENSE`. This repository does not vendor Go source.
 If you distribute a compiled binary, include that license text and the complete
-corresponding Plenilune source under GPL-3.0-only.
+corresponding Plenilune source under Apache-2.0.
 
 ## Build and test tools (not distributed)
 
@@ -100,7 +100,7 @@ Plenilune contains an optional HTTP adapter for the Meta Model API. It does not
 include, distribute, sublicense or relicense any Meta model, weights, API, SDK,
 service or output. `muse-spark-1.3-contributor` is a fixed service model
 identifier, not a license grant. The adapter code is Plenilune source under
-GPL-3.0-only; Meta's service remains under Meta's terms.
+Apache-2.0; Meta's service remains under Meta's terms.
 
 As reviewed on 31 October 2026:
 

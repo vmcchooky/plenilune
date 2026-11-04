@@ -2,33 +2,36 @@
 
 Copyright (C) 2026 Võ Mạnh Cường (Chooky), GitHub `vmcchooky`.
 Project: Plenilune. Quorix Việt Nam is the project's brand/trade name.
-Plenilune is published under the GNU General Public License, version 3 only
-(GPL-3.0-only).
+Plenilune is published under the Apache License, Version 2.0
+(Apache-2.0).
 
-SPDX-License-Identifier: GPL-3.0-only
+SPDX-License-Identifier: Apache-2.0
 
-The complete GPLv3 text is in LICENSE. It was copied verbatim from
-https://www.gnu.org/licenses/gpl-3.0.txt (35149 bytes; SHA-256
-3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986).
-The Free Software Foundation copyright notice inside that text is unchanged.
+The complete Apache License 2.0 text is in LICENSE. It was copied verbatim
+from https://www.apache.org/licenses/LICENSE-2.0.txt (11358 bytes; SHA-256
+cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30).
 
-This notice adds no restrictions to the GPL. In particular, the GPL permits
-commercial use and does not prohibit competition. If you distribute Plenilune
-or a modified version, GPL-3.0 requires you to comply with its terms, including
-providing the corresponding source under GPL-3.0-only and preserving copyright,
-license and attribution notices. "Only" means no "or later" option is granted.
-For a binary distribution, the complete corresponding source must be made
-available under GPL-3.0-only.
+Until 4 November 2026 the project was published under GPL-3.0-only; copies
+obtained under the GPL keep those terms. The license change was made by the
+project owner, the sole copyright holder.
 
-The GPL applies to Plenilune's own source code. Third-party components keep
-their own copyrights and licenses; see THIRD_PARTY_NOTICES.md and
+This notice adds no restrictions to the License. In particular, the License
+permits commercial use and does not prohibit competition. If you distribute
+Plenilune or a modified version, the License requires you to give recipients
+a copy of the License, mark changed files, and preserve copyright, patent,
+trademark and attribution notices, including the attribution notices in
+this NOTICE file.
+
+The License applies to Plenilune's own source code. Third-party components
+keep their own copyrights and licenses; see THIRD_PARTY_NOTICES.md and
 third_party/licenses/. Nothing in this notice relicenses a third-party
-component. Meta's model and API are a service governed by Meta's terms, not
-part of Plenilune's GPL-licensed code.
+component. Meta's model and API are services governed by Meta's terms; they
+are not distributed with Plenilune and are not licensed under Plenilune's
+License.
 
 Third-party names and marks (including Meta, Muse, Cisco and IOS) belong to
 their owners and are used only for identification. Plenilune is independent and
 is not affiliated with or endorsed by Meta Platforms, Inc., Cisco Systems, Inc.,
-or the MoonStorm project. The GPL grants no trademark rights.
+or the MoonStorm project. The License grants no trademark rights.
 
 This is a project notice, not legal advice.

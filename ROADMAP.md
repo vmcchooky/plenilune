@@ -43,4 +43,4 @@ Không thêm service/database/queue/framework/plugin system nếu chưa có nhu 
 Chỉ `muse-spark-1.3-contributor`; không đổi model để che thiết kế hoặc qualification lỗi.
 Nếu provider chưa đạt vẫn có demo offline/manual đầy đủ, gắn nhãn trung thực.
 Không tự push/publish/deploy, apply thiết bị hay triển khai MoonStorm; license đã
-chốt GPL-3.0-only và mọi thay đổi license cần chủ dự án quyết định.
+là Apache-2.0 (chủ dự án quyết chuyển từ GPL-3.0-only ngày 04/11/2026) và mọi thay đổi license cần chủ dự án quyết định.

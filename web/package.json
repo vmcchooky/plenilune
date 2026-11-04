@@ -2,7 +2,7 @@
   "name": "plenilune-demo",
   "private": true,
   "version": "0.1.0",
-  "license": "GPL-3.0-only",
+  "license": "Apache-2.0",
   "author": "Võ Mạnh Cường (Chooky) — Quorix Việt Nam",
   "repository": "vmcchooky/plenilune",
   "type": "module",

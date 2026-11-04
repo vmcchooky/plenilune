@@ -94,8 +94,8 @@ Tham chiếu wire: [Responses](https://dev.meta.ai/docs/protocols/responses),
 ## Ranh giới license với Meta
 
 Mã adapter HTTP, tool loop và orchestration trong repo này thuộc
-GPL-3.0-only của Plenilune. Model và API của Meta là dịch vụ của Meta, không
-được phân phối kèm repo và không được cấp phép lại theo GPL của Plenilune. Khi
+Apache-2.0 của Plenilune. Model và API của Meta là dịch vụ của Meta, không
+được phân phối kèm repo và không được cấp phép theo license của Plenilune. Khi
 bật AI, người dùng phải tuân thủ Meta Model API Terms và Acceptable Use Policy
 hiện hành; xem [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md). Tên và mark của
 Meta chỉ dùng để định danh, không ngụ ý Meta bảo trợ hoặc liên kết với dự án.

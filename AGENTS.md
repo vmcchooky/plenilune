@@ -17,7 +17,7 @@ this workspace's implementation scope.
   semantics/evidence independently. Do not weaken assertions to pass.
 - Check gofmt, go vet ./..., go test ./..., go test -race ./..., go build ./....
 - No hosted workflow, publication or device access is needed for local
-  development; the license is recorded in LICENSE (GPL-3.0-only). Do not copy proprietary MoonStorm source.
+  development; the license is recorded in LICENSE (Apache-2.0). Do not copy proprietary MoonStorm source.
 
 ## Development plan (docs/plan/)
 

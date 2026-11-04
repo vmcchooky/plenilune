@@ -77,7 +77,7 @@ MoonStorm tương lai gọi subprocess JSON theo version đã pin; MoonStorm gi�
 Không copy/import code MoonStorm, không thêm coupling SQLite/custody/SSH vào core.
 Lỗi có code/stage/source line khi biết; không in secrets hoặc cả config vào log.
 Unsupported, input limit, ambiguity và budget không được biến thành kết luận an toàn.
-Server demo chỉ listen localhost. Repo chưa push; license đã chốt GPL-3.0-only;
+Server demo chỉ listen localhost. Repo chưa push; license Apache-2.0 (chủ dự án chuyển từ GPL-3.0-only ngày 04/11/2026);
 lượt này không gọi live Meta.
 
 ## Runtime update — 31/10/2026

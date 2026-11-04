@@ -236,6 +236,10 @@ mở phiên, chưa có Mục B mới); main `119e91d` (chưa đổi); PR mở: #
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N0 manifest chờ duyệt
+- PR #71 https://github.com/vmcchooky/plenilune/pull/71, base main `3400e7d3471a93cb47c1ec029e7d48e90c82e9b0`, head `4d4eb89b3326a1f76087a8128114b4f1466c23a7`; chỉ thay `docs/public-manifest.sha256`.
+- Checkout sạch `core.autocrlf=false`, chạy `scripts/public-snapshot.ps1`: `Manifest entries: 472 (manifest file itself is not listed)`. Chờ MANIFEST-MERGE OK.
+
 ### 2026-11-05 — N0 PR #69 MERGED
 - Kiểm đầu ca: main `119e91d9be88af256c3ec8ae96d1a2c6c355fdea`; PR #69 head `5ae054ee0c1cf86f8b37e791c789d04f797812c6`, PR #70 head `412974f1b634c678141e4f9e95fb5bd6f67b1a44` đều OPEN.
 - Cổng Windows trên #69 head `5ae054ee0c1cf86f8b37e791c789d04f797812c6`: `gofmt -l` 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go build ./...` PASS exit=0. Web chỉ metadata license, không thay đổi logic web.

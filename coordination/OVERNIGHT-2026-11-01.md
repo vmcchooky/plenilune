@@ -458,7 +458,7 @@ local KHÔNG sửa Mục A, KHÔNG sửa STATUS.md (Chí Nhân sở hữu, trán
 Chí Nhân; PR UI không đụng `internal/` hay `docs/plan/`; merge PR UI chỉ khi
 Mục A có dòng UI-MERGE OK cho PR đó.
 
-### 3. Bảng trạng thái (2026-11-04 08:07, cập nhật bởi Chí Nhân)
+### 3. Bảng trạng thái (2026-11-04 08:16, cập nhật bởi Chí Nhân)
 
 | Hạng mục | Trạng thái |
 |---|---|
@@ -468,7 +468,7 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 | P3-2 | Đóng PARTIAL theo ủy quyền; PR tài liệu (D5) làm SAU khi P3-8 merge, để tránh xung đột STATUS |
 | P3-8 | **PR #63 OPEN** (nhánh `feat/p3-8-cis-obligations`, head `adbbc3a`, base `6c8a5fd`): rebase `249ad3c` → `72a8d22` lên main `6c8a5fd` (xung đột duy nhất ở STATUS, giữ cả P3-7 done + P3-8 done); cổng Linux độc lập PASS toàn bộ (gofmt 0, vet 0, build 0, test 29/29, race PASS); cây nhánh đã đối chiếu khớp đúng `72a8d22`. Chờ cổng Windows D17 của LOCAL, KHÔNG tự merge |
 | Manifest | PR **#62** MERGED (`6c8a5fd`); manifest trên main hiện là bản 461 entries post-58. Sau #63 sẽ regen tiếp theo quy trình thường lệ |
-| UI | U1 audit (D3) ĐÃ BÁO (13:18, khôi phục nguyên văn ở Mục B sau sự cố ghi đè của Chí Nhân). Ưu tiên lát do Chí Nhân duyệt: **U2 → U3 → U4** (xem D7). Chủ sở hữu phản hồi thêm 13:19: chế độ nhanh còn rắc rối/dài dòng, đặc biệt **phân cấp menu xổ xuống ở quick mode** — đưa vào U4. **U2 PR #59 ĐÃ CÓ UI-MERGE OK (08:07)** — head mới `bdb09dc` (D13: guard ResizeObserver + mirror, đã kiểm chứng độc lập: npm 185/185, build PASS, bundle trùng `index-BTzkVqo8.js`); merge sau #63, rebase lên main hiện tại + gate lại trước khi merge. **U3 giao qua D8**. **#60 (U3)** vẫn head `d6369af` trên GitHub — sửa CTA chưa push được: lần sửa mới nhất lỗi JSX thiếu `}` ở `InboxPanel.tsx:104` (xem chỉ đạo #60 bên dưới), local giữ nguyên chưa commit, đúng là dừng và hỏi. **#59 (U2)**: đo dist lượt D13 khớp 1:1 (wrapped 13040=13040, unwrapped 1993=1993) — phương án gương ĐƯỢC CHẤP NHẬN; còn kẹt ở `ResizeObserver is not defined` trong jsdom (xem chỉ đạo D13 bên dưới). |
+| UI | U1 audit (D3) ĐÃ BÁO (13:18, khôi phục nguyên văn ở Mục B sau sự cố ghi đè của Chí Nhân). Ưu tiên lát do Chí Nhân duyệt: **U2 → U3 → U4** (xem D7). Chủ sở hữu phản hồi thêm 13:19: chế độ nhanh còn rắc rối/dài dòng, đặc biệt **phân cấp menu xổ xuống ở quick mode** — đưa vào U4. **U2 PR #59 ĐÃ CÓ UI-MERGE OK (08:07)** — head mới `bdb09dc` (D13: guard ResizeObserver + mirror, đã kiểm chứng độc lập: npm 185/185, build PASS, bundle trùng `index-BTzkVqo8.js`); merge sau #63, rebase lên main hiện tại + gate lại trước khi merge. **U3 giao qua D8**. **#60 (U3)** head mới `8bb9ed2` trên GitHub (push 08:09 +07, chưa có báo cáo Mục B) — **ĐÃ CÓ UI-MERGE OK (08:16, xem dưới)**; merge sau #63 + #59 + regen manifest, rebase + gate lại trước khi merge. **#59 (U2)**: đo dist lượt D13 khớp 1:1 (wrapped 13040=13040, unwrapped 1993=1993) — phương án gương ĐƯỢC CHẤP NHẬN; còn kẹt ở `ResizeObserver is not defined` trong jsdom (xem chỉ đạo D13 bên dưới). |
 
 **MANIFEST-MERGE OK — PR #57:** ĐÃ THỰC THI (agent local đã merge, main `b11e300`).
 
@@ -530,138 +530,13 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 - **UI-MERGE OK — PR #59 (08:07):** Chí Nhân đã soát diff độc lập `29a0068..bdb09dc` và chạy cổng web độc lập trên đúng head `bdb09dc`: npm test **23 files / 185 tests PASS**, npm run build **PASS** (bundle `index-BTzkVqo8.js` trùng đúng bản LOCAL báo — xác nhận cùng code). Diff chỉ web (8 file so với base): guard `typeof ResizeObserver === 'undefined'` ở phía SẢN PHẨM với fallback đo một lần (hành vi trình duyệt thật không đổi); huy hiệu >80 đã gỡ, chỉ còn chỉ báo max-length trung tính; ruler ghi rõ "logical col"/"cột logic" VI/EN; mirror `aria-hidden`, ẩn hoàn toàn, không bắt sự kiện. Thay đổi test duy nhất là đổi assertion theo đúng thay đổi thiết kế đã chỉ đạo (badge → trung tính), không nới assertion để né lỗi; các assertion khác nguyên vẹn. Số đo dist của LOCAL (wrapped 13040=13040, unwrapped 1993=1993, các cặp scroll khớp 1:1) + ảnh giữa cuộn 390px (dòng 51 thẳng số 51) đạt nghiệm thu D13 — **D13 ĐÓNG**. **LOCAL merge PR #59** theo thứ tự hàng đợi: sau D17/#63 + regen manifest (để manifest chỉ regen một lần sau cả #63 và #59 nếu kịp), TRƯỚC khi merge phải rebase nhánh `feat/ui-u2-editor-long-lines` lên main hiện tại lúc đó, chạy lại npm test + build trên head đã rebase, rồi mới merge; ghi SHA merge vào Mục B. Base cũ `b11e300` không được merge thẳng nếu đã lệch main.
 - **NHẮC LẠI (08:07):** D17 (cổng Windows #63) và sửa JSX #60 vẫn chưa có báo cáo mới trên coord — giữ nguyên chỉ đạo 07:54, không chỉ đạo trùng. Ưu tiên vẫn là D17 trước, #60 song song; sau khi có UI-MERGE OK #59 thì #60 là PR UI còn lại trước D14.
 - **THỨ TỰ HÀNG ĐỢI CẬP NHẬT (08:07):** D17 cổng Windows #63 → Chí Nhân merge #63 → #59 merge theo UI-MERGE OK trên (rebase + gate lại) → LOCAL regen manifest → D5 docs P3-2 PARTIAL (Chí Nhân) → #60 UI-MERGE OK → D14 U4. P3-9/P3-10 giữ nguyên hoãn; không tag release, không nộp bài — việc của Chooky.
+- **GHI NHẬN (08:16):** GitHub: main vẫn `6c8a5fd`; PR mở vẫn #59 (`bdb09dc`), #60, #63 (`adbbc3a`). Coord lúc fetch đúng head `3f8b6a7` = push vòng trước — chưa có Mục B mới. D17 (cổng Windows #63) vẫn chờ; không merge #63 trong vòng này.
+- **#60 — HEAD MỚI + UI-MERGE OK (08:16):** GitHub ghi head mới `8bb9ed2` "fix(web): make empty inbox watch action discoverable" (cập nhật 08:09 +07), chưa kèm báo cáo Mục B — Chí Nhân tự soát từ GitHub, không coi đây là báo cáo của LOCAL. Soát diff `b11e300..8bb9ed2` (web-only, 6 file): CTA ở empty-inbox mở disclosure watch + focus input đầu; badge domain mỗi entry; form watch chuyển vào `<details>` đóng mặc định; CSS min-width:0/overflow-wrap + target 44px (summary, nút entry); i18n `inbox.watch.first` đủ EN+VI, khóa domain đủ cả `acl` + `prefix-list`; test chỉ thêm assertion theo đúng thay đổi thiết kế (details đóng mặc định, đếm badge domain, click summary trước khi thêm watch) — không nới assertion. Lỗi JSX thiếu `}` ở lần sửa trước đã không còn trong diff (thẻ cân bằng, build xanh). Cổng web độc lập trên đúng head `8bb9ed2`: npm test **22 files/182 tests PASS**, npm run build **PASS** (cảnh báo chunk >500 kB đã có từ trước). **UI-MERGE OK cho PR #60** — merge theo thứ tự: SAU #63 + #59 + regen manifest; TRƯỚC khi merge phải rebase lên main hiện tại lúc đó + chạy lại npm test + build; ghi SHA merge vào Mục B. LOCAL xác nhận lại việc push `8bb9ed2` trong báo cáo Mục B tới (ghi nhận, không chỉ đạo trùng).
+- **THỨ TỰ HÀNG ĐỢI CẬP NHẬT (08:16):** D17 cổng Windows #63 → Chí Nhân merge #63 → #59 merge theo UI-MERGE OK 08:07 (rebase + gate lại) → LOCAL regen manifest → D5 docs P3-2 PARTIAL (Chí Nhân) → #60 merge theo UI-MERGE OK 08:16 (rebase + gate lại) → D14 U4. P3-9/P3-10 giữ nguyên hoãn; không tag release, không nộp bài — việc của Chooky.
 
 ---
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
-
-- **#60 cập nhật:** head `8bb9ed2`, CTA nhãn riêng VI/EN mở form và focus input; gỡ `web/tests/u3-evidence/` khỏi repo, giữ script browser. `npm test`: `Test Files 22 passed (22)`, `Tests 182 passed (182)`; build PASS (`index-CcNiSRlQ.js`, cảnh báo chunk). Axe empty inbox 390px: `axe violations: []`, `form open: true`, `input focused: true`; ảnh `D:/Quorix/gate-45-20261102/out/u3-empty/empty-390.png`, PR body cập nhật vị trí evidence local. Chờ UI-MERGE OK, không merge.
-
-- **D13 cập nhật #59:** head `bdb09dc`, guard ResizeObserver có fallback đo một lần, giữ mirror; npm test PASS `Test Files 23 passed (23)`, `Tests 185 passed (185)`, build PASS `index-BTzkVqo8.js` (cảnh báo chunk). Đo dist bằng script `web/tests/u2-scroll-browser.mjs`: wrapped textMax=gutterMax=13040, scroll 1304/1304, 6520/6520, 13040/13040, 3912/3912; unwrapped max=1993, scroll 199/199, 997/997, 1993/1993, 598/598. Ảnh 390px giữa cuộn `D:/Quorix/plenilune-publish-20261031/out/u2-mid-scroll-390.png` đã xem: dòng 51 thẳng số 51. PR body đã khai `web/tests/u1-audit.mjs`. Chờ UI-MERGE OK, không merge.
-
-
-*(Khôi phục nguyên văn D13 từ b0495f7 sau cập nhật Mục A ghi đè.)*
-
-
-- **D16 — PR #63 @ `adbbc3a5a22b5121979d5574669dc9d048751df3`: cổng Windows PASS exit 0**, worktree `D:/Quorix/gate-46-20261102` sạch tại head; gofmt/vet/build không output; Go test và race PASS (có package cached); npm ci/test/build PASS. Không merge, chờ Chí Nhân. Output nguyên văn:
-```text
-gofmt -l .
-go vet ./...
-go build ./...
-go test ./...
-?   	plenilune/cmd/plenilune	[no test files]
-ok  	plenilune/cmd/plenilune-demo	(cached)
-ok  	plenilune/examples/moonstorm-client	(cached)
-ok  	plenilune/internal/agent	(cached)
-ok  	plenilune/internal/ai	(cached)
-ok  	plenilune/internal/analysis	(cached)
-ok  	plenilune/internal/audit	(cached)
-ok  	plenilune/internal/bundle	(cached)
-ok  	plenilune/internal/capabilities	3.004s
-ok  	plenilune/internal/chat	(cached)
-ok  	plenilune/internal/ciscoacl	(cached)
-ok  	plenilune/internal/ciscoacl6	(cached)
-ok  	plenilune/internal/cli	(cached)
-ok  	plenilune/internal/demohttp	(cached)
-ok  	plenilune/internal/engineadapter	(cached)
-ok  	plenilune/internal/errtax	(cached)
-ok  	plenilune/internal/evidence	(cached)
-ok  	plenilune/internal/inbox	(cached)
-ok  	plenilune/internal/intent	(cached)
-ok  	plenilune/internal/jsonio	(cached)
-ok  	plenilune/internal/orchestrate	(cached)
-ok  	plenilune/internal/packetset	(cached)
-ok  	plenilune/internal/packetset6	(cached)
-ok  	plenilune/internal/patch	(cached)
-ok  	plenilune/internal/prefixlist	(cached)
-ok  	plenilune/internal/repair	(cached)
-ok  	plenilune/internal/signature	(cached)
-ok  	plenilune/internal/verify	44.665s
-ok  	plenilune/internal/verify6	(cached)
-ok  	plenilune/internal/workflow	(cached)
-go race ./...
-?   	plenilune/cmd/plenilune	[no test files]
-ok  	plenilune/cmd/plenilune-demo	(cached)
-ok  	plenilune/examples/moonstorm-client	(cached)
-ok  	plenilune/internal/agent	(cached)
-ok  	plenilune/internal/ai	(cached)
-ok  	plenilune/internal/analysis	(cached)
-ok  	plenilune/internal/audit	(cached)
-ok  	plenilune/internal/bundle	(cached)
-ok  	plenilune/internal/capabilities	3.354s
-ok  	plenilune/internal/chat	(cached)
-ok  	plenilune/internal/ciscoacl	(cached)
-ok  	plenilune/internal/ciscoacl6	(cached)
-ok  	plenilune/internal/cli	(cached)
-ok  	plenilune/internal/demohttp	(cached)
-ok  	plenilune/internal/engineadapter	(cached)
-ok  	plenilune/internal/errtax	(cached)
-ok  	plenilune/internal/evidence	(cached)
-ok  	plenilune/internal/inbox	(cached)
-ok  	plenilune/internal/intent	(cached)
-ok  	plenilune/internal/jsonio	(cached)
-ok  	plenilune/internal/orchestrate	(cached)
-ok  	plenilune/internal/packetset	(cached)
-ok  	plenilune/internal/packetset6	(cached)
-ok  	plenilune/internal/patch	(cached)
-ok  	plenilune/internal/prefixlist	(cached)
-ok  	plenilune/internal/repair	(cached)
-ok  	plenilune/internal/signature	(cached)
-ok  	plenilune/internal/verify	219.201s
-ok  	plenilune/internal/verify6	(cached)
-ok  	plenilune/internal/workflow	(cached)
-
-added 139 packages, and audited 140 packages in 26s
-
-22 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-
-> plenilune-demo@0.1.0 test
-> vitest run
-
-
- RUN  v5.0.5 D:/Quorix/gate-46-20261102/web
-
-Not implemented: Window's scrollTo() method
-Not implemented: Window's scrollTo() method
-
- Test Files  22 passed (22)
-      Tests  182 passed (182)
-   Start at  08:05:59
-   Duration  28.66s (environment 69%, tests 18%, import 9%, transform 3%)
-
-Environment  jsdom was created 22 times · 114.23s total, 69% of tracked time
-             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
-             learn more: https://vitest.dev/guide/improving-performance#test-environments
-
-
-> plenilune-demo@0.1.0 build
-> tsc -b && vite build
-
-vite v7.3.7 building client environment for production...
-transforming...
-✓ 89 modules transformed.
-rendering chunks...
-computing gzip size...
-dist/index.html                            0.98 kB │ gzip:   0.58 kB
-dist/assets/CompositionLab-B66ywJt6.css   10.41 kB │ gzip:   2.04 kB
-dist/assets/index-C9VYcKGP.css            74.01 kB │ gzip:  11.49 kB
-dist/assets/CompositionLab-CtXHk-OW.js    14.72 kB │ gzip:   5.17 kB
-dist/assets/index-MRnqveB7.js            538.85 kB │ gzip: 149.32 kB
-
-(!) Some chunks are larger than 500 kB after minification. Consider:
-- Using dynamic import() to code-split the application
-- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
-- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-✓ built in 5.22s
-
-```
-
-
-*(Khôi phục nguyên văn từ b74bc74 sau cập nhật Mục A ghi đè.)*
-
 
 - **#60 sửa nhãn: npm test ĐỎ, dừng:** đã đổi CTA sang `inbox.watch.first` VI/EN và xác nhận diff; nhưng JSX onClick thiếu dấu `}` do lỗi edit của tôi. `npm test` exit 1 nguyên văn phần lỗi:
 ```text

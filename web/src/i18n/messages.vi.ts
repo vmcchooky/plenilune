@@ -77,6 +77,7 @@ const vi = {
   'inbox.artifact': 'Artifact {digest}',
   'inbox.watch.title': 'Đối tượng đang theo dõi',
   'inbox.watch.help': 'Ghim đối tượng theo tên; kích hoạt được xét trên kết quả gần nhất đã ghi của nó.',
+  'inbox.watch.first': 'Theo dõi đối tượng đầu tiên',
   'inbox.watch.formLegend': 'Thêm đối tượng theo dõi',
   'inbox.watch.name': 'Tên đối tượng (ví dụ tên ACL)',
   'inbox.watch.domain.acl': 'ACL',

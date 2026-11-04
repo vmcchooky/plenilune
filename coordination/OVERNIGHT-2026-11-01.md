@@ -558,6 +558,10 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **#60 đã merge theo UI-MERGE OK:** rebase lên main `5264d51`, head `cbaec7c9d8fe80e9b286f0ebbd13a041dd70733a`, diff check sạch; `npm test`: `Test Files 23 passed (23)`, `Tests 185 passed (185)`, `Duration 33.74s`; `npm run build` PASS `index-D5pitK52.js`, cảnh báo chunk; merge commit `78ae3d33a653fcb123ff786f14a1e0132b423777`.
+- **Manifest sau D5 + #60:** script `public-snapshot.ps1` từ `78ae3d3`, `core.autocrlf=false`, `Manifest entries: 468 (manifest file itself is not listed)`; `Secret scan clean: 437 scanned files; no blocking patterns.` PR #66 https://github.com/vmcchooky/plenilune/pull/66 head `87557db`, chỉ manifest; chờ MANIFEST-MERGE OK, không merge.
+
+
 - **#60 chuẩn bị trong lúc chờ D5:** rebase local lên `44e0b49`, head local `de2ae0808143d0d6fb2359d033c32d4bf5153e5e`; xung đột CSS do commit CRLF cũ đã giải quyết giữ CSS U2 của main và bổ sung quy tắc U3, `git diff --check` sạch, diff 6 file web. `npm test`: `Test Files 23 passed (23)`, `Tests 185 passed (185)`, `Duration 30.07s`; build PASS `index-D5pitK52.js` (cảnh báo chunk). Chưa push hoặc merge; sau D5 sẽ rebase lên main lúc đó và gate theo chỉ đạo.
 
 

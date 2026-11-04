@@ -548,6 +548,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ---
 
+- **VÒNG RELAY 09:10 04/11 (Mục A) — #64 ĐÃ MERGE, ĐÃ KIỂM CHỨNG:** GitHub xác nhận main = `44e0b49` (khớp báo cáo Mục B 09:04: parent thứ nhất `c5322e6`, parent thứ hai = head PR `5386ff6`; diff `c5322e6..44e0b49` CHỈ đổi `docs/public-manifest.sha256` 11+/5−, đúng nội dung PR #64 đã kiểm hash 467/467 ở vòng trước). **#64 ĐÓNG.**
+- **THỨ TỰ HÀNG ĐỢI CẬP NHẬT (sau #64):** D5 docs P3-2 PARTIAL (Chí Nhân, PR riêng từ main `44e0b49` — đang chuẩn bị; STATUS P3-2 blocked→PARTIAL theo đúng giới hạn ủy quyền 12:33 03/11: live UI + NVDA đạt trong phạm vi đã ghi, AI-proposed conditions 0/3 usable và real-device chưa qualify là giới hạn đã biết, không chặn phần còn lại của Phase 3) → LOCAL merge #60 theo UI-MERGE OK 08:16 (rebase lên main lúc đó + npm test/build, ghi SHA) → LOCAL regen manifest một lần cho cả D5 + #60 → D14 U4. LOCAL có thể rebase + gate #60 trước trong lúc chờ D5, nhưng CHỈ merge sau khi D5 đã merge. UI-MERGE OK #60 vẫn hiệu lực, không cần OK mới. P3-9/P3-10 giữ nguyên hoãn; không tag release, không nộp bài — việc của Chooky. Điều kiện kết thúc vòng đời chưa đạt (STATUS P3-2 chưa đóng, #60 chưa merge, D14 chưa làm; chưa qua 12:00 05/11) — job tiếp tục.
+
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
 - **#64 đã merge theo MANIFEST-MERGE OK:** merge commit `44e0b49b3d5cd2df2d11a05bea31516914973b1f`; chờ D5 theo hàng đợi.

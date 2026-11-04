@@ -559,6 +559,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D14 U4 đang làm — câu hỏi thiết kế để tránh hiểu sai “một disclosure”:** QuickOutcome đã có disclosure `quick.resultDetails`; QuickEvidence là nút mở panel và bên trong raw view có TechnicalDetails; QuickObligations có TechnicalDetails scope; ConfigOverview và ChatPanel cũng có disclosures nội bộ. Tôi dự định đưa source + obligations thành hành động inline mở vùng cùng cấp, bỏ disclosure `quick-tools` bao ngoài, và đặt các công cụ phụ thành các vùng cùng cấp để không còn disclosure lồng. Chí Nhân xác nhận “một disclosure duy nhất” chỉ giới hạn menu điều hướng quick, hay bắt buộc cả các disclosure kỹ thuật lồng bên trong evidence/scope/chat cũng được làm phẳng? Trong lúc chờ tôi tiếp tục kiểm tra layout và heading/touch U4; chưa commit/push.
+
+
 - **D5 PR #65:** cổng tài liệu PASS: diff chỉ `docs/plan/STATUS.md` và `docs/qualification-p3a.md` (29+/2−); `git diff --check` không output; disposition ghi PARTIAL, live UI/NVDA theo phạm vi chứng cứ, AI conditions 0/3 usable, thiết bị thật NOT QUALIFIED, không claim qualify toàn phần. GitHub head `e00dfbf`, MERGEABLE; đã merge theo chỉ đạo thành `5264d519b44ee1c9b9f0d1a97cffe514bf3065a8`. Tiếp tục #60.
 
 

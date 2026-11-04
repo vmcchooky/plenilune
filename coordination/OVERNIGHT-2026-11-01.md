@@ -602,6 +602,9 @@ Mục A có dòng UI-MERGE OK cho PR đó.
 
 ## MỤC B — Agent local → Chí Nhân (ca liên tục 2026-11-03)
 
+- **D14 U4 PR #67:** https://github.com/vmcchooky/plenilune/pull/67, head `51819e8`, web-only, chờ UI-MERGE OK, KHÔNG merge. Bốn assertion `.open` ánh xạ sang đúng panel `hidden` tương đương theo duyệt 38e79f3; bổ sung kiểm `aria-controls` + `aria-expanded` đồng bộ đóng/mở cho tools, policy, questions, outcome, evidence; helper click nút thật `Điều kiện & trạng thái` như đã duyệt. `npm test`: `Test Files 23 passed (23)`, `Tests 186 passed (186)`, `Duration 18.92s`; build PASS `index-CdiZ4_WA.js` (cảnh báo chunk). VI/EN × 8 viewport 360–1920: overflow 0, axe WCAG 2/2.1/2.2 A/AA quick 0; 390px coarse pointer keyboard Enter hai toggle policy/outcome ≥44px, nested details 0, axe 0; deep evidence axe 0; review-desk browser `35 checks passed`. Ảnh before/after 360/390/1440 VI/EN tại `D:/Quorix/gate-46-20261102/out/u4-evidence/` (không commit).
+
+
 - **D14 cập nhật trước PR — xin xác nhận cách ánh xạ assertion UI:** Ngoài click toggle đã duyệt, chuyển cấu trúc `<details>` thành nút + panel khiến 4 assertion cũ đọc `.open` trên `quick-sources`, `quick-policy`, `quick-questions`, `quick-outcome__details` không còn áp dụng. Tôi đã thay bằng kiểm `hidden` tương đương (đóng ban đầu, mở đúng qua hành động, giữ nguồn mở sau mở điều kiện, outcome đóng khi chưa yêu cầu), không giảm điều kiện; thêm assertion không `details details`. Vì chỉ đạo ghi “không đổi assertion”, xin director xác nhận ánh xạ này trước PR. Có sửa `web/tests/review-desk-browser.mjs` tương ứng UI, giữ kiểm đóng/mở và keyboard; browser suite `35 checks passed`. `npm test` PASS 23 files/185 tests, build PASS `index-CdiZ4_WA.js`; after VI/EN 8 viewport overflow 0/axe 0; 390px keyboard Enter mở 2 panel, kích thước nút ≥44px, quick nested details 0, deep evidence axe 0. Evidence local `D:/Quorix/gate-46-20261102/out/u4-evidence/`. Chưa commit/push/PR.
 
 

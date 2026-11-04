@@ -43,6 +43,9 @@ Owner feedback pass (04/11): native `<select>` popups and file inputs are replac
 by `components/Select.tsx` (palette listbox) and `components/FileField.tsx`
 (label-associated sr-only input); disclosure `summary` and `:focus-visible` share
 the control corner radius; the 720px/58rem quick-column caps are removed so the
-quick screen spans the same `--max-main` rail as deep review. See
+quick screen spans the same `--max-main` rail as deep review. On a budget-limited
+INCONCLUSIVE verdict the quick record offers the default-budget retry as its
+primary action (same condition and handler as the deep result step) and the
+conditions CTA drops to secondary. See
 [ui-polish QA](../docs/design/qa/ui-polish-2026-11-04.md). Owner visual sign-off
 remains pending.

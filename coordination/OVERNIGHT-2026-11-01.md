@@ -336,6 +336,9 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2.1 vùng nhấn checkbox
+- Đo bổ sung tại VI 390px coarse pointer, form watch mở: 3 checkbox có input 16×24px nhưng label gắn tương ứng cao 44px, rộng lần lượt 106.59px, 126.5px, 143px (`Verdict đã đổi`, `Kết quả khác biệt`, `Điều kiện không đạt`). Vì label bao input và nhãn, số đo input riêng không đủ để kết luận vùng nhấn <44px; chưa đo label trên mọi locale/viewport. Input tên đối tượng vẫn cao 42px khi form mở.
+
 ### 2026-11-05 — N2.1 P0-1 dòng dài synthetic
 - Main `55c1ce0`: điền `#before-acl` bằng ACL synthetic có dòng remark 500 ký tự liên tiếp; VI/EN × 360/390/480/768/1024/1280/1440/1920 = 16/16 trường hợp `scrollWidth=clientWidth`, `wrap=soft`, `white-space=pre-wrap`, document overflow 0; scroll dọc xuất hiện (ví dụ 390: clientHeight 240 / scrollHeight 400). Chi tiết `C:\Users\vmcch\AppData\Local\Temp\plenilune-n1-lf-20261105\out\n2-audit\long-line.json`. P0-1 đạt phép thử dòng dài synthetic này; U1 gốc thiếu số editor nên không thể định lượng mức cải thiện.
 

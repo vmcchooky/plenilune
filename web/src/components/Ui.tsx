@@ -63,16 +63,19 @@ export function SectionHeading({
   note,
   aside,
   id,
+  srOnlyTitle = false,
 }: {
   title: string;
   note?: string;
   aside?: ReactNode;
   id?: string;
+  /** Render the title screen-reader-only (e.g. when a toggle already names the section). */
+  srOnlyTitle?: boolean;
 }) {
   return (
     <div className="section-heading">
       <div>
-        <h2 id={id}>{title}</h2>
+        <h2 id={id} className={srOnlyTitle ? 'sr-only' : undefined}>{title}</h2>
         {note && <p>{note}</p>}
       </div>
       {aside && <div className="section-heading__aside">{aside}</div>}

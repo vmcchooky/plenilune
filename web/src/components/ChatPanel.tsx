@@ -30,7 +30,16 @@ const SUGGESTIONS: MessageKey[] = [
   'chat.suggest.classes',
 ];
 
-export function ChatPanel({ comparison, analysis }: { comparison: Comparison | null; analysis: Analysis | null }) {
+export function ChatPanel({
+  comparison,
+  analysis,
+  headingSrOnly = false,
+}: {
+  comparison: Comparison | null;
+  analysis: Analysis | null;
+  /** Hide the visible heading (the quick-questions toggle already names the section). */
+  headingSrOnly?: boolean;
+}) {
   const { t, locale } = useI18n();
   const anchor = comparison?.sha256 ?? analysis?.sha256 ?? null;
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
@@ -70,7 +79,7 @@ export function ChatPanel({ comparison, analysis }: { comparison: Comparison | n
 
   return (
     <section className="chat-panel" aria-labelledby="chat-title">
-      <SectionHeading id="chat-title" title={t('chat.title')} />
+      <SectionHeading id="chat-title" title={t('chat.title')} srOnlyTitle={headingSrOnly} />
       <p className="chat-panel__help">{t('chat.help')}</p>
       <p className="chat-panel__anchor">
         <code>{t('chat.anchor', { digest: shortHash(anchor) })}</code>

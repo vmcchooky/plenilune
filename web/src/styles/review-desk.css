@@ -16,7 +16,7 @@
 }
 .watch-drawer__count { margin-left: var(--space-3); }
 .watch-drawer[open] > summary { color: var(--ink); }
-.review-disclosure { border-top: var(--border-thin) solid var(--line); padding-top: var(--space-3); }
+.review-disclosure { border-top: var(--border-thin) solid var(--line); padding-top: var(--space-6); }
 .review-disclosure > summary { min-height: 44px; padding: var(--space-3) 0; font-weight: 600; cursor: pointer; }
 .review-disclosure > summary span { display: block; margin: var(--space-2) 0 0; font-size: var(--text-sm); font-weight: 400; color: var(--muted); }
 input[type="checkbox"], input[type="radio"] {
@@ -70,6 +70,11 @@ button.badge { min-height: 32px; padding-inline: var(--space-3); }
 .quick-header { margin-bottom: var(--space-3); }
 .quick-screen .quick-evidence__toggle { font-weight: 500; }
 .quick-sources > .quick-dropzone, .quick-questions > .chat-panel { padding-block: var(--space-4); }
+
+/* Open panels breathe a little under their toggles. */
+.quick-questions > #quick-questions-panel,
+.quick-policy > #quick-policy-panel,
+.quick-tools > #quick-tools-panel { padding-top: var(--space-3); }
 
 .quick-tools > .review-disclosure { border-top: var(--border-thin) solid var(--line); }
 .quick-tools > .review-disclosure > summary { min-height: 44px; padding-block: var(--space-3); cursor: pointer; }

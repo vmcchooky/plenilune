@@ -98,6 +98,48 @@ CHỈ ĐẠO ĐÃ CẤP NGAY:
 Điểm dừng: mốc STAND-DOWN tại Mục A, hoặc hết hàng VÀ Chí Nhân xác nhận kết ca
 tại Mục A. Báo cáo Mục B ở MỌI mốc merge (quy tắc hiển thị của chủ sở hữu).
 
+### VÒNG 00:10 05/11 — Chí Nhân (relay cycle 1, phiên đêm)
+Trạng thái kiểm trực tiếp trên GitHub lúc mở vòng: coord tip `0606a8b` (= tip
+mở phiên, chưa có Mục B mới); main `119e91d` (chưa đổi); PR mở: #69 head
+`5ae054e`, #70 head `412974f` — cả hai base đúng `119e91d`.
+- **N0 — #69 (license): kiểm lại, MERGE OK vẫn đứng.** Diff main→PR chỉ
+  docs/metadata (16 file, không code Go, không logic web; web chỉ đổi SPDX +
+  license meta ở index.html/package.json). LICENSE tại head PR: đúng văn bản
+  Apache-2.0, 11.358 byte, sha256 `cfc7749b…` khớp bản ghi lúc đẩy.
+  LOCAL merge #69 TRƯỚC (merge commit), báo SHA vào Mục B, rồi chạy tiếp
+  chu trình regen manifest của N0.
+- **N1 — #70 (UI cream + CTA): REVIEW XONG, cấp UI-MERGE OK.** Cổng Linux độc
+  lập của Chí Nhân trên đúng head `412974f`: npm test 24 file / 192 test PASS,
+  build PASS. Soát diff: chỉ web + `docs/design/qa/ui-polish-2026-11-04.md`
+  (28 file, 925+/96−), không đụng engine/manifest; không assertion nào bị
+  nới — chỗ xóa duy nhất ở test là thay tương tác native select bằng
+  click trigger/option (hệ quả của Select listbox mới); không skip, không
+  nâng timeout (timeout 30000 chỉ ở test CTA mới). Không màu mới, không
+  shadow mềm (chỉ inset focus ring bằng var(--accent)); palette Neo 1+ giữ
+  nguyên. Bằng chứng QA kèm PR: overflow 0 ở 360–1920, axe 0, option 44px
+  ở coarse pointer, keyboard contract đầy đủ. CTA retry ngân sách mặc định
+  đã được chủ sở hữu duyệt (CTA C).
+- **UI-MERGE OK — PR #70 head `412974f` (chỉ hiệu lực cho head này).**
+  Thứ tự: merge #69 trước, rồi merge #70 → báo SHA vào Mục B → regen
+  manifest thành PR riêng, chờ MANIFEST-MERGE OK trước khi merge manifest.
+- N2/N3/N4: Chí Nhân sẽ đăng danh sách lát cắt/dàn ý sau khi N0–N1 merge
+  xong, đối chiếu trên main mới. N6 vẫn HOLD publish cho tới RELEASE-GO.
+
+
+- **2026-11-05 00:19 — UI-MERGE OK · PR #70** (Chí Nhân đã review độc lập):
+  head `412974f` = đúng bản đã kiểm. Kết quả phía Chí Nhân: diff 28 file, **0 file Go**;
+  `docs/public-manifest.sha256` **khớp main 100%** (việc revert trong nhánh đã làm đúng);
+  CTA C đúng điều kiện đã duyệt — QuickOutcome `canRetryDefault = INCONCLUSIVE &&
+  Boolean(comparison.options)`, dùng chung nhãn `result.primaryRetry` + hành vi
+  `compareWithDefaultBudget` như deep (ResultStep), đặt ở primaryAction của quick record;
+  test mới p18quick (f) kiểm đủ vòng: mẫu budget → INCONCLUSIVE → nút hiện + class primary
+  → click → verdict giải quyết + nút biến mất, không assertion cũ nào bị nới.
+  Cổng Linux phía Chí Nhân trên đúng head này: **npm test 24/24 file, 192/192 test PASS**
+  (186 nền + 5 Select + 1 CTA), **npm run build PASS**. Phần polish lõi (Select/FileField/
+  spacing) đã review từ head `e978907` ở ca trước, delta sau đó chỉ gồm CTA + docs.
+  → LOCAL: merge #70 SAU KHI xong chu trình N0 (main đã gồm #69 + manifest regen),
+  bằng merge commit, báo SHA vào Mục B, rồi chạy chu trình regen manifest cho #70 như thường lệ.
+  Thứ tự bắt buộc: N0 (gồm manifest) → merge #70 → manifest. Không đảo.
 
 - 23:10 — PR **#25** `feat/ui-s1-tokens` @ `9bc94ec6` (base `main`) ĐÃ MỞ:
   UI lát 1 (token Neo 1+). Chờ cổng + kiểm tra hình ảnh như prompt.

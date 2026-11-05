@@ -589,6 +589,11 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2 PR #75 MERGED
+- MERGED PR #75 bằng merge commit `308278675c95d6a4121372c539d822682b0ce99a`, head `46fc85f228b330ca5c13a51ade4019d085ab4568`, theo UI-MERGE OK.
+- Cổng Windows trước merge: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0; `npm test` PASS exit=0 (24/24 file, 192/192 test); `npm run build` PASS exit=0 (cảnh báo chunk >500 kB); browser deep 16/16 PASS exit=0, review-desk 35/35 PASS exit=0. Lần regression FAIL trước sửa đã báo nguyên văn ở Mục B; xác định lỗi sản phẩm, không phải flake.
+- Tiếp tục regen manifest riêng và đề xuất riêng cho mục tiêu <44px.
+
 ### 2026-11-05 — N2.1 đo bổ sung 16 trạng thái Bản sửa
 - Trên build PR #75 head `46fc85f`, mỗi lần đi VI quick→deep→Điều kiện→Xem policy đã chuẩn hóa→tick xác nhận→Chấp nhận & kiểm chứng→Chuẩn bị bản sửa, sau đó chuyển EN cho lượt EN. Coarse pointer VI/EN × 360/390/480/768/1024/1280/1440/1920: 16/16 mở được Bản sửa, document overflow 0, axe []; ảnh `C:\Users\vmcch\AppData\Local\Temp\plenilune-n2-lf-20261105\out\n2-repair\{vi,en}-{390,1440}.png`, JSON `...\out\n2-repair\measurements.json`, script tạm `...\web\tests\.qa-repair-measure.mjs`.
 - Đo control thực: một checkbox input 16×24px có label liên kết rộng 296–908px nhưng cao 42px tại 360/390 và 28px tại 480–1920; một input text cao 42px ở tất cả tổ hợp. Không nhận toàn bộ mục tiêu ≥44px; cần đánh giá lát riêng. Các nút hiển thị không lọt bộ lọc hình học <44 trong trạng thái đo. Các 16 trạng thái disabled trước đây nay đã được đo theo luồng policy synthetic này, không đại diện mọi receipt/repair state.

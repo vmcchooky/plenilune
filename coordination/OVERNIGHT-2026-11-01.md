@@ -531,6 +531,20 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2 deep regression test trước sửa
+- Nhánh `fix/n2-deep-mobile-overflow` từ `7c3bf9f`; viết browser regression tái hiện quick→deep→rail 0→1→2, kiểm document overflow, chữ 2 nút không bị tràn và axe, VI/EN × 360–1920. Chạy trước CSS trên server main để xác nhận test bắt lỗi: `node tests/deep-overflow-browser.mjs` FAIL exit=1 nguyên văn:
+```text
+AssertionError [ERR_ASSERTION]: vi-360: overflow
+
+29 !== 0
+
+    at .../web/tests/deep-overflow-browser.mjs:19:16
+  actual: 29,
+  expected: 0,
+  operator: 'strictEqual'
+```
+- Đây là lỗi sản phẩm đã đo, không coi là flake. Sẽ sửa CSS theo phạm vi duyệt, chạy lại test/cổng; không giảm assertion.
+
 ### 2026-11-05 — N2 deep overflow: chẩn đoán
 - Tái hiện VI 390 ở `7c3bf9f`, cùng trình tự quick→deep→rail 0→1→2: `innerWidth=390`, document/body `scrollWidth=412` (+22px). Thử loại tạm từng node trong DOM rồi gắn lại: bỏ `.action-bar__buttons` hoặc một trong hai nút của nó thì document về 390px. `.action-bar__buttons` clientWidth 358 / scrollWidth 396; nút primary `Xác định điều kiện và phạm vi được đổi` rộng 175px, clientWidth 173 / scrollWidth 212, computed `white-space: nowrap`. Đây là bằng chứng nguồn gây tràn trong trạng thái tái hiện, không sửa CSS hoặc test. Chi tiết script `...\web\tests\.qa-overflow-diagnose.mjs`, `.qa-overflow-metrics.mjs`; ảnh `...\out\n2-deep\vi-390-overflow-detail.png`.
 

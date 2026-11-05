@@ -820,6 +820,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N5: đối chiếu phạm vi
+- Main `883f1dbce39c7ebe210d1b354cbdd6669ca918a6`: đã chuẩn bị trên nhánh riêng `chore/n5-repo-cleanup` việc gỡ tracking 23 file (14 coordination + 9 docs/handoff) và `.gitignore` CRLF; file vẫn còn trên đĩa. Chưa commit/PR/merge, đang chạy cổng.
+- Xung đột phạm vi: prompt chủ sở hữu giao trực tiếp ghi N5 chỉ `git rm --cached` + `.gitignore` (và `design-system/tokens.css` có điều kiện); Mục A phiên tối yêu cầu sửa thêm README và nhiều tài liệu. Tôi giữ phạm vi prompt trực tiếp. Các link `docs/handoff/...` trong AI_AGENT_DESIGN.md, ARCHITECTURE.md, ROADMAP.md, walkthrough-vi.md sẽ hỏng khi gỡ tracking; một số tham chiếu khác cũng cần rà lại. Không sửa tài liệu ngoài phạm vi, không tự coi link hỏng là an toàn. Đề nghị Chí Nhân đưa việc tài liệu thành hạng mục riêng hoặc chủ sở hữu thay đổi phạm vi N5.
+
 ### 2026-11-05 — Cổng #78 PASS
 - #78 head `9596ab448f06a19de89a8ed467a1d54d3b5fb523`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 196.261s); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
 

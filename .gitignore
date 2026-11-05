@@ -11,3 +11,7 @@
 coverage.out
 
 __pycache__/
+
+# Local working papers: kept on disk, not published (N5 repo cleanup).
+/coordination/
+/docs/handoff/

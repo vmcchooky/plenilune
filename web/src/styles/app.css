@@ -1276,7 +1276,11 @@ button.badge:hover { background: var(--surface-3); }
   .action-bar { flex-direction: column; align-items: stretch; }
   .action-bar__note { flex-basis: auto; max-width: none; }
   .action-bar__buttons { justify-content: stretch; margin-left: 0; }
-  .action-bar__buttons .button { flex: 1 1 150px; }
+  .action-bar__buttons .button {
+    flex: 1 1 150px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
   .meta-list > div { grid-template-columns: 1fr; gap: var(--space-1); }
   .error-panel { padding: var(--space-4); }
   .error-panel__actions { width: 100%; }

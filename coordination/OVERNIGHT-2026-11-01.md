@@ -441,6 +441,9 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — Cổng #74 PASS
+- #74 head `4c9a928209bd057020d538a52038ffe4865d55bd`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 286.677s); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
+
 ### 2026-11-05 — Manifest sau #73 chờ duyệt
 - PR #74 https://github.com/vmcchooky/plenilune/pull/74, base `43347fa0f15b63b5138f377c6c333c1cc6b74abf`, head `4c9a928209bd057020d538a52038ffe4865d55bd`; chỉ thay `docs/public-manifest.sha256`, 1+/1− (hash `web/tests/u1-audit.mjs`).
 - Checkout sạch `core.autocrlf=false`, chạy `scripts/public-snapshot.ps1`: `Manifest entries: 476 (manifest file itself is not listed)`. Chờ MANIFEST-MERGE OK; đang chạy cổng Windows cho head.

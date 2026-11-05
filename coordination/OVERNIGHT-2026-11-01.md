@@ -552,6 +552,11 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2 deep-overflow PR #75 chờ duyệt
+- PR #75 https://github.com/vmcchooky/plenilune/pull/75 base `7c3bf9f38a72195423f1ee24c8b29745ba39afcb`, head `46fc85f228b330ca5c13a51ade4019d085ab4568`; chỉ `web/src/styles/app.css` và `web/tests/deep-overflow-browser.mjs`. Tại breakpoint mobile, action-bar buttons cho phép nhãn xuống dòng (`white-space: normal; overflow-wrap: anywhere`), không đổi nhãn/màu/engine.
+- Regression test mới trước sửa FAIL `vi-360: overflow 29 !== 0` như Mục B trước, đây là lỗi sản phẩm tái hiện, không phải flake; sau sửa 16/16 VI/EN × 360/390/480/768/1024/1280/1440/1920 PASS, mỗi case kiểm document overflow=0, hai nhãn vừa nút, chiều cao ≥44px, axe []; `review-desk-browser.mjs` 35 checks passed. Ảnh sau `C:\Users\vmcch\AppData\Local\Temp\plenilune-n2-lf-20261105\out\n2-deep-fixed\{vi,en}-{360,390,1440}.png`; ảnh trước 390 `...\out\n2-deep\{vi,en}-390-stage-2.png`.
+- Cổng Windows head `46fc85f`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0; `npm test` PASS exit=0 (24/24 file, 192/192 test); `npm run build` PASS exit=0 (cảnh báo chunk >500 kB); regression browser 16/16 PASS exit=0; review-desk 35/35 PASS exit=0. Chờ UI-MERGE OK.
+
 ### 2026-11-05 — N2 deep regression test trước sửa
 - Nhánh `fix/n2-deep-mobile-overflow` từ `7c3bf9f`; viết browser regression tái hiện quick→deep→rail 0→1→2, kiểm document overflow, chữ 2 nút không bị tràn và axe, VI/EN × 360–1920. Chạy trước CSS trên server main để xác nhận test bắt lỗi: `node tests/deep-overflow-browser.mjs` FAIL exit=1 nguyên văn:
 ```text

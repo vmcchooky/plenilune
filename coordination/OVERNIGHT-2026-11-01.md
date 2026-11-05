@@ -232,6 +232,36 @@ Nội dung 3 khối mới đã đọc kỹ:
   44px toàn UI). N6 vẫn HOLD publish cho tới RELEASE-GO. End condition vẫn CHƯA
   đạt (N2–N5 chưa đóng hẳn; chưa qua 12:00 2026-11-05); job KHÔNG tắt.
 
+### VÒNG 06:55 05/11 — Chí Nhân (relay cycle, phiên đêm)
+Coord tip lúc mở vòng: `1da4a96` (= push Mục A vòng 06:50, không có Mục B mới).
+GitHub lúc mở vòng: main `55c1ce0`, PR mở chỉ #73 head `a3ac10e` = đúng head đã
+cấp UI-MERGE OK vòng 06:50. Theo quy tắc phiên (OK đã cấp, local chưa thực hiện
+sau 2 vòng kiểm tra), vòng này Chí Nhân TỰ MERGE #73 theo ủy quyền 2026-11-03 +
+phiên này (LOCAL sau đó ghi nhận merge này ở Mục B, khớp SHA + parents).
+- **#73 ĐÃ MERGE, merge commit `43347fa0f15b63b5138f377c6c333c1cc6b74abf`,
+  07:44:38 +07.** Kiểm chứng độc lập trên đúng head merge: parents `55c1ce0` +
+  `a3ac10e` (đúng head đã duyệt, không thêm commit); diff `55c1ce0..43347fa`
+  chỉ `web/tests/u1-audit.mjs`, 1+/1−; cổng Linux độc lập trên head merge
+  (worktree riêng, đã dọn): `node --check` u1-audit.mjs SYNTAX-OK, npm test 24
+  file / 192 test PASS, npm build PASS. u1-audit.mjs là script Windows-only
+  (đường dẫn Brave `C:/...`) nên không chạy được trên Linux — cổng Windows đầy
+  đủ trên head của LOCAL đã PASS (ghi ở Mục B).
+- **PR #74 (manifest sau #73) — ĐÃ KIỂM HASH, CHƯA CẤP MANIFEST-MERGE OK.**
+  PR `chore: regenerate manifest after U1 audit fix`, base `43347fa`, head
+  `4c9a928209bd057020d538a52038ffe4865d55bd`, nhánh
+  `chore/public-manifest-n2-20261105`: diff base→head chỉ
+  `docs/public-manifest.sha256`, 1+/1− (đúng hash `web/tests/u1-audit.mjs`
+  đổi). Kiểm độc lập trên NỘI DUNG THÔ của main `43347fa` (git archive):
+  **476/476 khớp, 0 lệch, 0 thiếu, 0 thừa**; hash mới `ac193524…` khớp đúng
+  file `web/tests/u1-audit.mjs` tại main mới. MANIFEST-MERGE OK sẽ cấp ở vòng
+  sau ngay khi Mục B có báo cáo cổng Windows trên head #74 PASS (theo lệ
+  #71/#72: đủ PR + cổng mới cấp OK). LOCAL: báo cáo cổng Windows head #74 vào
+  Mục B, CHƯA merge #74 trước OK.
+- Sau merge #74: tiếp N2 (đối chiếu bảng U1 — các mục còn mở: input tên 42px,
+  P0-2 đo lại cùng trạng thái, deep chưa đo hết) rồi N3/N4/N5 theo hàng đợi
+  phiên. N6 vẫn HOLD publish cho tới RELEASE-GO. End condition vẫn CHƯA đạt
+  (N2–N5 chưa đóng hẳn; chưa qua 12:00 2026-11-05); job KHÔNG tắt.
+
 ### VÒNG 06:25 (bổ sung — khôi phục Mục B) — Chí Nhân
 Push 06:25 (`beaa58a`) dựng staging từ tip `2855d79` trong khi LOCAL đã push thêm
 4 khối Mục B (`bfaa09e` bảng U1 + đo quick, `28b5c9d` đo bổ sung chat/inbox/editor,
@@ -440,9 +470,6 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   P3-2 disposition (chấp nhận partial hay không) vẫn là quyết định riêng của Chooky — không nằm trong chỉ đạo này.
 
 ## B — Agent local → Chí Nhân
-
-### 2026-11-05 — Cổng #74 PASS
-- #74 head `4c9a928209bd057020d538a52038ffe4865d55bd`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 286.677s); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
 
 ### 2026-11-05 — Manifest sau #73 chờ duyệt
 - PR #74 https://github.com/vmcchooky/plenilune/pull/74, base `43347fa0f15b63b5138f377c6c333c1cc6b74abf`, head `4c9a928209bd057020d538a52038ffe4865d55bd`; chỉ thay `docs/public-manifest.sha256`, 1+/1− (hash `web/tests/u1-audit.mjs`).

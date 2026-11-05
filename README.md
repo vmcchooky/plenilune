@@ -3,31 +3,37 @@
 Semantic diff and change-intent verification for network configuration: compare
 two configuration versions, name which objects and behaviors changed, show a
 re-evaluated witness, and hand over evidence another person can replay. ACL is
-the first analysis domain; IPv4 prefix-lists are the second. Plenilune is an
-independent Go project; a versioned JSON adapter is the future MoonStorm
+the first analysis domain; IPv4 prefix-lists are the second, and standard IPv4
+ACLs, object-groups and IPv6 ACL comparison have since shipped (see Status).
+Plenilune is an independent Go project; a versioned JSON adapter (subprocess +
+JSON, with a sample client in `examples/moonstorm-client/`) is the MoonStorm
 integration boundary. No device is contacted.
 
-Status (31 October 2026): configuration intake, a domain-neutral analysis
-artifact, exact ACL and IPv4 prefix-list comparison, change classes, in-memory
-ACL repair, offline replay, local review UI, Contributor provider adapter and
-receipt-binding guards are implemented and locally tested. AI is opt-in and
-locked to `muse-spark-1.3-contributor`; there is no fallback model. Offline UI
-QA in Brave covers VI/EN, 320/390/1440 and the keyboard path; live UI,
-real-device, screen-reader and model-quality qualification remain open. The
-local runtime is not a hosted service.
+Status (5 November 2026): version 1.0.0. Configuration intake, a domain-neutral
+analysis artifact, exact ACL and IPv4 prefix-list comparison, change classes,
+in-memory ACL repair, offline replay, local review UI, Contributor provider
+adapter and receipt-binding guards are implemented and tested. Phase 3 breadth
+is in: standard IPv4 ACLs, object-groups inside named extended IPv4 ACLs, IPv6
+ACL comparison, and the CIS obligation library shipped as data in
+`examples/cis/`. Route-maps and a second vendor are deferred by owner decision.
+Qualification closed as PARTIAL: live UI and an NVDA pass are evidenced within
+the recorded scope in [docs/qualification-p3a.md](docs/qualification-p3a.md);
+AI-proposed conditions were usable in 0 of 3 recorded runs, and no physical
+device is qualified. AI is opt-in and locked to
+`muse-spark-1.3-contributor`; there is no fallback model. The local runtime is
+not a hosted service.
 
-Backend update 31 October: prefix-list parser/engine v0.2 now bind the declared
-[semantics profile](docs/semantics/prefix-list-v02.md), validate exported IR and
-source-order sequences, and preserve frozen v0.1 analysis replay. Timing-limited
-ACL replay cannot excuse tampered prefix counts, source metadata or coverage.
-Current checks and QA handoff: [backend-prefix-v02](docs/handoff/backend-prefix-v02.md).
-The following UI/demo pass is recorded in
-[demo-ui-public](docs/handoff/demo-ui-public.md).
+Prefix-list parser/engine v0.2 binds the declared
+[semantics profile](docs/semantics/prefix-list-v02.md), validates exported IR
+and source-order sequences, and preserves frozen v0.1 analysis replay.
+Timing-limited ACL replay cannot excuse tampered prefix counts, source
+metadata or coverage.
 
-UI update 2 November: the local review desk now prioritizes available results,
-uses a light cream/beige system with muted olive accents, and folds optional watches and policy
+The local review desk prioritizes available results, uses a light cream/beige
+system with muted olive accents, and folds optional watches and policy
 editing. See [design and QA](docs/design/qa/review-desk.md) for checks and open
-visual approval criteria. Historical walkthrough screenshots below predate this pass.
+visual approval criteria; owner visual sign-off is still pending there.
+Historical walkthrough screenshots below predate this design.
 
 ## What it does
 
@@ -35,14 +41,27 @@ visual approval criteria. Historical walkthrough screenshots below predate this 
   inventories supported objects with exact byte/line mapping, and explicitly
   lists unsupported and unanalyzed configuration. It never infers that an
   unanalyzed part is unchanged or safe.
-- Analyzes two domains: Cisco IOS named extended IPv4 ACLs and IPv4
-  `ip prefix-list` route filters. Other domains are reported, not guessed.
+- Analyzes these domains: Cisco IOS named extended IPv4 ACLs — including
+  rules that reference network and service object-groups — standard IPv4
+  ACLs (named and numbered), IPv6 ACLs, and IPv4 `ip prefix-list` route
+  filters. Other domains are reported, not guessed. Depth differs by domain:
+  IPv6 comparison reports a verdict and witnesses only (no change classes,
+  obligations or repair in this version), and prefix-lists have no
+  intent/repair path.
 - Explains ACL differences as change classes: newly denied and newly permitted
   groups keyed by the deciding before/after rule, each with an independently
   re-evaluated example packet and, when an operator-accepted scope is supplied,
   an inside/outside-allowed classification.
 - Compares prefix-lists exactly over every IPv4 route, reporting affected route
   counts, length sets, deciding sequence entries and a witness route.
+- Audits a single IPv4 ACL exactly (`audit`): unreachable and redundant rules
+  from cumulative effective regions, plus heuristic generalization/correlation
+  relations. The audit is report-only and never edits the configuration.
+- Ships a CIS obligation library as data in `examples/cis/`: four ready-made
+  obligation sets in the `plenilune.obligations/v1` format that plug into a
+  policy unchanged. No CIS benchmark text is redistributed; see
+  [docs/cis-obligation-library.md](docs/cis-obligation-library.md) for what is
+  and is not encoded.
 - Lets the reviewer probe a neighboring packet against before, after and a
   candidate repair; a probe explains one point and is never called proof.
 - Parses a documented subset of one named extended IPv4 ACL.
@@ -66,7 +85,7 @@ device.
 ## Requirements
 
 - Go 1.26 or newer; no external Go dependencies.
-- Node.js 20+ and npm for the optional web UI.
+- Node.js 20.19+ (or 22.12+) and npm for the optional web UI.
 - Windows is the current local demo environment; the Go core and CLI are
   portable.
 
@@ -81,11 +100,21 @@ go build -o bin/plenilune.exe ./cmd/plenilune
 ```
 
 `analyze --before before.cfg --after after.cfg` (or `--request FILE|-` for
-in-memory JSON input) emits `plenilune.analysis/v2`; `analyze-replay` reproduces
-it offline from the original bytes. Artifacts carry no raw configuration text
-outside the analyzed objects (v2 redaction); frozen `plenilune.analysis/v1`
-artifacts remain replayable from their original sources. An independent client that only spawns the
+in-memory JSON input) emits `plenilune.analysis/v3`; a runnable pair ships in
+the tree: `./bin/plenilune.exe analyze --before
+testdata/configs/intended/before.cfg --after
+testdata/configs/intended/after.cfg`. `analyze-replay` reproduces the artifact
+offline from the original bytes. Artifacts carry no raw configuration text
+outside the analyzed objects (the redaction introduced in v2, kept in v3);
+frozen `plenilune.analysis/v1` and `/v2` artifacts remain replayable from their
+original sources. An independent client that only spawns the
 binary and reads JSON lives in `examples/moonstorm-client/`.
+
+The same binary also provides `capabilities`, `diff`, `audit` /
+`audit-replay`, `bundle-export` / `bundle-replay`, `repair-enumerate` and the
+Ed25519 `sign` / `verify-signature` commands; `plenilune --help` lists every
+command and its exit codes. Only `assist --ai on` can call Meta; every other
+command is offline.
 
 For terminals and scripts, `diff --brief --out FILE` keeps the same sealed
 evidence artifact (byte-identical JSON) but writes it to the named file and
@@ -152,17 +181,23 @@ After the build above, run the frontend tests and start the local UI:
 cd web
 npm test
 cd ..
-./scripts/start-local.ps1
 ```
 
-The demo server listens on loopback (default `127.0.0.1:8082`). The UI workflow
-is: open or paste both configuration versions (file import keeps exact bytes),
+On Windows, `./scripts/start-local.ps1` is the launcher instead of starting
+the demo binary directly: it prompts for the Meta key into the server process
+only (leave the key box empty for offline mode) and opens the UI in a browser
+when one is found.
+
+The demo server listens on loopback (default `127.0.0.1:8082`). The UI opens
+on a verdict-first quick flow; the full review workflow is: open or paste both
+configuration versions (file import keeps exact bytes),
 read the configuration overview, select an object, inspect change classes and
 example packets, optionally probe a neighboring packet, author ACL conditions,
 preview the canonical full policy, explicitly accept it, review a candidate,
 record a human decision, and export/replay the evidence. A prefix-list object
 shows its route-level result and states that intent/repair are not supported for
-that domain yet.
+that domain yet. An IPv6 object shows its comparison verdict and witnesses;
+obligations and repair are not supported for IPv6 in this version.
 
 The result plate answers three questions above the fold: what changed (the
 witness packet and action change), why (the deciding rule in each version) and
@@ -186,13 +221,18 @@ manual path remains available.
   their input hashes, obligation digest and full accepted policy hash match the
   current accepted snapshot. Foreign receipts are rejected before display,
   receipt, or export.
+- Detached Ed25519 signatures (`plenilune.signature/v1`) are optional and bind
+  both digests of a sealed artifact. A signature attests key possession only:
+  hashes are not signatures, and a signature never changes a verdict or a
+  replay outcome.
 - Browser QA uses synthetic inputs and a separate no-key server; it does not
   treat a recorded backend session as a new live UI run. The 31 October pass ran
   142 checks in Brave 156.0.8078.80 (VI/EN, 320/390/1440, keyboard path, light
   and dark), with no serious/critical axe findings and no external request.
 - Domain checks: exhaustive reduced-domain oracles for ACL change classes and
-  prefix-list comparison; engine v0.2 is box-for-box equivalent to v0.1 on a
-  fixed corpus and keeps v0.1 receipt replay. Measured latency and cost are
+  prefix-list comparison, and a Z3 differential oracle in CI for the ACL
+  engine ([docs/oracle-z3.md](docs/oracle-z3.md)); frozen earlier-version
+  artifacts keep replaying. Measured latency and cost are
   recorded in `docs/research/` with the environment, not generalized from
   cache-warm runs.
 
@@ -233,7 +273,8 @@ GPL-3.0-only; copies obtained under the GPL keep those terms.)
 The license covers Plenilune's own source. Third-party components keep their
 own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and
 `third_party/licenses/`. Meta's model and API are a separate service governed
-by Meta's terms; they are not licensed or relicensed under Plenilune's GPL.
+by Meta's terms; they are not licensed or relicensed under Plenilune's
+Apache License.
 Plenilune is independent and is not affiliated with or endorsed by Meta, Cisco
 or the MoonStorm project.
 

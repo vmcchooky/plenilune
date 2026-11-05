@@ -57,6 +57,28 @@ try {
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0, `${locale}-${width}: overflow`);
         const axe = await new AxeBuilder({ page }).analyze();
         assert.deepEqual(axe.violations.map(violation => violation.id), [], `${locale}-${width}: axe`);
+        // Reopen path: after the repair flow, a user who scrolls back to
+        // the top must still reach the watch summary — the rail must not
+        // cover it — and real clicks must close and reopen the drawer.
+        await page.evaluate(() => window.scrollTo(0, 0));
+        const drawer = page.locator('.watch-drawer');
+        const summary = page.locator('.watch-drawer > summary');
+        const summaryHit = await summary.evaluate((el) => {
+          const rect = el.getBoundingClientRect();
+          const hit = document.elementFromPoint(rect.left + 16, rect.top + rect.height / 2);
+          return hit === el || el.contains(hit);
+        });
+        assert.equal(summaryHit, true, `${locale}-${width}: watch summary is the hit target`);
+        if (await drawer.getAttribute('open') !== null) {
+          await summary.click();
+          assert.equal(await drawer.getAttribute('open'), null, `${locale}-${width}: watch drawer closes`);
+        }
+        await summary.click();
+        assert.notEqual(await drawer.getAttribute('open'), null, `${locale}-${width}: watch drawer reopens`);
+        if (await page.locator('.inbox-watch__add').getAttribute('open') === null) {
+          await page.locator('.inbox-watch__add > summary').click();
+        }
+        assert.ok((await watch.boundingBox()).height >= 44, `${locale}-${width}: watch input height after reopen`);
         if ([390, 1440].includes(width)) await page.screenshot({ path: `../out/n2-touch-fixed/${locale}-${width}.png`, fullPage: true });
         console.log(`${locale}-${width}: PASS`);
       } finally {

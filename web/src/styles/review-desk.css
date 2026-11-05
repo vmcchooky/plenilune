@@ -97,7 +97,7 @@ button.badge { min-height: 32px; padding-inline: var(--space-3); }
 /* F9: visible horizontal-scroll cue at the rail edges (mobile only). */
 .step-rail__cue { display: none; }
 @media (max-width: 960px) {
-  .step-rail { position: relative; }
+  .step-rail { position: relative; top: auto; }
   .step-rail__cue {
     display: inline-flex;
     position: absolute;

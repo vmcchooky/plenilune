@@ -67,6 +67,9 @@ publication step.
 | `docs/walkthrough-vi.md`, `docs/walkthrough-en.md` | Two synthetic offline walkthroughs with replay commands |
 | `docs/screenshots/**` | Reviewed synthetic UI screenshots; no personal data or local paths |
 | `examples/moonstorm-client/**` | Independent subprocess JSON client (std-lib only) |
+| `examples/cis/**` | CIS obligation library (P3-8): obligation sets as data in `plenilune.obligations/v1` format |
+| `examples/standard-acl/**`, `examples/object-groups/**`, `examples/ipv6-acl/**` | Runnable before/after pairs for the P3-5/P3-6/P3-7 domains |
+| `examples/README.md` | Index of the shipped examples |
 | `docs/usage-vi.md` | Vietnamese walkthrough of the configuration-level flow |
 | `docs/public-catalog.md` | This catalog |
 | `docs/public-manifest.sha256` | SHA-256 inventory of the files above, generated for the review snapshot; the manifest file itself is not listed. Regenerate with `scripts/public-snapshot.ps1` only from a checkout whose working-tree bytes match Git (LF checkout, `core.autocrlf=false`): `.gitattributes` pins Go source and `testdata/**`, but unattributed text files become CRLF on `core.autocrlf=true` clones and their hashes would drift |
@@ -82,9 +85,7 @@ publication step.
 | `web/dist/**` | Generated production build |
 | `web/tsconfig.tsbuildinfo` | Generated TypeScript state |
 | `web/docs/qa/**` | QA evidence, screenshots, harnesses and reports |
-| `web/tests/qa-ui-2026-10-31.mjs` | Dated browser QA harness tied to the local Brave/server layout |
 | `docs/handoff/PROMPT_*.vi.md`, `docs/handoff/QA_NEXT.vi.md` | Internal agent/QA briefs; not product documentation |
-| `web/tests/browser-qa.mjs` | Historical QA harness tied to an older UI snapshot |
 | `.env`, `.env.*` except `.env.example` | Local secrets/configuration |
 | `*.log`, `test-results/`, `playwright-report/`, `traces/`, `coverage.out` | Local output |
 
@@ -114,13 +115,15 @@ synthetic measurements, not customer data.
 
 ## License
 
-Plenilune is licensed **GPL-3.0-only**. [LICENSE](../LICENSE) is the verbatim
-GNU GPLv3 text; [NOTICE](../NOTICE) records the project copyright (Võ Mạnh Cường
-(Chooky), Quorix Việt Nam brand) and the license boundary. The GPL permits
-commercial use and does not prohibit competition; distribution of a derivative
-must comply with GPL-3.0, including corresponding source and notices.
+Plenilune is licensed **Apache-2.0**. [LICENSE](../LICENSE) is the verbatim
+Apache License 2.0 text; [NOTICE](../NOTICE) records the project copyright (Võ Mạnh Cường
+(Chooky), Quorix Việt Nam brand) and the license boundary. The License permits
+commercial use and does not prohibit competition; distribution must comply
+with Apache-2.0, including preserving the License and notices. (Before
+4 November 2026 the project was published under GPL-3.0-only; copies
+obtained under the GPL keep those terms.)
 
-The GPL covers Plenilune's own source only. Third-party components retain their
+Apache-2.0 covers Plenilune's own source only. Third-party components retain their
 licenses; see [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) and
 `third_party/licenses/`. Meta's model and API are a service under Meta's terms,
-not code licensed under Plenilune's GPL.
+not code licensed under Plenilune's Apache-2.0 license.

@@ -10,6 +10,9 @@ Go DTO hiện tại ở `internal/ciscoacl`, `internal/intent`, `internal/eviden
 | Command | Input | Output |
 |---|---|---|
 | `version` | Không | tool/version/commit/modified/go/parser |
+| `capabilities [--json]` | Không | Document `plenilune.capabilities/v1` (xem §4); JSON là dạng duy nhất |
+| `analyze --before FILE --after FILE [--select domain:name,...]` hoặc `analyze --request FILE|-` | Hai cấu hình (hoặc request JSON) | Artifact `plenilune.analysis/v3` (xem §8); exit 0 khi có artifact |
+| `analyze-replay --before FILE --after FILE --evidence FILE` hoặc `analyze-replay --request FILE|-` | Cặp gốc + analysis artifact (hoặc replay request) | ANALYSIS_REPLAYED; 0 replayed / 2 TIMING_SENSITIVE/error |
 | `parse --config FILE` | Một ACL-only file | Normalized ACL IR; line 1-based, ordinal 0-based |
 | `trace --config FILE --packet FILE` | ACL + tuple | `plenilune.trace/v1` |
 | `verify --config FILE --evidence FILE` | Original bytes + trace | `TRACE_REPLAYED`, digest, scope |
@@ -22,6 +25,11 @@ Go DTO hiện tại ở `internal/ciscoacl`, `internal/intent`, `internal/eviden
 | `repair-enumerate --before FILE --after FILE [--policy FILE] [--proposals FILE]` | Original pair + optional frozen policy + optional proposals | Enumeration record đã seal (xem §6); 0 có candidate VERIFIED / 1 không có / 2 incomplete/error |
 | `audit --config FILE [--max-operations N] [--max-boxes N] [--timeout D]` | Một ACL | Audit record đã seal (xem §9); 0 complete / 2 incomplete/error; budget flags chỉ được hạ thấp default |
 | `audit-replay --config FILE --evidence FILE` | ACL + audit record | AUDIT_REPLAYED hoặc TIMING_SENSITIVE; 0 replayed / 2 còn lại |
+| `bundle-export --out DIR --before FILE --after FILE --comparison FILE [--repair FILE] [--report FILE] [--instructions FILE]` | Một review case | Thư mục bundle + manifest `plenilune.bundle/v1` (xem §4, Review bundle) |
+| `bundle-replay --dir DIR` | Thư mục bundle | Kiểm manifest rồi replay mọi artifact trong bundle; 0 khi tất cả khớp / 2 lỗi toàn vẹn hoặc timing-sensitive |
+| `sign-keygen --out FILE` | Không | Sinh khóa Ed25519; private key ghi vào FILE (0600, không ghi đè); chỉ in fingerprint + public key |
+| `sign --key FILE --evidence FILE [--out FILE]` | Khóa + artifact đã seal (evidence v2 hoặc analysis v3) | Envelope `plenilune.signature/v1` neo cả hai digest (xem §4, Ký bằng chứng) |
+| `verify-signature --evidence FILE --signature FILE [--fingerprint HEX] [--pubkey FILE]` | Artifact + envelope chữ ký | 0 SIGNATURE_VALID / 2 còn lại; chữ ký không đổi verdict hay replay |
 | `assist --before FILE --after FILE --intent TEXT --ai off\|on [--policy FILE]` | Intent + optional frozen policy | Session sidecar + deterministic receipts; AI defaults off |
 
 Exit 0: operation thành công, kể cả packet bị deny. Exit 2: usage/input,
@@ -31,11 +39,17 @@ result khi input/replay thất bại; lỗi ghi stdout có thể để lại str
 Không tự lưu/overwrite file; caller quyết định output path.
 
 ACL input <=2 MiB, <=10.000 dòng, <=8.192 byte/dòng, <=512 executable rules.
-Chỉ một `ip access-list extended NAME` block, rule phải indent; cho blank, `!`,
-`end`. Full running-config, nhiều/empty ACL, banner và command khác bị từ chối.
+Đường ACL-only (`parse`/`diff`/`trace`/`audit`): một block `ip access-list
+extended NAME` hoặc `ip access-list standard NAME` (kể cả dạng số cũ), rule
+phải indent; cho blank, `!`, `end`. Bản extended có thể kèm định nghĩa
+`object-group` và tham chiếu group (parser `cisco-acl/v0.4`, xem
+`docs/semantics/object-groups-v04.md`); group không được định nghĩa, vòng
+lặp hoặc sai loại bị từ chối fail-closed bằng mã `PARSE_GROUP_*`. Full
+running-config, nhiều/empty ACL, banner và command khác bị từ chối ở đường
+này — cấu hình đầy đủ và ACL IPv6 đi qua đường `analyze` (§8).
 Protocol tên `ip/tcp/udp/icmp` hoặc số 0–255; IPv4 any/host/wildcard kể cả không liên tục;
 numeric port `eq/neq/lt/gt/range` cho TCP/UDP; sequence tăng, remark, log/log-input.
-Không suy đoán hostname, service name, object-group, TCP state hoặc platform.
+Không suy đoán hostname, service name, TCP state hoặc platform.
 
 ## 2. Packet và trace
 

@@ -825,6 +825,11 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-06 — Manifest cuối #82 đã merge
+- GitHub xác nhận PR #82 MERGED lúc 06:17:40 +07 bởi `vmcchooky`, merge `5687692132743e18c66a0efd287db54c1d0cb5be`, head `552fc9c3533a7964e2dab4ea3a9a565f4b161699`. Agent local không thực hiện merge này. Main hiện `5687692132743e18c66a0efd287db54c1d0cb5be`; không còn PR mở.
+- Cổng Windows trước merge head #82: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 204.665s); `go build ./...` PASS exit=0. Manifest tự kiểm 481/481 hash khớp source/snapshot, 0 thiếu, 0 thừa; secret scan 450 file sạch.
+- Theo chỉ đạo phiên tối, N6 do phía Chí Nhân chuẩn bị; không tag/publish, chờ RELEASE-GO.
+
 ### 2026-11-05 — Cổng #82 PASS
 - #82 head `552fc9c3533a7964e2dab4ea3a9a565f4b161699`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 204.665s); `go build ./...` PASS exit=0. Manifest 481/481 hash khớp source/snapshot, scan 450 file sạch như báo trước. Chờ MANIFEST-MERGE OK.
 

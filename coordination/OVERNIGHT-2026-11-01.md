@@ -589,6 +589,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — Đề xuất lát riêng mục tiêu <44px, chờ duyệt
+- Số đo repair đã báo: `#append-rule` (input text) cao 42px; label `.ai-consent__controls .checkbox-row` bao input consent cao 42px ở 360/390 và 28px ở 480–1920; checkbox đã gắn label nên xử lý vùng label thay vì phóng đại glyph 16×24px. Form watch cũng có input tên cao 42px; condition có 9 input text cao 42px trong trạng thái 390px đã đo.
+- Đề xuất: lát CSS web-only riêng cho coarse pointer, đặt min-height 44px có phạm vi trên input text thực sự hiển thị của repair/watch/conditions và vùng label checkbox consent được đo, giữ association/kích thước glyph, nhãn, thứ tự, logic và token Neo 1+; KHÔNG áp cho file input sr-only. Trước khi chốt selector cần liệt kê đầy đủ thành phần bị ảnh hưởng và đo các label/target thực, tránh tác động ngoài phạm vi. Browser regression VI/EN × 360–1920 đo bounding box/label hữu hiệu + thao tác click/keyboard, overflow và axe; ảnh trước/sau 390/1440; không hạ assertion. Chờ Chí Nhân duyệt phạm vi/selector trước khi làm PR.
+
 ### 2026-11-05 — Manifest sau #75 chờ duyệt
 - PR #76 https://github.com/vmcchooky/plenilune/pull/76, base `308278675c95d6a4121372c539d822682b0ce99a`, head `01e4157e5c80bc4172497dcbb20fa817d677d0f5`; chỉ thay `docs/public-manifest.sha256`, 2+/1−.
 - Checkout sạch `core.autocrlf=false`, chạy `scripts/public-snapshot.ps1`: `Manifest entries: 477 (manifest file itself is not listed)`. Chờ MANIFEST-MERGE OK; đang chạy cổng Windows cho head.

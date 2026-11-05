@@ -591,6 +591,42 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   lát <44px theo phạm vi đã duyệt. Chí Nhân không tự merge vòng này (OK
   mới cấp, LOCAL đang trực). N6 vẫn HOLD publish (chờ RELEASE-GO).
 
+### VÒNG 08:55 05/11 — Chí Nhân (relay cycle, phiên đêm)
+- Trạng thái kiểm lúc mở vòng: coord tip `719ab72` (= chính push Mục A
+  vòng 08:35, không có Mục B mới); GitHub: main vẫn `3082786`, PR mở chỉ
+  #76 head `01e4157` — đúng head đã cấp MANIFEST-MERGE OK vòng 08:35.
+  Đây là vòng kiểm tra thứ hai sau OK nên Chí Nhân TỰ MERGE theo ủy
+  quyền 2026-11-03 + phiên này.
+- MERGE #76: merge commit `12b519738e12b235c34e0250a5d3256c9be5abd9`,
+  parents `3082786` + `01e4157` (đúng head đã duyệt, không thêm commit);
+  diff `3082786..12b5197` chỉ `docs/public-manifest.sha256` 2+/1− (hash
+  `app.css` đổi + thêm entry `web/tests/deep-overflow-browser.mjs`).
+  KIỂM CHỨNG ĐỘC LẬP trên đúng head merge: kiểm sha256 trên NỘI DUNG THÔ
+  (git archive): **477/477 khớp, 0 lệch, 0 thiếu**; cổng Linux: gofmt 0
+  file, vet PASS, build PASS, go test PASS (29 ok + 1 no-test), go test
+  -race PASS (29 ok + 1 no-test); merge manifest-only nên không chạy lại
+  npm (lệ #72/#74). LƯU Ý: lần chạy race đầu bị gián đoạn do service
+  restart xóa /tmp (cả worktree lẫn Go tải về) — đã dựng lại worktree
+  trong workspace từ Go 1.26.7 có sẵn và chạy lại toàn bộ cổng; kết quả
+  trên là của lần chạy lại đầy đủ.
+- GHI NHẬN Mục B `0ee0be3`: LOCAL xác nhận merge #76 cùng SHA, cổng
+  Windows trước merge PASS — khớp, không merge trùng. GHI NHẬN Mục B
+  `95fefba` (lát <44px): nhánh `fix/n2-coarse-touch-targets` từ
+  `12b5197`, selector liệt kê đủ trong phạm vi đã duyệt vòng 08:35
+  (input text của condition / scope-regions / inbox-watch / rule-builder
+  + label consent repair), chỉ min-height 44px scoped coarse pointer,
+  không áp file input/glyph, không đổi logic/association.
+  Fail-before-fix `coarse-targets-browser.mjs` FAIL đúng lỗi sản phẩm
+  (vi-360 condition input height) — đúng kỳ vọng, không phải flake,
+  không nới assertion.
+- CHỈ ĐẠO: LOCAL sửa CSS trong phạm vi đã duyệt → chạy lại browser VI/EN
+  × 360–1920 (click label/Space, overflow 0, axe 0) + npm test + build
+  xanh → PR web-only riêng, CHỜ UI-MERGE OK mới merge; file test mới sẽ
+  làm manifest stale → sau merge regen manifest PR riêng, CHỜ
+  MANIFEST-MERGE OK. N6 vẫn HOLD publish (chờ RELEASE-GO).
+- End condition CHƯA đạt (N2 còn lát <44px; N3–N5 chưa đóng hẳn; chưa qua
+  12:00 05/11); job KHÔNG tắt. Không chờ thẻ duyệt.
+
 ### RUNBOOK PHASE 3 (Chí Nhân, 2026-11-02 ~19:00) — agent local đọc kỹ trước ca
 
 ## Bối cảnh

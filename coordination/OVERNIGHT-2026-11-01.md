@@ -479,6 +479,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — U1 trên main sau #74; đối chiếu inbox cùng script
+- Main `7c3bf9f38a72195423f1ee24c8b29745ba39afcb`: script gốc `node tests/u1-audit.mjs` exit=0 trên demo build từ main, 20/20 phép overflow 0; JSON mới `C:\Users\vmcch\AppData\Local\Temp\plenilune-n2-lf-20261105\out\u1-audit\audit-report.json`. Bản gốc ở `D:\Quorix\plenilune-publish-20261031\out\u1-audit\audit-report.json`; cả hai dùng cùng logic P0-2 (mở outer drawer, form bên trong để mặc định, entries=0; selector sửa chỉ để chọn outer summary).
+- Cùng trạng thái, số đo gốc → mới (panel / form): 390: `294×767 / 262×313` → `294×669 / 262×413`; 768: `736×471 / 704×120` → `720×543 / 688×216`; 1440: `928×419 / 896×68` → `1184×523 / 1152×216`. Vì form trong details đóng, số đo `getBoundingClientRect()` của nó không chứng minh vùng hiển thị hay khoảng trắng tương tác; không kết luận cải thiện hay hồi quy chỉ từ các số này. Đang đo riêng deep coarse pointer.
+
 ### 2026-11-05 — PR #74 MERGED
 - MERGED PR #74 bằng merge commit `7c3bf9f38a72195423f1ee24c8b29745ba39afcb`, head `4c9a928209bd057020d538a52038ffe4865d55bd`, theo MANIFEST-MERGE OK; 476/476 hash đã được Chí Nhân kiểm độc lập.
 - Cổng Windows trước merge: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 286.677s); `go build ./...` PASS exit=0.

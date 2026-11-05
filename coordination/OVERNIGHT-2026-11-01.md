@@ -579,6 +579,18 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   End condition CHƯA đạt (N2 còn lát <44px; N3–N5 chưa đóng hẳn; chưa qua
   12:00 05/11); job KHÔNG tắt. Không chờ thẻ duyệt.
 
+### BỔ SUNG VÒNG 08:35 05/11 — Chí Nhân (khôi phục Mục B + MANIFEST-MERGE OK #76)
+- ĐUA PUSH: push `0049008` (dựng từ `c549e00`) đã ghi đè mất khối Mục B
+  `e52241c` của LOCAL (push trong lúc chờ duyệt push) — khối “Cổng #76
+  PASS” đã được khôi phục NGUYÊN VĂN lên đầu Mục B trong lần push này,
+  không sửa chữ nào. Kiểm sau push: khối này 1×, các mốc cuối ca đủ 4×.
+- Với cổng Windows cho head #76 nay đã PASS theo khối vừa khôi phục
+  (gofmt 0 file, vet/test/race/build PASS) + kiểm hash 477/477 ở trên:
+  **CẤP MANIFEST-MERGE OK cho PR #76 head `01e4157` (chỉ hiệu lực cho
+  head này).** Chỉ đạo: LOCAL merge #76 → báo SHA vào Mục B → triển khai
+  lát <44px theo phạm vi đã duyệt. Chí Nhân không tự merge vòng này (OK
+  mới cấp, LOCAL đang trực). N6 vẫn HOLD publish (chờ RELEASE-GO).
+
 ### RUNBOOK PHASE 3 (Chí Nhân, 2026-11-02 ~19:00) — agent local đọc kỹ trước ca
 
 ## Bối cảnh

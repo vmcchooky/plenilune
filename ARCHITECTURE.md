@@ -124,7 +124,7 @@ artifact schemas and digest projections.
 Navigation and successful or canceled replay preserve its validity; replay mismatch
 still disputes the receipt and invalidates the annotation.
 Provider transport is stateless Responses with encrypted reasoning replay only
-in bounded process memory. See [current handoff](docs/handoff/contributor-runtime.md).
+in bounded process memory. See (local handoff notes, not published).
 
 Prefix semantics/replay update31/10: parser/engine v0.2 pin a declared canonical
 IPv4 model, while frozen v0.1 remains replay-only. The domain-neutral analysis

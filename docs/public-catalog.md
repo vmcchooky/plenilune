@@ -62,7 +62,6 @@ publication step.
 | `web/public/**` | Static public assets |
 | `docs/design/product-ux.md` | Product design reference |
 | `docs/semantics/**` | Declared prefix-list semantics profile |
-| `docs/handoff/**` except the internal prompt/QA briefs | Implementation notes/history; review claims before publishing |
 | `docs/research/**` | Measured engine data and the short research note |
 | `docs/walkthrough-vi.md`, `docs/walkthrough-en.md` | Two synthetic offline walkthroughs with replay commands |
 | `docs/screenshots/**` | Reviewed synthetic UI screenshots; no personal data or local paths |
@@ -85,7 +84,7 @@ publication step.
 | `web/dist/**` | Generated production build |
 | `web/tsconfig.tsbuildinfo` | Generated TypeScript state |
 | `web/docs/qa/**` | QA evidence, screenshots, harnesses and reports |
-| `docs/handoff/PROMPT_*.vi.md`, `docs/handoff/QA_NEXT.vi.md` | Internal agent/QA briefs; not product documentation |
+| `docs/handoff/**` | Local handoff notes; not published |
 | `.env`, `.env.*` except `.env.example` | Local secrets/configuration |
 | `*.log`, `test-results/`, `playwright-report/`, `traces/`, `coverage.out` | Local output |
 

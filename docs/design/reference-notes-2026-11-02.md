@@ -41,4 +41,4 @@ The pass introduces shared tracking/leading/focus/chip tokens, applies tabular d
 globally and aligns existing chip geometry without turning every runtime/provenance
 label into a colored badge. Cream colors and plain secondary metadata are retained.
 Actual build/browser gate belongs to the ZCode coordinator to avoid concurrent dist
-writes. See local coordination/UI-NIGHT-2026-11-02.md for acknowledgements and locks.
+writes. See (local coordination notes, not published) for acknowledgements and locks.

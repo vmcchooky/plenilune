@@ -243,7 +243,7 @@ for proof scope. [ARCHITECTURE](ARCHITECTURE.md) describes package ownership.
 [REVIEW_NOTES](REVIEW_NOTES.md) records prior review dispositions.
 [ROADMAP](ROADMAP.md) lists remaining work. A Vietnamese walkthrough is in
 [docs/usage-vi.md](docs/usage-vi.md). Historical implementation handoffs are in
-`docs/handoff/`. Security model and reporting gaps: [SECURITY.md](SECURITY.md).
+local handoff notes. Security model and reporting gaps: [SECURITY.md](SECURITY.md).
 Dependency inventory: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Safety and data

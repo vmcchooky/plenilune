@@ -5,7 +5,7 @@ duyệt điều kiện → kiểm chứng bản sửa → người khác phát l
 implemented; D5 offline browser QA đã chạy ngày 31/10. Live UI với Muse vẫn là
 qualification riêng. Trạng thái hiện hành thuộc [README](README.md), thiết kế sản
 phẩm chi tiết và acceptance từng slice tại [product UX](docs/design/product-ux.md),
-handoff tại [product-ux-next](docs/handoff/product-ux-next.md).
+handoff tại (local handoff notes, not published).
 
 ## Baseline
 

@@ -224,7 +224,7 @@ cho phạm vi proof. [ARCHITECTURE](ARCHITECTURE.md) mô tả ownership package.
 [REVIEW_NOTES](REVIEW_NOTES.md) ghi disposition review trước đó.
 [ROADMAP](ROADMAP.md) liệt kê việc còn lại. Hướng dẫn sử dụng tiếng Việt ở
 [docs/usage-vi.md](docs/usage-vi.md). Handoff triển khai lịch sử nằm trong
-`docs/handoff/`. Mô hình bảo mật và khoảng trống báo lỗi:
+local handoff notes. Mô hình bảo mật và khoảng trống báo lỗi:
 [SECURITY.md](SECURITY.md). Inventory dependency:
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 

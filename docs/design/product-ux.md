@@ -4,12 +4,12 @@
 
 # Plenilune — từ thay đổi ACL đến quyết định nhận bản sửa
 
-> Snapshot thiết kế trước triển khai; D0–D4 đã được thực hiện sau đó. Trạng thái và kiểm tra hiện hành: [README](../../README.md) / [handoff](../handoff/contributor-runtime.md).
+> Snapshot thiết kế trước triển khai; D0–D4 đã được thực hiện sau đó. Trạng thái và kiểm tra hiện hành: [README](../../README.md) / (local handoff notes, not published).
 Ngày 30/10/2026. **Thiết kế bước tiếp theo, chưa triển khai runtime.**
 Tài liệu này sở hữu UX/hành trình; wire contract thuộc [CONTRACTS](../../CONTRACTS.md),
 package thuộc [ARCHITECTURE](../../ARCHITECTURE.md), nghĩa chứng minh thuộc
 [VERIFICATION_DESIGN](../../VERIFICATION_DESIGN.md), AI thuộc
-[AI_AGENT_DESIGN](../../AI_AGENT_DESIGN.md). [Handoff triển khai](../handoff/product-ux-next.md).
+[AI_AGENT_DESIGN](../../AI_AGENT_DESIGN.md). (local handoff notes, not published).
 
 ## 1. Quyết định và baseline độc lập
 

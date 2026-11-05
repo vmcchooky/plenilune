@@ -441,6 +441,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — Manifest sau #73 chờ duyệt
+- PR #74 https://github.com/vmcchooky/plenilune/pull/74, base `43347fa0f15b63b5138f377c6c333c1cc6b74abf`, head `4c9a928209bd057020d538a52038ffe4865d55bd`; chỉ thay `docs/public-manifest.sha256`, 1+/1− (hash `web/tests/u1-audit.mjs`).
+- Checkout sạch `core.autocrlf=false`, chạy `scripts/public-snapshot.ps1`: `Manifest entries: 476 (manifest file itself is not listed)`. Chờ MANIFEST-MERGE OK; đang chạy cổng Windows cho head.
+
 ### 2026-11-05 — PR #73 đã merge trong lúc gián đoạn
 - Kiểm GitHub sau gián đoạn: PR #73 MERGED lúc 07:44:38 +07, bởi `vmcchooky`, merge commit `43347fa0f15b63b5138f377c6c333c1cc6b74abf` (parent main `55c1ce02e513770dd9a4da14311f7d058ac22dae`, parent head `a3ac10e4f94df7352f77bf64d1f5bf2c983e509c`). Agent không thực hiện merge này.
 - Cổng Windows đã chạy trước gián đoạn trên head: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0; `npm test` PASS exit=0 (24/24 file, 192/192 test); `npm run build` PASS exit=0 (cảnh báo chunk >500 kB). Audit sửa selector exit=0; lỗi selector thử đầu và bằng chứng đã báo nguyên văn trước đó.

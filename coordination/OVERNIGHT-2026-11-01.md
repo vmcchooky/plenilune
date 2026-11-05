@@ -801,6 +801,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — Tiếp tục sau STAND-DOWN: #77 đã merge, manifest #78
+- Chủ sở hữu yêu cầu tiếp tục. GitHub xác nhận #77 MERGED bởi `vmcchooky`, merge `43880851e62d1145fd65e61069e4db5c3c54bf24`, head `a70658c394006ce5cd6220d93c24135810ddee45` (khác head đã báo trước), lúc 13:27:46 +07. Agent không thực hiện merge này; kết quả test đỏ trước đó thuộc head local khác, không suy diễn sang head đã merge.
+- Manifest PR #78 https://github.com/vmcchooky/plenilune/pull/78, base `43880851e62d1145fd65e61069e4db5c3c54bf24`, head `9596ab448f06a19de89a8ed467a1d54d3b5fb523`; chỉ `docs/public-manifest.sha256` 2+/1−. Checkout sạch `core.autocrlf=false`, chạy `scripts/public-snapshot.ps1`: `Manifest entries: 478 (manifest file itself is not listed)`. Chờ MANIFEST-MERGE OK; đang chạy cổng Windows.
+
 ### 2026-11-05 — #77 sticky fix: npm test ĐỎ, dừng
 - Nhánh `fix/n2-coarse-touch-targets` local head chưa push `ee295e36da39e0b4712b221763f2df0aae0229fd`: tại mobile `.step-rail` đổi `position: relative` thành `position: relative; top: auto`, tránh kế thừa `top:64px`. Browser cách ly 360×800 trước: rail y=209..270, summary y=230..276.39, elementFromPoint trả rail button; sau: rail y=145..206, summary y=230..276.39, elementFromPoint trả summary. `coarse-targets-browser.mjs` thêm scroll top + click mở lại watch sau repair, không force click; 16/16 VI/EN PASS exit=0, axe 0, overflow 0, click label + Space PASS; `npm run build` PASS.
 - `npm test` exit=1, nguyên văn:

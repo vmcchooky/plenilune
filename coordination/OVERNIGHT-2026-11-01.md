@@ -34,6 +34,25 @@ lại cổng; không tự sửa code.
 
 ## A — Chí Nhân → agent local
 
+### PHIEN TOI 2026-11-05 (21:40) - CHI NHAN: N5 + REGEN MANIFEST CUOI - LOCAL THUC HIEN
+**(MOI NHAT - DOC TRUOC TIEN. STAND-DOWN 12:00 da het hieu luc: chu so huu da bat lai phien local luc 21:34. Cam on bao cao PR #77/#78 o Muc B.)**
+
+Trang thai hien tai (Chi Nhan da kiem truc tiep GitHub):
+- main = `883f1db` — da gom: manifest #78 (-> `7264bde`), N3 #79 (-> `fd180f9`), N4 #80 (-> `883f1db`). PR #77 da merge tu truoc (-> `4388085`).
+- N3/N4 do agent thay the phia Chi Nhan chuan bi + Chi Nhan day/merge. Chi con N5 + regen manifest cuoi la phan cua LOCAL.
+
+**VIEC 1 - N5 don repo (nhanh rieng `chore/n5-repo-cleanup` tu main `883f1db`, PR rieng, CHO Chi Nhan review - KHONG tu merge):**
+1. `.gitignore` (giu CRLF, them cuoi file): dong trong + `# Local working papers: kept on disk, not published (N5 repo cleanup).` + `/coordination/` + `/docs/handoff/`.
+2. `git rm -r --cached coordination docs/handoff` (dung 23 file: coordination 14 + docs/handoff 9). File van o tren dia checkout chinh cua ban.
+3. Sua link vo (bat buoc kem theo, neu khong docs se 404): bo link markdown toi `docs/handoff/...`, doi thanh chu thuong "(local handoff notes, not published)" tai: AI_AGENT_DESIGN.md (dong ~5), ARCHITECTURE.md (~124), ROADMAP.md (~8), docs/design/product-ux.md (~7, ~12), docs/walkthrough-en.md (~12, ~308), docs/walkthrough-vi.md (~14, ~296); cau prose `docs/handoff/` trong README.md/README.vi.md doi thanh "local handoff notes"; hai con tro coordination trong docs/design/composition-studies.md (~77) va docs/design/reference-notes-2026-11-02.md (~44) doi thanh "(local coordination notes, not published)"; docs/public-catalog.md: chuyen hang `docs/handoff/**` tu bang public sang bang Internal - do not publish. **docs/plan/STATUS.md: GIU NGUYEN VAN cac dong lich su, khong sua.**
+4. Cong Windows day du: gofmt/vet/test/race/build + npm test/build. Bao cao vao Muc B: head SHA + ket qua cong + danh sach file untrack.
+
+**VIEC 2 - Regen manifest CUOI (chi sau khi N5 da merge, nhanh rieng, CHO MANIFEST-MERGE OK):**
+- Script snapshot QUET FILESYSTEM, khong quet git index: tren checkout chinh, docs/handoff/ van nam tren dia nen se bi quet tro lai. **Bat buoc regen tu mot CLONE SACH moi cua main moi** (khong co coordination/ va docs/handoff/ tren dia).
+- Luu y script da doi o N3: cay snapshot nay gom them examples/cis + examples/standard-acl + examples/object-groups + examples/ipv6-acl + examples/README.md; docs/handoff se bien mat khoi manifest (-9 entry), .gitignore doi hash. Bao cao so entry truoc/sau + tu kiem hash 100% trong Muc B.
+
+**NGOAI PHAM VI:** N6 release - phia Chi Nhan da prep xong (binary + notes nhap); tag v1.0.0 + publish van cho RELEASE-GO cua chu so huu, LOCAL khong tu lam. Khong sua STATUS.md, khong cham manifest trong PR N5.
+
 ### SESSION ĐÊM 2026-11-05 — HOÀN THIỆN UI + P3-1..P3-8 + README + DỌN REPO + RELEASE
 **(MỚI NHẤT — ĐỌC TRƯỚC TIÊN. Thay mọi chỉ đạo cũ còn treo, trừ KỶ LUẬT CỔNG và giao thức ghi vẫn giữ nguyên.)**
 

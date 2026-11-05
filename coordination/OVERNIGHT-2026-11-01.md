@@ -820,6 +820,11 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — #81 đã merge; manifest cuối #82 chờ duyệt
+- GitHub xác nhận #81 MERGED lúc 22:22:20 +07 bởi `vmcchooky`, merge `f2fff008f2a82dc0c45f5ae8f636a260849f62c1`, head `74ccb1171fabad59ba1590c625a65c998b765a32`. Agent phiên này không thực hiện merge. Cổng Windows trước merge: gofmt 0 file, vet/test/race/build PASS exit=0 (29 package test + 1 không test, cached), npm test 24 file/192 test PASS exit=0, npm build PASS exit=0; đã ghi chi tiết Mục B.
+- PR manifest cuối #82 https://github.com/vmcchooky/plenilune/pull/82, base `f2fff008f2a82dc0c45f5ae8f636a260849f62c1`, head `552fc9c3533a7964e2dab4ea3a9a565f4b161699`; chỉ `docs/public-manifest.sha256`, 32+/29−. Clone mới sạch `core.autocrlf=false`, `Test-Path coordination=False`, `Test-Path docs/handoff=False`; script `scripts/public-snapshot.ps1` cho `Manifest entries: 481 (manifest file itself is not listed)`, manifest cũ 478 entry (trước N3/N4/N5; không được coi chênh +3 là riêng N5).
+- Tự kiểm raw SHA256 trên cả cây source và snapshot: `manifest_entries=481 unique=481 snapshot_files=481 missing=0 extra=0 hash_mismatches=0`, exit=0; secret scan `Secret scan clean: 450 scanned files; no blocking patterns.` Chờ MANIFEST-MERGE OK, đang chạy cổng Windows.
+
 ### 2026-11-05 — N5 #81 cập nhật theo chủ sở hữu, chờ duyệt
 - Chủ sở hữu đã trực tiếp chấp thuận mở rộng N5 để sửa liên kết tài liệu trong cùng PR. #81 https://github.com/vmcchooky/plenilune/pull/81 nay ready for review, head `74ccb1171fabad59ba1590c625a65c998b765a32`, base `883f1dbce39c7ebe210d1b354cbdd6669ca918a6`; gồm 23 file untrack đã liệt kê, `.gitignore` và 11 file docs/README sửa tham chiếu như chỉ đạo. Không sửa STATUS, không sửa manifest; file local vẫn trên đĩa. Các file CRLF giữ CRLF, `git diff --check` báo trailing whitespace ở dòng CRLF vốn dùng trong repo.
 - Cổng Windows head `74ccb11`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0; `npm test` PASS exit=0 (24/24 file, 192/192 test); `npm run build` PASS exit=0 (cảnh báo chunk >500 kB). Chờ MERGE OK; sau merge sẽ regen manifest từ clone sạch.

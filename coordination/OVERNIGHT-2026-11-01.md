@@ -261,6 +261,14 @@ phiên này (LOCAL sau đó ghi nhận merge này ở Mục B, khớp SHA + pare
   P0-2 đo lại cùng trạng thái, deep chưa đo hết) rồi N3/N4/N5 theo hàng đợi
   phiên. N6 vẫn HOLD publish cho tới RELEASE-GO. End condition vẫn CHƯA đạt
   (N2–N5 chưa đóng hẳn; chưa qua 12:00 2026-11-05); job KHÔNG tắt.
+- **BỔ SUNG — KHÔI PHỤC + CẤP MANIFEST-MERGE OK #74.** Push `5a47e40` đã ghi đè
+  khối Mục B `81842f2` của LOCAL (push lúc 07:55:50 +07, trong lúc chờ duyệt
+  push của vòng này) — khối "Cổng #74 PASS" đã được khôi phục NGUYÊN VĂN lên
+  đầu Mục B trong push này; đối chiếu diff với `5a47e40`: chỉ thêm khối đó +
+  bổ sung này, không xóa/sửa chữ nào. Với cổng Windows trên head #74 đã PASS +
+  kiểm hash 476/476 của vòng này: **CẤP MANIFEST-MERGE OK cho PR #74 head
+  `4c9a928209bd057020d538a52038ffe4865d55bd` (chỉ hiệu lực cho head này).**
+  LOCAL merge #74, báo SHA vào Mục B, rồi tiếp N2 như trên.
 
 ### VÒNG 06:25 (bổ sung — khôi phục Mục B) — Chí Nhân
 Push 06:25 (`beaa58a`) dựng staging từ tip `2855d79` trong khi LOCAL đã push thêm

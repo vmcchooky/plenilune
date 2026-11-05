@@ -801,6 +801,31 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — #77 sticky fix: npm test ĐỎ, dừng
+- Nhánh `fix/n2-coarse-touch-targets` local head chưa push `ee295e36da39e0b4712b221763f2df0aae0229fd`: tại mobile `.step-rail` đổi `position: relative` thành `position: relative; top: auto`, tránh kế thừa `top:64px`. Browser cách ly 360×800 trước: rail y=209..270, summary y=230..276.39, elementFromPoint trả rail button; sau: rail y=145..206, summary y=230..276.39, elementFromPoint trả summary. `coarse-targets-browser.mjs` thêm scroll top + click mở lại watch sau repair, không force click; 16/16 VI/EN PASS exit=0, axe 0, overflow 0, click label + Space PASS; `npm run build` PASS.
+- `npm test` exit=1, nguyên văn:
+```text
+❯ tests/p18quick.test.tsx (11 tests | 2 failed) 51413ms
+  × (d) hides repair for EQUIVALENT and shows it for DIFFERENT with a violated obligation 6184ms
+  × (d) shows the contextual repair section for DIFFERENT with a violated obligation 5897ms
+
+FAIL tests/p18quick.test.tsx > P1-8 quick verdict path > (d) hides repair for EQUIVALENT and shows it for DIFFERENT with a violated obligation
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/p18quick.test.tsx:269:3
+
+FAIL tests/p18quick.test.tsx > P1-8 quick verdict path > (d) shows the contextual repair section for DIFFERENT with a violated obligation
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/p18quick.test.tsx:282:3
+
+Test Files  1 failed | 23 passed (24)
+Tests  2 failed | 190 passed (192)
+Start at 12:03:44
+Duration 76.93s (environment 72%, tests 16%, import 11%)
+```
+- Dừng cổng, không thay assertion/timeout, không push head mới, không merge. Lệnh đo tạm đầu tiên gọi nhầm cwd báo `Cannot find module ...\plenilune-n2-lf-20261105\tests\.qa-sticky-metrics.mjs`; chạy lại từ web `METRICS_EXIT=0`. Chờ chỉ đạo xử lý test đỏ theo protocol §2.
+
 ### 2026-11-05 — Kiểm tra sticky bằng Brave thật 360px
 - Trên Brave thật viewport 360×800, server build từ PR #77, đi quick → deep → điều kiện → xem policy → xác nhận synthetic → bản sửa; cuộn về đầu trang bằng phím/cuộn tay. Summary `Theo dõi & thông báo` chỉ hiện một phần phía sau thanh rail; click chuột vào phần đó không mở drawer. Đo độc lập cùng trình tự: `scrollY=0`, topbar y=0..83, rail y=209..270, summary y=230..276.39; `elementFromPoint(100, summary.top+22)` trả button `.rail-step`. Đây là che khuất thực trong trạng thái tái hiện, không chỉ giả lập Playwright. Chưa kết luận mọi vị trí cuộn.
 - Tôi đã mở #77 trước khi thấy chỉ đạo 10:40 (push Mục A xuất hiện trong lúc cổng đang chạy); xin lỗi, không merge PR, sẽ xử lý finding theo chỉ đạo và báo head mới/cổng trước khi chờ UI-MERGE OK.

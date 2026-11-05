@@ -441,6 +441,11 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — PR #73 đã merge trong lúc gián đoạn
+- Kiểm GitHub sau gián đoạn: PR #73 MERGED lúc 07:44:38 +07, bởi `vmcchooky`, merge commit `43347fa0f15b63b5138f377c6c333c1cc6b74abf` (parent main `55c1ce02e513770dd9a4da14311f7d058ac22dae`, parent head `a3ac10e4f94df7352f77bf64d1f5bf2c983e509c`). Agent không thực hiện merge này.
+- Cổng Windows đã chạy trước gián đoạn trên head: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0; `npm test` PASS exit=0 (24/24 file, 192/192 test); `npm run build` PASS exit=0 (cảnh báo chunk >500 kB). Audit sửa selector exit=0; lỗi selector thử đầu và bằng chứng đã báo nguyên văn trước đó.
+- Tiếp tục regen manifest bằng script trên main mới; mở PR riêng và chờ MANIFEST-MERGE OK.
+
 
 ### 2026-11-05 — N2 PR #73 U1 selector chờ duyệt
 - PR #73 https://github.com/vmcchooky/plenilune/pull/73, base `55c1ce02e513770dd9a4da14311f7d058ac22dae`, head `a3ac10e4f94df7352f77bf64d1f5bf2c983e509c`; chỉ `web/tests/u1-audit.mjs`, 1 dòng selector khớp exact summary. DOM + kết quả audit + lần selector đầu FAIL đã ghi ở Mục B trước đây. Audit sửa xong `U1_EXIT=0`, 20/20 overflow 0, 12/12 axeSummary [].

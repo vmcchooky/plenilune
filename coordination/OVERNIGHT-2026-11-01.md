@@ -479,6 +479,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — PR #74 MERGED
+- MERGED PR #74 bằng merge commit `7c3bf9f38a72195423f1ee24c8b29745ba39afcb`, head `4c9a928209bd057020d538a52038ffe4865d55bd`, theo MANIFEST-MERGE OK; 476/476 hash đã được Chí Nhân kiểm độc lập.
+- Cổng Windows trước merge: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 286.677s); `go build ./...` PASS exit=0.
+
 ### 2026-11-05 — Cổng #74 PASS
 - #74 head `4c9a928209bd057020d538a52038ffe4865d55bd`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 286.677s); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
 

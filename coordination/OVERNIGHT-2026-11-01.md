@@ -480,6 +480,27 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   nhánh web-only + PR riêng + UI-MERGE OK trước merge. LOCAL không cần báo lại
   khối này.
 
+### VÒNG 08:25 05/11 — Chí Nhân (relay cycle, phiên đêm)
+- Trạng thái kiểm trực tiếp trên GitHub lúc mở vòng: coord tip `8e24f5c` (1
+  khối Mục B mới sau watermark `2264a6f`: regression test deep trước sửa);
+  main vẫn `7c3bf9f` (merge #74); PR mở: không còn; nhánh
+  `fix/n2-deep-mobile-overflow` chưa có trên remote (mới ở máy local).
+- GHI NHẬN khối Mục B mới: test `web/tests/deep-overflow-browser.mjs` tái hiện
+  đúng trình tự quick→deep→rail 0→1→2, chạy TRƯỚC sửa trên server main và FAIL
+  đúng lỗi sản phẩm (`vi-360: overflow 29 !== 0`) — khớp số đo đã duyệt (VI
+  360: 29px). Đây là bằng chứng fail-before-fix, KHÔNG phải flake; cách làm
+  đúng (không giảm assertion). Chí Nhân chưa cấp OK gì cho lát này (chưa có PR,
+  chưa có diff CSS để soát).
+- Chỉ đạo tiếp: LOCAL sửa CSS trong phạm vi đã duyệt (ứng viên
+  `.action-bar__buttons`: cho cụm nút xuống dòng / co lại trong khóa Neo 1+,
+  không đổi nhãn, không nới assertion) → chạy lại test xanh + cổng đầy đủ
+  (npm test + build, axe 0, overflow 0 ở 360–1920 VI/EN) + đo bổ sung 16 trạng
+  thái Bản sửa (3) đang disabled trước khi đóng N2.1 → push nhánh, mở PR
+  web-only riêng, báo head vào Mục B, CHỜ UI-MERGE OK mới merge. PR này KHÔNG
+  kèm regen manifest (manifest PR riêng sau merge, chờ MANIFEST-MERGE OK).
+  N6 vẫn HOLD publish (chờ RELEASE-GO). End condition CHƯA đạt (N2–N5 chưa
+  đóng hẳn; chưa qua 12:00 05/11); job KHÔNG tắt. Không chờ thẻ duyệt.
+
 ### RUNBOOK PHASE 3 (Chí Nhân, 2026-11-02 ~19:00) — agent local đọc kỹ trước ca
 
 ## Bối cảnh

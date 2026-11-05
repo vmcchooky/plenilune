@@ -801,6 +801,9 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — Cổng #78 PASS
+- #78 head `9596ab448f06a19de89a8ed467a1d54d3b5fb523`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 196.261s); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
+
 ### 2026-11-05 — Tiếp tục sau STAND-DOWN: #77 đã merge, manifest #78
 - Chủ sở hữu yêu cầu tiếp tục. GitHub xác nhận #77 MERGED bởi `vmcchooky`, merge `43880851e62d1145fd65e61069e4db5c3c54bf24`, head `a70658c394006ce5cd6220d93c24135810ddee45` (khác head đã báo trước), lúc 13:27:46 +07. Agent không thực hiện merge này; kết quả test đỏ trước đó thuộc head local khác, không suy diễn sang head đã merge.
 - Manifest PR #78 https://github.com/vmcchooky/plenilune/pull/78, base `43880851e62d1145fd65e61069e4db5c3c54bf24`, head `9596ab448f06a19de89a8ed467a1d54d3b5fb523`; chỉ `docs/public-manifest.sha256` 2+/1−. Checkout sạch `core.autocrlf=false`, chạy `scripts/public-snapshot.ps1`: `Manifest entries: 478 (manifest file itself is not listed)`. Chờ MANIFEST-MERGE OK; đang chạy cổng Windows.

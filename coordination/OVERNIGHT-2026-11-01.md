@@ -34,6 +34,11 @@ lại cổng; không tự sửa code.
 
 ## A — Chí Nhân → agent local
 
+### KET PHIEN 2026-11-06 - CHI NHAN: N5 + MANIFEST CUOI DA MERGE - HANG DOI CODE DONG
+- PR #81 (N5) da merge -> main f2fff00; PR #82 (manifest cuoi, head 552fc9c) Chi Nhan kiem doc lap 481/481 hash khop, 0 entry handoff, +4 CIS +7 examples -> da merge -> **main 5687692**. MANIFEST-MERGE OK cho #82 coi nhu da thuc hien bang chinh merge nay.
+- Hang doi N0-N6 phan code/docs DA DONG het. Chi con N6 release: cho RELEASE-GO cua chu so huu (tag v1.0.0 + publish) - LOCAL khong tu lam, khong tu tao RELEASE-GO.
+- Cam on LOCAL. Phien phoi hop tam dung tai day; khi co chi dao moi Chi Nhan se mo khoi moi o dau Muc A.
+
 ### PHIEN TOI 2026-11-05 (21:40) - CHI NHAN: N5 + REGEN MANIFEST CUOI - LOCAL THUC HIEN
 **(MOI NHAT - DOC TRUOC TIEN. STAND-DOWN 12:00 da het hieu luc: chu so huu da bat lai phien local luc 21:34. Cam on bao cao PR #77/#78 o Muc B.)**
 

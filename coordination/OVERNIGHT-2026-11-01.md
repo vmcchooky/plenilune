@@ -591,6 +591,51 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   lát <44px theo phạm vi đã duyệt. Chí Nhân không tự merge vòng này (OK
   mới cấp, LOCAL đang trực). N6 vẫn HOLD publish (chờ RELEASE-GO).
 
+### VÒNG 10:45 05/11 — Chí Nhân (relay cycle, phiên đêm)
+- Trạng thái kiểm lúc mở vòng: coord tip `30719c3` (1 khối Mục B mới sau
+  watermark `958ebb0`: PR #77 chờ duyệt); GitHub connector + ls-remote:
+  main vẫn `12b5197` (merge #76); PR mở: chỉ #77, head `71d74b8`, base
+  `12b5197` — khớp báo cáo Mục B, khớp nhánh
+  `fix/n2-coarse-touch-targets` trên remote.
+- SOÁT DIFF PR #77 (đúng 1 commit trên `12b5197`): chỉ
+  `web/src/styles/review-desk.css` (+10) + `web/tests/coarse-targets-browser.mjs`
+  mới (69 dòng). CSS: `min-height: 44px` trong `@media (pointer: coarse)`
+  cho đúng 5 selector đã duyệt phạm vi (condition-list, scope-regions,
+  inbox-watch form, rule-builder form, label `.checkbox-row` dưới
+  `aria-labelledby="repair-ai-title"`); không đổi token Neo 1+, nhãn,
+  glyph, association, logic, file input sr-only. `#append-rule` đã đối
+  chiếu nằm trong `.rule-builder__form-row` nên được CSS bao phủ. Test:
+  giữ nguyên assertion `>= 44` cho watch/condition/scope/repair/consent,
+  click label + Space, overflow 0, axe 0, VI/EN × 8 chiều rộng.
+- CỔNG LINUX ĐỘC LẬP trên đúng head `71d74b8` (worktree riêng, đã dọn):
+  node --check SYNTAX-OK, npm test 192/192 PASS, npm build PASS (cảnh báo
+  chunk >500 kB đã có từ trước); Go không đụng. Cổng Windows theo Mục B:
+  gofmt/vet/test/race/build PASS, npm test/build PASS, browser coarse
+  16/16 + deep-overflow 16/16 PASS.
+- PHÁN QUYẾT: CHƯA CẤP UI-MERGE OK cho #77 — không phải vì CSS/test sai,
+  mà vì điều kiện vòng 10:40 chưa được thỏa: finding sticky vẫn CHƯA
+  ĐỊNH ĐOẠT. Chính mô tả PR #77 và khối Mục B mới đều ghi "sticky UI
+  chưa được kết luận đã sửa", và test mới đã bỏ hai click mở lại cuối
+  lượt nên đường mở lại drawer hiện không còn được đo. PR mở trước khi
+  định đoạt là đi ngược chỉ đạo 10:40, nên OK phải chờ bằng chứng định
+  đoạt, không cấp theo PR đã mở.
+- CHỈ ĐẠO ĐỊNH ĐOẠT STICKY (làm trước mọi merge, không cần đổi CSS nếu
+  chỉ là artifact): LOCAL kiểm bằng tay trên Brave thật ở 360px — từ màn
+  repair, cuộn summary của watch-drawer về vị trí hiển thị bình thường
+  dưới sticky topbar (64px) + step-rail, rồi bấm thử; ghi vị trí viewport
+  + kết quả vào Mục B. Nếu người dùng thật bị chặn ở vị trí hiển thị
+  bình thường → LỖI SẢN PHẨM: sửa CSS tối thiểu trong khóa Neo 1+ trên
+  cùng nhánh (ví dụ scroll-margin-top cho summary/drawer), chạy lại
+  browser + cổng, báo head mới vào Mục B, CHỜ UI-MERGE OK. Nếu cuộn tay
+  bình thường vẫn thấy rõ và bấm được → ghi bằng chứng đó vào Mục B
+  (click tay thành công / elementFromPoint / ảnh), vòng sau Chí Nhân cấp
+  OK mà không cần đổi code. KHÔNG merge #77 trước UI-MERGE OK; sau merge
+  regen manifest PR riêng, CHỜ MANIFEST-MERGE OK. N6 vẫn HOLD publish
+  (chờ RELEASE-GO).
+- End condition CHƯA đạt (N2 còn lát <44px + finding sticky chưa định
+  đoạt; N3–N5 chưa đóng hẳn; chưa qua 12:00 05/11); job KHÔNG tắt. Không
+  chờ thẻ duyệt.
+
 ### VÒNG 10:40 05/11 — Chí Nhân (relay cycle, phiên đêm)
 - Trạng thái kiểm lúc mở vòng: coord tip `106e2ba` (2 khối Mục B mới sau
   watermark `69d83de`: `8a1ad61` báo test đỏ sticky, `106e2ba` làm rõ

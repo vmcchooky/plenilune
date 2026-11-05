@@ -55,6 +55,9 @@ flowchart LR
 | `internal/ai`, `internal/agent` | Provider/tool loop, budget, evidence refs | Tự tạo verdict hoặc apply thiết bị |
 | `internal/analysis` | Intake cấu hình, inventory đối tượng, dispatch domain, artifact phân tích và replay; phân loại tuần tự + engine song song theo worker pool, budget toàn cục theo ledger thứ tự canonical | Parse/semantics của miền; device/auth |
 | `internal/prefixlist` | Parse/evaluate/compare IPv4 prefix-list chính xác | Network, file I/O, route-map |
+| `internal/ciscoacl6`, `internal/packetset6`, `internal/verify6` | IPv6 ACL song song (P3-7): parse `cisco-acl6/v0.1`, cube 128-bit + chiều ICMPv6 type, so sánh exact `acl6-exact/v0.1` | Đụng vào đường IPv4 đã kiểm chứng; obligations/repair cho IPv6 |
+| `internal/capabilities` | Builder duy nhất của document `plenilune.capabilities/v1` (schemas/domains/limits/features/error codes) | Nguồn sự thật thứ hai ngoài constants của package sở hữu |
+| `internal/errtax` | Registry taxonomy lỗi typed (code/stage/retryable) dùng chung CLI/HTTP | Parse message text thay cho code/stage |
 | `internal/demohttp` | API localhost, opt-in Meta config/session | Quyết định semantics hoặc gọi device |
 
 Không tạo package rỗng chỉ để khớp sơ đồ. Contract máy đọc và ví dụ có authority tại [CONTRACTS](CONTRACTS.md).
@@ -68,7 +71,7 @@ Không tạo package rỗng chỉ để khớp sơ đồ. Contract máy đọc v
 - Canonical accepted obligation **definition** (kind, region, excludes, scope, ID) và kết quả đều thuộc deterministic digest, cùng input digests và phiên bản.
 - Model ID, usage, response hash và timing là metadata riêng. AI không cần được gọi lại để replay deterministic evidence.
 - Hash kiểm tra nội dung/consistency; không chứng minh người tạo, không chống kẻ sửa cả nội dung lẫn hash.
-- Trace dùng `plenilune.trace/v1`; full comparison dùng `plenilune.evidence/v1`. Replay đọc đúng schema, không đổi nghĩa trace.
+- Trace dùng `plenilune.trace/v1`; full comparison dùng `plenilune.evidence/v2` (v1 đóng băng, replay-only). Replay đọc đúng schema, không đổi nghĩa trace.
 - JSON evidence là dữ liệu gốc cho view. Full replay dùng input + obligation đã lưu; checksum-only không được gọi là semantic replay.
 
 ## Tích hợp và lỗi
@@ -77,7 +80,7 @@ MoonStorm tương lai gọi subprocess JSON theo version đã pin; MoonStorm gi�
 Không copy/import code MoonStorm, không thêm coupling SQLite/custody/SSH vào core.
 Lỗi có code/stage/source line khi biết; không in secrets hoặc cả config vào log.
 Unsupported, input limit, ambiguity và budget không được biến thành kết luận an toàn.
-Server demo chỉ listen localhost. Repo chưa push; license Apache-2.0 (chủ dự án chuyển từ GPL-3.0-only ngày 04/11/2026);
+Server demo chỉ listen localhost. License Apache-2.0 (chủ dự án chuyển từ GPL-3.0-only ngày 04/11/2026);
 lượt này không gọi live Meta.
 
 ## Runtime update — 31/10/2026

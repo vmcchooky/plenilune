@@ -164,8 +164,9 @@ service, model, marks or outputs, and Plenilune is not endorsed by Meta.
   qualification has been completed.
 - Live UI with Meta, real-device qualification and model-quality evaluation
   remain open; a successful mocked provider test is not live evidence.
-- There is no supported release train. Only the current source tree is exercised
-  by the local checks.
+- The supported release line is the latest 1.x release (see "Supported
+  versions" above and `RELEASING.md`); pre-release snapshots are not
+  supported.
 
 ## Local checks before sharing
 
@@ -187,7 +188,8 @@ assets must be reviewed separately.
 
 ## Publication gate
 
-The owner has selected GPL-3.0-only, added [LICENSE](LICENSE)/[NOTICE](NOTICE)
+The owner has selected Apache-2.0 (changed from GPL-3.0-only on
+4 November 2026), added [LICENSE](LICENSE)/[NOTICE](NOTICE)
 and assigned the security contact. Before a remote push or deployment:
 
 1. the owner reviews the final [public catalog](docs/public-catalog.md), public

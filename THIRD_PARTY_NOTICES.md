@@ -114,7 +114,7 @@ As reviewed on 31 October 2026:
 Those are service terms, not additional restrictions on Plenilune's source.
 This summary is not legal advice and the terms may change; review the current
 documents before enabling AI. Do not represent Meta as endorsing Plenilune, and
-do not describe Meta's model or service as licensed under Plenilune's GPL.
+do not describe Meta's model or service as licensed under Plenilune's Apache-2.0 license.
 
 ## All locked npm packages
 

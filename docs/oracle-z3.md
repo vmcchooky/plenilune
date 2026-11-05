@@ -36,5 +36,6 @@ Investigate disagreements on both sides. Agreement is regression evidence on
 this generated corpus, not a proof of engine correctness or device semantics.
 
 Local result 2026-11-02, Windows, Python 3.13, Z3 4.13.4, seed 3304:
-164 pairs passed (66 EQUIVALENT, 98 DIFFERENT). Hosted CI execution remains
-unmeasured until the workflow is published by the owner.
+164 pairs passed (66 EQUIVALENT, 98 DIFFERENT). Hosted CI ran successfully
+on main after PR #54 (run 41580010329, recorded 2026-11-03 in
+docs/plan/STATUS.md, P3-3).

@@ -1,8 +1,9 @@
 # Standard IPv4 ACL profile — parser v0.3
 
-Status: implementation in progress for P3-5. This document does not advertise
-runtime support before parser, independent oracle, intake, repair and frozen
-replay gates pass. Production status lives in docs/plan/STATUS.md.
+Status: implemented for P3-5 (parser, independent oracle, intake, repair
+and frozen replay gates passed; merged via PR #54). Production status
+lives in docs/plan/STATUS.md. A runnable pair lives in
+`examples/standard-acl/`.
 
 ## Model and source authority
 
@@ -62,7 +63,8 @@ renumber standard network rules in physical order and thereby change semantics.
 
 ## Version and replay requirements
 
-Fresh support uses `cisco-acl/v0.3`; `cisco-acl/v0.2` remains explicit legacy
+Fresh support arrived in `cisco-acl/v0.3` and continues in the current
+`cisco-acl/v0.4`; `cisco-acl/v0.2` remains explicit legacy
 dispatch and must continue rejecting standard ACLs. Old trace, comparison,
 analysis, audit, repair and enumeration records retain their recorded parser and
 artifact identities. No frozen fixture is rewritten merely to match the new
@@ -78,4 +80,5 @@ compare, obligations, changes, audit, budget-stopped partials and witnesses.
 
 Integration covers both syntaxes, full-configuration source mapping, policy
 acceptance, append/remove/replace at nonmonotone source positions, CRLF, replay,
-and explicit capability/unsupported reporting. Until these pass, P3-5 stays open.
+and explicit capability/unsupported reporting. These gates passed for P3-5
+(see docs/plan/STATUS.md).

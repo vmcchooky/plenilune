@@ -39,7 +39,7 @@ $rootFiles = @(
 )
 foreach ($name in $rootFiles) { Copy-PublicFile (Get-Item -LiteralPath (Join-Path $root $name)) }
 
-foreach ($tree in @('cmd', 'internal', 'testdata', 'docs', 'examples/moonstorm-client', 'web/src', 'web/public', 'third_party/licenses')) {
+foreach ($tree in @('cmd', 'internal', 'testdata', 'docs', 'examples/moonstorm-client', 'examples/cis', 'examples/standard-acl', 'examples/object-groups', 'examples/ipv6-acl', 'web/src', 'web/public', 'third_party/licenses')) {
     $base = Join-Path $root $tree
     if (-not (Test-Path -LiteralPath $base)) { continue }
     Get-ChildItem -LiteralPath $base -Recurse -File -Force | ForEach-Object { Copy-PublicFile $_ }
@@ -49,7 +49,7 @@ Get-ChildItem -LiteralPath (Join-Path $root 'scripts') -File -Filter '*.ps1' | F
 
 # Development gates must accompany the source snapshot; no Python packages or
 # generated caches are redistributed.
-foreach ($name in @('scripts/fuzz.sh', 'scripts/oracle/requirements.txt', 'scripts/oracle/differential.py', 'scripts/oracle/test_differential.py', '.github/workflows/fuzz.yml', '.github/workflows/oracle.yml')) {
+foreach ($name in @('examples/README.md', 'scripts/fuzz.sh', 'scripts/oracle/requirements.txt', 'scripts/oracle/differential.py', 'scripts/oracle/test_differential.py', '.github/workflows/fuzz.yml', '.github/workflows/oracle.yml')) {
     Copy-PublicFile (Get-Item -LiteralPath (Join-Path $root $name))
 }
 

@@ -552,6 +552,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2.1 đo bổ sung 16 trạng thái Bản sửa
+- Trên build PR #75 head `46fc85f`, mỗi lần đi VI quick→deep→Điều kiện→Xem policy đã chuẩn hóa→tick xác nhận→Chấp nhận & kiểm chứng→Chuẩn bị bản sửa, sau đó chuyển EN cho lượt EN. Coarse pointer VI/EN × 360/390/480/768/1024/1280/1440/1920: 16/16 mở được Bản sửa, document overflow 0, axe []; ảnh `C:\Users\vmcch\AppData\Local\Temp\plenilune-n2-lf-20261105\out\n2-repair\{vi,en}-{390,1440}.png`, JSON `...\out\n2-repair\measurements.json`, script tạm `...\web\tests\.qa-repair-measure.mjs`.
+- Đo control thực: một checkbox input 16×24px có label liên kết rộng 296–908px nhưng cao 42px tại 360/390 và 28px tại 480–1920; một input text cao 42px ở tất cả tổ hợp. Không nhận toàn bộ mục tiêu ≥44px; cần đánh giá lát riêng. Các nút hiển thị không lọt bộ lọc hình học <44 trong trạng thái đo. Các 16 trạng thái disabled trước đây nay đã được đo theo luồng policy synthetic này, không đại diện mọi receipt/repair state.
+
 ### 2026-11-05 — N2 deep-overflow PR #75 chờ duyệt
 - PR #75 https://github.com/vmcchooky/plenilune/pull/75 base `7c3bf9f38a72195423f1ee24c8b29745ba39afcb`, head `46fc85f228b330ca5c13a51ade4019d085ab4568`; chỉ `web/src/styles/app.css` và `web/tests/deep-overflow-browser.mjs`. Tại breakpoint mobile, action-bar buttons cho phép nhãn xuống dòng (`white-space: normal; overflow-wrap: anywhere`), không đổi nhãn/màu/engine.
 - Regression test mới trước sửa FAIL `vi-360: overflow 29 !== 0` như Mục B trước, đây là lỗi sản phẩm tái hiện, không phải flake; sau sửa 16/16 VI/EN × 360/390/480/768/1024/1280/1440/1920 PASS, mỗi case kiểm document overflow=0, hai nhãn vừa nút, chiều cao ≥44px, axe []; `review-desk-browser.mjs` 35 checks passed. Ảnh sau `C:\Users\vmcch\AppData\Local\Temp\plenilune-n2-lf-20261105\out\n2-deep-fixed\{vi,en}-{360,390,1440}.png`; ảnh trước 390 `...\out\n2-deep\{vi,en}-390-stage-2.png`.

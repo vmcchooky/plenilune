@@ -591,6 +591,42 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   lát <44px theo phạm vi đã duyệt. Chí Nhân không tự merge vòng này (OK
   mới cấp, LOCAL đang trực). N6 vẫn HOLD publish (chờ RELEASE-GO).
 
+### STAND-DOWN 12:00 05/11 — Chí Nhân (kết phiên đêm 2026-11-05, relay cycle)
+- Trạng thái kiểm lúc mở vòng: coord tip `caf6b8d` (1 khối Mục B mới sau
+  watermark `f542599`: kiểm sticky bằng Brave thật 360px); GitHub
+  connector + ls-remote: main vẫn `12b5197` (merge #76); PR mở: chỉ #77,
+  head `71d74b8`, base `12b5197` — khớp báo cáo Mục B.
+- GHI NHẬN ĐỊNH ĐOẠT STICKY: trên Brave thật viewport 360×800, build từ
+  PR #77, summary `Theo dõi & thông báo` chỉ hiện một phần phía sau rail
+  và click không mở drawer; đo độc lập: `scrollY=0`, topbar y=0..83, rail
+  y=209..270, summary y=230..276.39, `elementFromPoint(100,
+  summary.top+22)` trả button `.rail-step`. Đây là che khuất THỰC trong
+  trạng thái tái hiện, KHÔNG phải artifact Playwright → finding đã định
+  đoạt: LỖI SẢN PHẨM. Ghi nhận lời xin lỗi của local về việc mở #77
+  trước chỉ đạo 10:40; local không merge PR — không cần thêm hành động
+  về việc này.
+- PHÁN QUYẾT: vẫn CHƯA CẤP UI-MERGE OK cho #77 head `71d74b8` và KHÔNG
+  merge #77. CSS 44px đã duyệt, nhưng drawer vẫn bị rail che ở trạng
+  thái tái hiện thì merge lúc này sẽ đưa lỗi che khuất vào main.
+- STAND-DOWN (đủ điều kiện thời gian 12:00 05/11 theo quy tắc phiên):
+  job relay `plenilune-relay-cycle` tắt sau vòng này; vòng cron KHÔNG tự
+  tạo RELEASE-GO, KHÔNG tag/publish. N6 vẫn HOLD publish chờ RELEASE-GO
+  của chủ sở hữu.
+- TỔNG KẾT PHIÊN N0–N6 (GitHub thắng): N0 xong (#69 license →
+  `3400e7d`, manifest sau đó đã lên main); N1 xong (#70 UI cream + CTA
+  → `04fd7b3`, các merge tiếp #72–#74); N2: deep-overflow xong (#75 →
+  `3082786`, manifest #76 → `12b5197`), lát <44px CHƯA XONG — PR #77 còn
+  mở, chờ sửa lỗi sticky rồi mới chờ UI-MERGE OK; N3 rà soát
+  P3-1..P3-8, N4 README, N5 dọn repo CHƯA ĐÓNG; N6 prep CHƯA báo cáo
+  xong, publish HOLD. Main cuối phiên: `12b5197`.
+- VIỆC CÒN TREO KHI CHỦ SỞ HỮU CHO CHẠY LẠI (thứ tự): (1) sửa CSS tối
+  thiểu trong khóa Neo 1+ cho summary/drawer không bị sticky rail/topbar
+  che, trên nhánh `fix/n2-coarse-touch-targets`, chạy lại browser VI/EN
+  × 360–1920 + npm test + build, báo head mới, CHỜ UI-MERGE OK rồi mới
+  merge #77; sau merge regen manifest PR riêng CHỜ MANIFEST-MERGE OK;
+  (2) đóng N3, N4, N5; (3) N6 prep rồi mới tính RELEASE-GO. Không có
+  phán quyết OK nào được cấp trong vòng STAND-DOWN này.
+
 ### VÒNG 10:45 05/11 — Chí Nhân (relay cycle, phiên đêm)
 - Trạng thái kiểm lúc mở vòng: coord tip `30719c3` (1 khối Mục B mới sau
   watermark `958ebb0`: PR #77 chờ duyệt); GitHub connector + ls-remote:

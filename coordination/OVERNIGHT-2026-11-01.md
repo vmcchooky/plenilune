@@ -591,6 +591,48 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   lát <44px theo phạm vi đã duyệt. Chí Nhân không tự merge vòng này (OK
   mới cấp, LOCAL đang trực). N6 vẫn HOLD publish (chờ RELEASE-GO).
 
+### VÒNG 10:40 05/11 — Chí Nhân (relay cycle, phiên đêm)
+- Trạng thái kiểm lúc mở vòng: coord tip `106e2ba` (2 khối Mục B mới sau
+  watermark `69d83de`: `8a1ad61` báo test đỏ sticky, `106e2ba` làm rõ
+  trình tự đo); GitHub: main vẫn `12b5197` (merge #76), PR mở: không còn;
+  nhánh `fix/n2-coarse-touch-targets` vẫn chưa có trên remote — chưa có
+  diff để soát, CHƯA cấp UI-MERGE OK.
+- GHI NHẬN kỷ luật đúng ở cả hai khối: không phân loại flake, không đổi
+  timeout, không force click, không merge/PR lúc test đỏ. Đúng.
+- PHÁN QUYẾT về sửa trình tự đo (khối `106e2ba`): CHẤP THUẬN VỀ NGUYÊN
+  TẮC, với điều kiện: assertion `watch.boundingBox().height >= 44` vẫn
+  giữ nguyên, chỉ chuyển thời điểm đo về lúc watch đang hiển thị sau khi
+  mở form — đó là sửa thời điểm đo, không phải nới assertion. Các
+  assertion condition/repair/label/click/Space/overflow/axe giữ nguyên.
+  Việc bổ sung locale EN từ đầu + tên nút EN là đúng hướng (đo đúng
+  locale).
+- NHƯNG: finding sticky KHÔNG được chôn theo sửa harness. Hai click mở
+  lại cuối lượt bị bỏ — phải xác định đó là artifact của Playwright hay
+  lỗi sản phẩm thật, TRƯỚC KHI mở PR:
+  - LOCAL kiểm bằng tay trên trình duyệt thật ở 360px: sau khi qua
+    repair, cuộn summary của watch-drawer về vị trí hiển thị bình thường
+    dưới sticky rail/header (tính chiều cao sticky, không để Playwright
+    tự cuộn đè lên header), rồi bấm thử. Ghi vị trí viewport + kết quả
+    vào Mục B.
+  - Nếu người dùng thật vẫn bị sticky chặn ở vị trí hiển thị bình
+    thường → ĐÂY LÀ LỖI SẢN PHẨM: báo Mục B thành finding riêng, sửa
+    bằng CSS tối thiểu trong khóa Neo 1+ (ví dụ scroll-margin-top cho
+    summary/drawer, không đổi nhãn/logic), kèm bằng chứng browser; lát
+    này phải xong trước khi đóng N2 — gộp vào PR <44px chỉ khi diff vẫn
+    web-only tối thiểu và nêu rõ trong mô tả PR, nếu không thì tách lát
+    riêng.
+  - Nếu chỉ là artifact do Playwright cuộn phần tử vào đúng dưới header
+    trong khi cuộn tay bình thường vẫn thấy rõ và bấm được → ghi bằng
+    chứng đó vào Mục B, rồi mới tiến hành PR.
+- CHỈ ĐẠO tiếp: chạy lại browser cho tới xanh (VI/EN × 360–1920, click
+  label/Space, overflow 0, axe 0) + npm test + build xanh → push nhánh +
+  mở PR web-only riêng, báo head vào Mục B, CHỜ UI-MERGE OK mới merge;
+  sau merge regen manifest PR riêng, CHỜ MANIFEST-MERGE OK. Không PR khi
+  còn đỏ. N6 vẫn HOLD publish (chờ RELEASE-GO).
+- End condition CHƯA đạt (N2 còn lát <44px + finding sticky chưa định
+  đoạt; N3–N5 chưa đóng hẳn; chưa qua 12:00 05/11); job KHÔNG tắt. Không
+  chờ thẻ duyệt.
+
 ### VÒNG 08:55 05/11 — Chí Nhân (relay cycle, phiên đêm)
 - Trạng thái kiểm lúc mở vòng: coord tip `719ab72` (= chính push Mục A
   vòng 08:35, không có Mục B mới); GitHub: main vẫn `3082786`, PR mở chỉ

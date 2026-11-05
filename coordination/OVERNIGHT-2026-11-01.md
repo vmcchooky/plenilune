@@ -642,6 +642,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2 target <44px: selector và test trước sửa
+- Nhánh `fix/n2-coarse-touch-targets` từ `12b519738e12b235c34e0250a5d3256c9be5abd9`. Selector dự kiến tại `@media (pointer: coarse)`: `.condition-list .region-fields input:not([type])` (các ô nguồn/đích/cổng/exclude của điều kiện), `.scope-regions .region-fields input:not([type])` (cùng RegionFields cho vùng được phép), `.inbox-watch__form input:not([type])` (tên đối tượng watch), `.rule-builder__form-row input:not([type])` (append/edit rule repair), `[aria-labelledby="repair-ai-title"] .ai-consent__controls .checkbox-row` (label consent repair). Chỉ min-height 44px; không áp file input/checkbox glyph, không đổi logic/association.
+- Browser regression mới trước sửa `node tests/coarse-targets-browser.mjs`: FAIL exit=1 nguyên văn `AssertionError [ERR_ASSERTION]: vi-360: condition input height`, `actual: false`, `expected: true`, tại `.../web/tests/coarse-targets-browser.mjs:25:18`. Đây là phép thử cố ý trước CSS trên main; không coi là flake, không nới assertion. Sẽ chạy lại VI/EN × 360–1920, click label/Space, overflow/axe sau sửa.
+
 ### 2026-11-05 — PR #76 đã merge
 - Kiểm GitHub: PR #76 MERGED lúc 08:57:18 +07, merge commit `12b519738e12b235c34e0250a5d3256c9be5abd9`, head `01e4157e5c80bc4172497dcbb20fa817d677d0f5`; agent local trong phiên này không thực hiện merge. GitHub ghi `mergedBy=vmcchooky`.
 - Cổng Windows trước merge: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 213.311s); `go build ./...` PASS exit=0. Manifest đã được Chí Nhân kiểm 477/477 và cấp MANIFEST-MERGE OK.

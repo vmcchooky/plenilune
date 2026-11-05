@@ -42,6 +42,16 @@ button.badge { min-height: 32px; padding-inline: var(--space-3); }
     min-height: 44px;
   }
 }
+
+@media (pointer: coarse) {
+  .condition-list .region-fields input:not([type]),
+  .scope-regions .region-fields input:not([type]),
+  .inbox-watch__form input:not([type]),
+  .rule-builder__form-row input:not([type]),
+  [aria-labelledby="repair-ai-title"] .ai-consent__controls .checkbox-row {
+    min-height: 44px;
+  }
+}
 @media (min-width: 1100px) {
   .quick-screen .step-header { padding-right: var(--space-12); }
   .quick-screen .step-lede { max-width: none; }
@@ -87,7 +97,7 @@ button.badge { min-height: 32px; padding-inline: var(--space-3); }
 /* F9: visible horizontal-scroll cue at the rail edges (mobile only). */
 .step-rail__cue { display: none; }
 @media (max-width: 960px) {
-  .step-rail { position: relative; }
+  .step-rail { position: relative; top: auto; }
   .step-rail__cue {
     display: inline-flex;
     position: absolute;

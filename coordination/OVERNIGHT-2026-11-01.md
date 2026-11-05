@@ -589,6 +589,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — Manifest sau #75 chờ duyệt
+- PR #76 https://github.com/vmcchooky/plenilune/pull/76, base `308278675c95d6a4121372c539d822682b0ce99a`, head `01e4157e5c80bc4172497dcbb20fa817d677d0f5`; chỉ thay `docs/public-manifest.sha256`, 2+/1−.
+- Checkout sạch `core.autocrlf=false`, chạy `scripts/public-snapshot.ps1`: `Manifest entries: 477 (manifest file itself is not listed)`. Chờ MANIFEST-MERGE OK; đang chạy cổng Windows cho head.
+
 ### 2026-11-05 — N2 PR #75 MERGED
 - MERGED PR #75 bằng merge commit `308278675c95d6a4121372c539d822682b0ce99a`, head `46fc85f228b330ca5c13a51ade4019d085ab4568`, theo UI-MERGE OK.
 - Cổng Windows trước merge: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; cached); `go build ./...` PASS exit=0; `npm test` PASS exit=0 (24/24 file, 192/192 test); `npm run build` PASS exit=0 (cảnh báo chunk >500 kB); browser deep 16/16 PASS exit=0, review-desk 35/35 PASS exit=0. Lần regression FAIL trước sửa đã báo nguyên văn ở Mục B; xác định lỗi sản phẩm, không phải flake.

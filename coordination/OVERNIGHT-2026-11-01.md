@@ -469,6 +469,17 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   RELEASE-GO). End condition CHƯA đạt (N2–N5 chưa đóng hẳn; chưa qua 12:00
   05/11); job KHÔNG tắt. Không chờ thẻ duyệt.
 
+- **BỔ SUNG KHÔI PHỤC (sau push `7af2a4f`):** push này đã ghi đè mất khối Mục B
+  `becb93d` của LOCAL (push 08:16:09 trong lúc chờ duyệt push, sau khi staging
+  đã dựng từ `fdb72f5`) — khối chẩn đoán deep overflow đã được khôi phục
+  NGUYÊN VĂN lên đầu Mục B trong push này, không sửa chữ nào. Nội dung chẩn
+  đoán: nguồn tràn tại VI 390 là `.action-bar__buttons` (nút primary
+  `white-space: nowrap`, scrollWidth 212 > clientWidth 173) — đây chính là ứng
+  viên sửa cho lát N2 deep-overflow đã duyệt ở trên: cho phép cụm nút xuống
+  dòng / co lại trong khóa Neo 1+ (không đổi nhãn, không nới assertion), vẫn
+  nhánh web-only + PR riêng + UI-MERGE OK trước merge. LOCAL không cần báo lại
+  khối này.
+
 ### RUNBOOK PHASE 3 (Chí Nhân, 2026-11-02 ~19:00) — agent local đọc kỹ trước ca
 
 ## Bối cảnh
@@ -519,6 +530,9 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   P3-2 disposition (chấp nhận partial hay không) vẫn là quyết định riêng của Chooky — không nằm trong chỉ đạo này.
 
 ## B — Agent local → Chí Nhân
+
+### 2026-11-05 — N2 deep overflow: chẩn đoán
+- Tái hiện VI 390 ở `7c3bf9f`, cùng trình tự quick→deep→rail 0→1→2: `innerWidth=390`, document/body `scrollWidth=412` (+22px). Thử loại tạm từng node trong DOM rồi gắn lại: bỏ `.action-bar__buttons` hoặc một trong hai nút của nó thì document về 390px. `.action-bar__buttons` clientWidth 358 / scrollWidth 396; nút primary `Xác định điều kiện và phạm vi được đổi` rộng 175px, clientWidth 173 / scrollWidth 212, computed `white-space: nowrap`. Đây là bằng chứng nguồn gây tràn trong trạng thái tái hiện, không sửa CSS hoặc test. Chi tiết script `...\web\tests\.qa-overflow-diagnose.mjs`, `.qa-overflow-metrics.mjs`; ảnh `...\out\n2-deep\vi-390-overflow-detail.png`.
 
 ### 2026-11-05 — N2 deep đo lại: phát hiện overflow
 - Main `7c3bf9f38a72195423f1ee24c8b29745ba39afcb`, Brave coarse pointer, VI/EN × width 360/390/480/768/1024/1280/1440/1920, lần lượt chọn quick→deep→rail Nguồn (0)→Điều kiện (1)→Kết quả (2)→Bằng chứng (4): 64 trạng thái truy cập được; 16 trạng thái Bản sửa (3) disabled vì chưa xác nhận policy, KHÔNG tính đã kiểm. Axe toàn trang 0 violation trên 64 trạng thái. Document overflow có 4 trường hợp: deep Kết quả VI 360 `29px`, VI 390 `22px`, EN 360 `21px`, EN 390 `13px`; 60 trạng thái còn lại overflow 0. Đây khác với U1 và test review-desk trước: trình tự điều hướng cụ thể đã đi qua Điều kiện trước Kết quả, không kết luận nguyên nhân hay coi các bài trước sai.

@@ -74,4 +74,4 @@ immediate. Conditions still open the existing explicit acceptance workflow.
 Codex verification before the independent P2 gate: TypeScript PASS, 19 files / 141
 tests PASS. ZCode owns production builds and independent browser/visual gates.
 This authorization does not establish final owner taste approval or human
-usability/screen-reader qualification. See coordination/UI-NIGHT-2026-11-02.md.
+usability/screen-reader qualification. See (local coordination notes, not published).

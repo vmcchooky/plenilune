@@ -9,7 +9,7 @@
 > These walkthroughs run fully offline and need no key. AI is off by default and
 > is not called. Plenilune does not contact a device and does not apply a
 > repair. Screenshots are from the UI QA run on 31 October 2026; see the
-> [QA handoff](handoff/demo-ui-public.md) for the verified scope.
+> (local handoff notes, not published) for the verified scope.
 
 Vietnamese version: [walkthrough-vi.md](walkthrough-vi.md).
 
@@ -305,6 +305,6 @@ plenilune analyze-replay --before before.cfg --after after.cfg --evidence analys
 - Separate QA server without a key; no Meta call; no external request.
 - Check count and screenshots: local
   `out/qa-ui-2026-10-31/browser/browser-results.json` (not public) and the
-  [handoff](handoff/demo-ui-public.md).
+  (local handoff notes, not published).
 - Live UI with Meta **was not run** in this pass; do not infer it from offline
   QA.

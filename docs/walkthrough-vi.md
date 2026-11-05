@@ -11,7 +11,7 @@
 >
 > Walkthrough này chạy hoàn toàn offline, không cần key. AI tắt mặc định và
 > không được gọi. Plenilune không kết nối thiết bị và không áp dụng bản sửa.
-> Ảnh chụp lấy từ lần QA UI ngày 31/10/2026; xem [báo cáo QA](../docs/handoff/demo-ui-public.md)
+> Ảnh chụp lấy từ lần QA UI ngày 31/10/2026; xem (local handoff notes, not published)
 > để biết phạm vi đã kiểm chứng.
 
 Bản tiếng Anh: [walkthrough-en.md](walkthrough-en.md).
@@ -293,5 +293,5 @@ plenilune analyze-replay --before before.cfg --after after.cfg --evidence analys
   và dark; axe không có vi phạm serious/critical.
 - Server QA riêng, không key; không gọi Meta; không request ngoài loopback.
 - Số kiểm tra và ảnh: xem `out/qa-ui-2026-10-31/browser/browser-results.json`
-  (cục bộ, không public) và [handoff](handoff/demo-ui-public.md).
+  (cục bộ, không public) và (local handoff notes, not published).
 - Live UI với Meta **chưa chạy** trong lượt này; không suy từ offline QA.

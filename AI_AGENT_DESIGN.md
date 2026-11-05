@@ -2,7 +2,7 @@
 
 Status: Responses adapter + exact engine + verified repair đã chạy một ca live
 Contributor synthetic; receipt replay offline matched. Ngày: 30/10/2026.
-Ghi chú triển khai lịch sử (số liệu cũ, không phải caps hiện hành) tại [Contributor runtime handoff](docs/handoff/contributor-runtime.md); caps/tool hiện hành ở mục Budgets bên dưới và [CONTRACTS](CONTRACTS.md).
+Ghi chú triển khai lịch sử (số liệu cũ, không phải caps hiện hành) tại (local handoff notes, not published); caps/tool hiện hành ở mục Budgets bên dưới và [CONTRACTS](CONTRACTS.md).
 Authority nghĩa obligation tại [VERIFICATION_DESIGN](VERIFICATION_DESIGN.md); DTO tại [CONTRACTS](CONTRACTS.md).
 
 ## Vai trò

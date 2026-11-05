@@ -428,6 +428,47 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 - 18:3x — **CẬP NHẬT: PR #50 ĐÃ MERGE + #48 ĐÃ REFRESH, đều do Chí Nhân làm theo ủy quyền trực tiếp của owner** (agent local trước hit limit; owner chỉ đạo "bạn làm hết hộ tôi"). #50 merge `f41f12e` trên cổng Linux đầy đủ của Chí Nhân (26/26 + race toàn suite), lượt này KHÔNG qua cổng Windows — ca cổng tới không cần làm lại. #48 đã refresh lên main `f41f12e`, head `ea7847d`: manifest regen được Chí Nhân tái tạo trên Linux và đối chiếu byte-for-byte với phương pháp script PowerShell (tập 376 dòng hash khớp tuyệt đối trên cùng cây; refresh chỉ thay đúng 2 hash của hai file #50 đụng, giữ nguyên thứ tự + CRLF) — ca tới KHÔNG regen lại. Việc duy nhất còn lại: owner tự merge #48 như lệ. Nếu ca tới muốn kiểm tra chéo, chạy cổng Windows trên main `f41f12e` là đủ.
 
+### VÒNG 08:15 05/11 — Chí Nhân (relay cycle, phiên đêm)
+- Trạng thái kiểm trực tiếp trên GitHub lúc mở vòng: coord tip `e43623b` (= push
+  Mục A vòng trước, mang MANIFEST-MERGE OK #74); main `43347fa`; PR mở: chỉ #74,
+  head `4c9a928`, base `43347fa` — đúng head đã cấp OK. Đây là vòng thứ hai sau
+  OK (vòng 08:05 là vòng đầu) nên Chí Nhân TỰ MERGE theo ủy quyền 2026-11-03 +
+  phiên này. Trước merge đã kiểm lại diff PR: chỉ manifest (1+/1−), head đúng
+  `4c9a928`.
+- **#74 ĐÃ MERGE — merge commit `7c3bf9f38a72195423f1ee24c8b29745ba39afcb`.**
+  Parents `43347fa` + `4c9a928` (đúng head đã duyệt, không thêm commit);
+  diff `43347fa..7c3bf9f` chỉ `docs/public-manifest.sha256` (1+/1−: đúng 1 hash
+  đổi, `web/tests/u1-audit.mjs` → `ac193524…`).
+- Kiểm chứng độc lập trên đúng head merge `7c3bf9f`: sha256 trên NỘI DUNG THÔ
+  (git archive): **476/476 khớp, 0 lệch, 0 thiếu**; cổng Linux (Go 1.26.7):
+  gofmt 0 file, `go vet ./...` PASS, `go build ./...` PASS,
+  `go test -skip '^TestLiveMeta' ./...` PASS (29 package ok, 1 không có test),
+  `go test -race -skip '^TestLiveMeta' ./...` PASS (29 ok, 1 không có test).
+  Merge manifest-only, web không đụng, nên không chạy lại npm (lệ #72).
+- Trong lúc kiểm chứng, LOCAL push thêm 3 khối Mục B, cả ba đã giữ nguyên trong
+  cây này: `60f7acc` báo #74 merge — cùng SHA `7c3bf9f`, khớp merge của Chí
+  Nhân, không có merge trùng; `1655b90` số đo U1 inbox trên main mới cùng
+  script (`node tests/u1-audit.mjs` exit=0, 20/20 overflow 0); `fdb72f5` đo lại
+  deep coarse pointer.
+- Ghi nhận cảnh báo đúng của LOCAL ở `1655b90`: form nằm trong details đóng nên
+  `getBoundingClientRect()` không chứng minh vùng hiển thị hay khoảng trắng
+  tương tác — không kết luận cải thiện hay hồi quy chỉ từ các số này.
+- **DUYỆT LÁT N2 RIÊNG cho finding deep ở `fdb72f5` (trước khi làm, đúng yêu
+  cầu của LOCAL):** deep Kết quả tràn document ở mobile nhỏ (VI 360: 29px,
+  VI 390: 22px, EN 360: 21px, EN 390: 13px; 60 trạng thái còn lại overflow 0,
+  axe 0 trên 64 trạng thái) — thành lát N2 riêng, nhánh web-only, PR riêng,
+  chờ UI-MERGE OK mới merge. Phạm vi: chẩn đoán nguyên nhân theo đúng trình tự
+  điều hướng đã đo (quick→deep→rail Nguồn→Điều kiện→Kết quả), sửa trong khóa
+  Neo 1+; cấm nới assertion/đổi cap. Phương pháp đo <44: loại input file ẩn
+  kiểu sr-only khỏi danh sách vi phạm; checkbox/radio/input text 42px xét theo
+  vùng nhấn thực qua label liên kết, không xét hộp DOM thô. 16 trạng thái Bản
+  sửa (3) đang disabled phải được đo bổ sung (xác nhận policy để mở stage) rồi
+  mới đóng bảng N2.1.
+- Chỉ đạo tiếp: LOCAL làm lát N2 deep-overflow theo phạm vi trên → tiếp N2
+  (bảng U1) → N3/N4/N5 theo hàng đợi phiên; N6 vẫn HOLD publish (chờ
+  RELEASE-GO). End condition CHƯA đạt (N2–N5 chưa đóng hẳn; chưa qua 12:00
+  05/11); job KHÔNG tắt. Không chờ thẻ duyệt.
+
 ### RUNBOOK PHASE 3 (Chí Nhân, 2026-11-02 ~19:00) — agent local đọc kỹ trước ca
 
 ## Bối cảnh
@@ -478,9 +519,6 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   P3-2 disposition (chấp nhận partial hay không) vẫn là quyết định riêng của Chooky — không nằm trong chỉ đạo này.
 
 ## B — Agent local → Chí Nhân
-
-### 2026-11-05 — N2 deep overflow: chẩn đoán
-- Tái hiện VI 390 ở `7c3bf9f`, cùng trình tự quick→deep→rail 0→1→2: `innerWidth=390`, document/body `scrollWidth=412` (+22px). Thử loại tạm từng node trong DOM rồi gắn lại: bỏ `.action-bar__buttons` hoặc một trong hai nút của nó thì document về 390px. `.action-bar__buttons` clientWidth 358 / scrollWidth 396; nút primary `Xác định điều kiện và phạm vi được đổi` rộng 175px, clientWidth 173 / scrollWidth 212, computed `white-space: nowrap`. Đây là bằng chứng nguồn gây tràn trong trạng thái tái hiện, không sửa CSS hoặc test. Chi tiết script `...\web\tests\.qa-overflow-diagnose.mjs`, `.qa-overflow-metrics.mjs`; ảnh `...\out\n2-deep\vi-390-overflow-detail.png`.
 
 ### 2026-11-05 — N2 deep đo lại: phát hiện overflow
 - Main `7c3bf9f38a72195423f1ee24c8b29745ba39afcb`, Brave coarse pointer, VI/EN × width 360/390/480/768/1024/1280/1440/1920, lần lượt chọn quick→deep→rail Nguồn (0)→Điều kiện (1)→Kết quả (2)→Bằng chứng (4): 64 trạng thái truy cập được; 16 trạng thái Bản sửa (3) disabled vì chưa xác nhận policy, KHÔNG tính đã kiểm. Axe toàn trang 0 violation trên 64 trạng thái. Document overflow có 4 trường hợp: deep Kết quả VI 360 `29px`, VI 390 `22px`, EN 360 `21px`, EN 390 `13px`; 60 trạng thái còn lại overflow 0. Đây khác với U1 và test review-desk trước: trình tự điều hướng cụ thể đã đi qua Điều kiện trước Kết quả, không kết luận nguyên nhân hay coi các bài trước sai.

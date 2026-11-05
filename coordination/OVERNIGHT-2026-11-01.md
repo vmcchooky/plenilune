@@ -501,6 +501,43 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   N6 vẫn HOLD publish (chờ RELEASE-GO). End condition CHƯA đạt (N2–N5 chưa
   đóng hẳn; chưa qua 12:00 05/11); job KHÔNG tắt. Không chờ thẻ duyệt.
 
+### VÒNG 08:30 05/11 — Chí Nhân (relay cycle, phiên đêm)
+- Trạng thái kiểm trực tiếp trên GitHub lúc mở vòng: coord tip `1fe3fd7` (1
+  khối Mục B mới sau watermark `d19642f`: PR #75 chờ duyệt); trong lúc vòng
+  chạy LOCAL push thêm `f54d32d` (đo bổ sung 16 trạng thái Bản sửa) — staging
+  đã đồng bộ từ `f54d32d` nên cả hai khối đều được giữ nguyên. Main vẫn
+  `7c3bf9f` (merge #74); PR mở: chỉ #75, head `46fc85f`, base `7c3bf9f` —
+  khớp báo cáo Mục B.
+- SOÁT DIFF PR #75 (đọc trước phán quyết): đúng 1 commit, chỉ 2 file:
+  `web/src/styles/app.css` (+5/−1) và `web/tests/deep-overflow-browser.mjs`
+  mới (40 dòng). CSS chỉ trong `@media (max-width: 720px)`: nút action-bar
+  được `white-space: normal; overflow-wrap: anywhere` — đúng phạm vi đã duyệt
+  ở vòng 08:25, không đổi nhãn/màu/token, khóa Neo 1+ giữ nguyên, không đụng
+  engine/Go. Test mới là script browser Windows-only (Brave + localhost:8098,
+  cùng mẫu `u1-audit.mjs`) nên không chạy trên Linux; nhưng fail-before-fix
+  đã chứng minh (`vi-360: overflow 29 !== 0`) và sau sửa 16/16 theo báo cáo
+  LOCAL (mỗi case: overflow 0, nhãn vừa nút, cao ≥44px, axe 0).
+- CỔNG LINUX ĐỘC LẬP trên đúng head `46fc85f` (worktree riêng, đã dọn):
+  `node --check` test mới SYNTAX-OK, `npm test` 192/192 PASS, `npm run build`
+  PASS (cảnh báo chunk >500 kB đã có từ trước, không mới). Go không đụng
+  (diff web-only); cổng Go trên head của LOCAL đã PASS theo Mục B.
+- **CẤP UI-MERGE OK cho PR #75 head `46fc85f` (chỉ hiệu lực cho head này).**
+  Chỉ đạo: LOCAL merge #75 → báo SHA vào Mục B → regen manifest thành PR
+  riêng (file test mới sẽ làm manifest stale 1 entry; KHÔNG merge manifest
+  trước MANIFEST-MERGE OK). Chí Nhân không tự merge vòng này (OK mới cấp,
+  LOCAL đang trực).
+- GHI NHẬN khối `f54d32d` (đo bổ sung 16 trạng thái Bản sửa trên build #75):
+  16/16 mở được Bản sửa, document overflow 0, axe 0 — phần đo lường N2.1 đã
+  đủ. NHƯNG mục tiêu <44px vẫn MỞ thành lát riêng, không đóng cùng N2.1:
+  checkbox input 16×24px có label cao 42px tại 360/390 và 28px tại 480–1920,
+  input text cao 42px ở mọi tổ hợp (đo theo vùng nhấn thực qua label, đúng
+  phương pháp đã duyệt). Lát riêng này không chặn merge #75 (lỗi có sẵn, PR
+  #75 không gây ra; nút của #75 đã ≥44px theo test của nó) — LOCAL báo
+  hướng xử lý lát <44px (input text + label checkbox) vào Mục B sau merge
+  #75, chờ duyệt trước khi thành PR.
+- N6 vẫn HOLD publish (chờ RELEASE-GO). End condition CHƯA đạt (N2–N5 chưa
+  đóng hẳn; chưa qua 12:00 05/11); job KHÔNG tắt. Không chờ thẻ duyệt.
+
 ### RUNBOOK PHASE 3 (Chí Nhân, 2026-11-02 ~19:00) — agent local đọc kỹ trước ca
 
 ## Bối cảnh

@@ -630,6 +630,9 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — Cổng #76 PASS
+- #76 head `01e4157e5c80bc4172497dcbb20fa817d677d0f5`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 213.311s); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
+
 ### 2026-11-05 — Đề xuất lát riêng mục tiêu <44px, chờ duyệt
 - Số đo repair đã báo: `#append-rule` (input text) cao 42px; label `.ai-consent__controls .checkbox-row` bao input consent cao 42px ở 360/390 và 28px ở 480–1920; checkbox đã gắn label nên xử lý vùng label thay vì phóng đại glyph 16×24px. Form watch cũng có input tên cao 42px; condition có 9 input text cao 42px trong trạng thái 390px đã đo.
 - Đề xuất: lát CSS web-only riêng cho coarse pointer, đặt min-height 44px có phạm vi trên input text thực sự hiển thị của repair/watch/conditions và vùng label checkbox consent được đo, giữ association/kích thước glyph, nhãn, thứ tự, logic và token Neo 1+; KHÔNG áp cho file input sr-only. Trước khi chốt selector cần liệt kê đầy đủ thành phần bị ảnh hưởng và đo các label/target thực, tránh tác động ngoài phạm vi. Browser regression VI/EN × 360–1920 đo bounding box/label hữu hiệu + thao tác click/keyboard, overflow và axe; ảnh trước/sau 390/1440; không hạ assertion. Chờ Chí Nhân duyệt phạm vi/selector trước khi làm PR.

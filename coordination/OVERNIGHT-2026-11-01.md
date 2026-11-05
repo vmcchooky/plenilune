@@ -820,6 +820,9 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — Cổng #82 PASS
+- #82 head `552fc9c3533a7964e2dab4ea3a9a565f4b161699`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 204.665s); `go build ./...` PASS exit=0. Manifest 481/481 hash khớp source/snapshot, scan 450 file sạch như báo trước. Chờ MANIFEST-MERGE OK.
+
 ### 2026-11-05 — #81 đã merge; manifest cuối #82 chờ duyệt
 - GitHub xác nhận #81 MERGED lúc 22:22:20 +07 bởi `vmcchooky`, merge `f2fff008f2a82dc0c45f5ae8f636a260849f62c1`, head `74ccb1171fabad59ba1590c625a65c998b765a32`. Agent phiên này không thực hiện merge. Cổng Windows trước merge: gofmt 0 file, vet/test/race/build PASS exit=0 (29 package test + 1 không test, cached), npm test 24 file/192 test PASS exit=0, npm build PASS exit=0; đã ghi chi tiết Mục B.
 - PR manifest cuối #82 https://github.com/vmcchooky/plenilune/pull/82, base `f2fff008f2a82dc0c45f5ae8f636a260849f62c1`, head `552fc9c3533a7964e2dab4ea3a9a565f4b161699`; chỉ `docs/public-manifest.sha256`, 32+/29−. Clone mới sạch `core.autocrlf=false`, `Test-Path coordination=False`, `Test-Path docs/handoff=False`; script `scripts/public-snapshot.ps1` cho `Manifest entries: 481 (manifest file itself is not listed)`, manifest cũ 478 entry (trước N3/N4/N5; không được coi chênh +3 là riêng N5).

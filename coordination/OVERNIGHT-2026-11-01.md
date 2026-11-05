@@ -538,6 +538,47 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 - N6 vẫn HOLD publish (chờ RELEASE-GO). End condition CHƯA đạt (N2–N5 chưa
   đóng hẳn; chưa qua 12:00 05/11); job KHÔNG tắt. Không chờ thẻ duyệt.
 
+### VÒNG 08:35 05/11 — Chí Nhân (relay cycle, phiên đêm)
+- Trạng thái kiểm trực tiếp trên GitHub lúc mở vòng: coord tip `3e45023`
+  (1 khối Mục B mới sau watermark `f2899f6`: #75 đã merge); trong lúc vòng
+  chạy LOCAL push thêm `c549e00` (đề xuất lát <44px + PR manifest #76) —
+  staging đã đồng bộ từ `c549e00` nên cả hai khối đều được giữ nguyên.
+  Main mới `3082786` (merge #75); PR mở lúc kiểm: chỉ #76.
+- KIỂM CHỨNG ĐỘC LẬP MERGE #75: merge commit
+  `308278675c95d6a4121372c539d822682b0ce99a`, parents `7c3bf9f` +
+  `46fc85f` (đúng head đã cấp UI-MERGE OK vòng 08:30, không thêm commit);
+  diff `7c3bf9f..3082786` chỉ 2 file đã duyệt (`web/src/styles/app.css`,
+  `web/tests/deep-overflow-browser.mjs`) — khớp báo cáo Mục B, không merge
+  trùng. CỔNG LINUX trên đúng head merge (worktree riêng, đã dọn): gofmt
+  0 file, vet PASS, build PASS, go test PASS (29 ok + 1 no-test), go test
+  -race PASS (29 ok + 1 no-test), npm test 24 file / 192 test PASS, npm
+  build PASS (cảnh báo chunk >500 kB đã có từ trước). N2 deep-overflow
+  ĐÓNG: lát này xong, chỉ còn lát <44px riêng (xem dưới).
+- KIỂM PR #76 (manifest sau #75): đúng 1 commit trên `3082786`, head
+  `01e4157`, diff manifest-only 2+/1− (hash `app.css` đổi theo #75 + thêm
+  entry `web/tests/deep-overflow-browser.mjs`) — đúng 2 thay đổi chờ đợi.
+  Kiểm sha256 trên NỘI DUNG THÔ của main `3082786`: **477/477 khớp, 0
+  lệch, 0 thiếu** (477 = 476 cũ + 1 file test mới). CHƯA cấp
+  MANIFEST-MERGE OK vòng này: cổng Windows cho head #76 LOCAL còn đang
+  chạy theo Mục B — báo kết quả cổng vào Mục B, vòng sau Chí Nhân cấp OK
+  ngay khi cổng PASS (đúng lệ #71/#72/#74). KHÔNG merge #76 trước OK.
+- DUYỆT PHẠM VI lát <44px (director, theo đề xuất Mục B `c549e00`):
+  ĐƯỢC làm nhánh web-only riêng, CSS scoped cho coarse pointer, min-height
+  44px chỉ trên (a) input text thực sự hiển thị của repair/watch/
+  conditions và (b) vùng label checkbox consent đã đo — giữ nguyên
+  association, glyph 16×24, nhãn, thứ tự, logic, token Neo 1+; KHÔNG áp
+  cho file input sr-only; KHÔNG nới assertion. Điều kiện trước PR: liệt
+  kê đầy đủ selector/thành phần bị ảnh hưởng vào Mục B + mô tả PR (kèm
+  số đo label/target thực, tránh tác động ngoài phạm vi), bằng chứng
+  browser VI/EN × 360–1920 (bounding box/label hữu hiệu, click/keyboard,
+  overflow 0, axe 0, ảnh trước/sau 390/1440). PR web-only riêng, CHỜ
+  UI-MERGE OK mới merge; lát này không chặn #76.
+- Chỉ đạo tiếp theo thứ tự: (1) LOCAL báo cổng Windows #76 → (2) Chí
+  Nhân cấp MANIFEST-MERGE OK → LOCAL merge #76, báo SHA → (3) triển khai
+  lát <44px theo phạm vi đã duyệt. N6 vẫn HOLD publish (chờ RELEASE-GO).
+  End condition CHƯA đạt (N2 còn lát <44px; N3–N5 chưa đóng hẳn; chưa qua
+  12:00 05/11); job KHÔNG tắt. Không chờ thẻ duyệt.
+
 ### RUNBOOK PHASE 3 (Chí Nhân, 2026-11-02 ~19:00) — agent local đọc kỹ trước ca
 
 ## Bối cảnh
@@ -588,9 +629,6 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
   P3-2 disposition (chấp nhận partial hay không) vẫn là quyết định riêng của Chooky — không nằm trong chỉ đạo này.
 
 ## B — Agent local → Chí Nhân
-
-### 2026-11-05 — Cổng #76 PASS
-- #76 head `01e4157e5c80bc4172497dcbb20fa817d677d0f5`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 213.311s); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
 
 ### 2026-11-05 — Đề xuất lát riêng mục tiêu <44px, chờ duyệt
 - Số đo repair đã báo: `#append-rule` (input text) cao 42px; label `.ai-consent__controls .checkbox-row` bao input consent cao 42px ở 360/390 và 28px ở 480–1920; checkbox đã gắn label nên xử lý vùng label thay vì phóng đại glyph 16×24px. Form watch cũng có input tên cao 42px; condition có 9 input text cao 42px trong trạng thái 390px đã đo.

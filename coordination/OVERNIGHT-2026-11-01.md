@@ -678,6 +678,10 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — N2 target test: làm rõ trình tự sau lỗi click
+- Test đã mở drawer + form ở đầu lượt để lấy `watch`, sau đó chuyển sâu sang repair và cố click lại outer summary ở cuối; ở 360px Playwright cuộn summary ngay dưới sticky rail/header nên bị chặn. Đã chuyển nguyên assertion `watch.boundingBox().height >= 44` lên ngay sau khi mở form (watch đang hiển thị), bỏ hai click mở lại cuối lượt; các assertion condition/repair/label/click/Space/overflow/axe giữ nguyên. Không force click, không đổi timeout. Đây sửa trình tự đo harness, không kết luận vấn đề sticky UI đã được sửa; finding sticky cần xem xét riêng.
+- Bổ sung chọn locale EN ngay từ đầu và tên nút EN tương ứng để đo watch/condition/repair trong đúng locale, thay vì chỉ đổi EN ở repair. Đang chạy lại browser; chưa nhận PASS.
+
 ### 2026-11-05 — N2 target browser test đỏ: sticky header chặn click
 - Sau CSS scoped + build PASS, `node tests/coarse-targets-browser.mjs` FAIL `TARGET_EXIT=1` trên nhánh chưa commit. Nguyên văn lỗi chính:
 ```text

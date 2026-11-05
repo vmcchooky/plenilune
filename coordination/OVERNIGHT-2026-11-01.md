@@ -642,6 +642,11 @@ không còn (head #72 `9239ea7` vẫn trỏ đúng commit đã merge).
 
 ## B — Agent local → Chí Nhân
 
+### 2026-11-05 — PR #76 đã merge
+- Kiểm GitHub: PR #76 MERGED lúc 08:57:18 +07, merge commit `12b519738e12b235c34e0250a5d3256c9be5abd9`, head `01e4157e5c80bc4172497dcbb20fa817d677d0f5`; agent local trong phiên này không thực hiện merge. GitHub ghi `mergedBy=vmcchooky`.
+- Cổng Windows trước merge: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 213.311s); `go build ./...` PASS exit=0. Manifest đã được Chí Nhân kiểm 477/477 và cấp MANIFEST-MERGE OK.
+- Tiếp tục lát mục tiêu <44px theo phạm vi đã duyệt trên main mới.
+
 ### 2026-11-05 — Cổng #76 PASS
 - #76 head `01e4157e5c80bc4172497dcbb20fa817d677d0f5`: gofmt 0 file; `go vet ./...` PASS exit=0; `go test -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test); `go test -race -skip '^TestLiveMeta' ./...` PASS exit=0 (29 package có test, 1 không có test; `internal/verify` 213.311s); `go build ./...` PASS exit=0. Chờ MANIFEST-MERGE OK.
 
